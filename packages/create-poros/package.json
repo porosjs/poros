@@ -1,0 +1,28 @@
+{
+  "name": "@poros/create-poros",
+  "version": "1.0.0",
+  "description": "@poros/create-poros",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "poros-scripts father build",
+    "build:deps": "poros-scripts bundleDeps",
+    "dev": "poros-scripts father dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/porosjs/poros"
+  },
+  "authors": [
+    "王建明 <wangjianming.x@gmail.com>"
+  ],
+  "license": "MIT",
+  "bugs": "https://github.com/porosjs/poros/issues",
+  "homepage": "https://github.com/porosjs/poros/tree/master/packages/create-poros#readme",
+  "publishConfig": {
+    "access": "public"
+  }
+}

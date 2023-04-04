@@ -1,0 +1,10 @@
+/node_modules
+/packages/**/node_modules
+/packages/**/dist
+.umi
+.umi-production
+.umi-test
+dist
+.idea
+.DS_Store
+.turbo

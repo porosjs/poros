@@ -1,0 +1,8 @@
+{
+  "name": "poros-scripts",
+  "version": "1.0.0",
+  "private": true,
+  "bin": {
+    "poros-scripts": "bin/poros-scripts.js"
+  }
+}
