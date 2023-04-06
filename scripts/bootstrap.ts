@@ -21,7 +21,7 @@ import { setExcludeFolder } from './.internal/utils';
     if (['poros'].includes(pkgName)) {
       return pkgName;
     } else {
-      return `@poros/${pkgName}`;
+      return `@porosjs/${pkgName}`;
     }
   }
 
@@ -103,6 +103,17 @@ import { setExcludeFolder } from './.internal/utils';
   },
   "include": ["src"]
 }\n`,
+        'utf-8',
+      );
+
+      // .fatherrc.ts
+      await fs.writeFile(
+        path.join(pkgDir, '.fatherrc.ts'),
+        `import { defineConfig } from 'father';
+
+export default defineConfig({
+  extends: '../../.fatherrc.base.ts',
+});\n`,
         'utf-8',
       );
 

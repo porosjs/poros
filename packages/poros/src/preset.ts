@@ -10,6 +10,7 @@ export default (api: IApi) => {
       require.resolve('./plugins/porosAlias'),
       require.resolve('./plugins/porosAppData'),
       require.resolve('./plugins/porosChecker'),
+      require.resolve('./plugins/porosElectron'),
     ],
   };
 };
