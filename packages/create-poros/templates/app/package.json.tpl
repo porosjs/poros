@@ -7,7 +7,7 @@
     "build:mac": "poros build --mac",
     "build:linux": "poros build --linux",
     "format": "prettier --cache --write .",
-    "rebuild-deps": "poros install-app-deps",{{#withHusky}}
+    "rebuild-deps": "poros rebuild-deps",{{#withHusky}}
     "prepare": "husky install",{{/withHusky}}
     "postinstall": "poros setup",
     "setup": "poros setup"

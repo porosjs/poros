@@ -1,7 +1,6 @@
 import * as path from 'path';
 import type { IApi } from 'umi';
-import { buildElectron, runBuild, runDev } from './compile';
-import { ElectronBuilder } from './types';
+import { runBuild, runDev } from './compile';
 
 export default (api: IApi) => {
   api.modifyConfig((config) => {
@@ -20,17 +19,15 @@ export default (api: IApi) => {
     return config;
   });
 
-  // start dev electron
   api.onStart(() => {
-    const { parallelBuild } = api.config.electronBuilder as ElectronBuilder;
-    if (parallelBuild) {
-      runBuild(api).catch((error) => {
+    const { parallel } = api.config.parallel;
+    if (parallel) {
+      runDev(api).catch((error) => {
         console.error(error);
       });
     }
   });
 
-  // start dev electron
   api.onDevCompileDone(({ isFirstCompile }) => {
     if (isFirstCompile) {
       runDev(api).catch((error) => {
@@ -39,12 +36,11 @@ export default (api: IApi) => {
     }
   });
 
-  // build electron
   api.onBuildComplete(({ err }) => {
-    const { parallelBuild } = api.config.electronBuilder as ElectronBuilder;
+    const { parallel } = api.config;
 
     if (err == null) {
-      if (parallelBuild) {
+      if (parallel) {
         buildElectron(api);
       } else {
         runBuild(api)

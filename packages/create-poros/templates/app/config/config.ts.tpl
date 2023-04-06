@@ -1,7 +1,6 @@
 import { defineConfig } from 'poros';
 
 export default defineConfig({
-  antd: {},
   access: {},
   model: {},
   initialState: {},
