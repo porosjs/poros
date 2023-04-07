@@ -19,15 +19,6 @@ export default (api: IApi) => {
     return config;
   });
 
-  api.onStart(() => {
-    const { parallel } = api.config.parallel;
-    if (parallel) {
-      runDev(api).catch((error) => {
-        console.error(error);
-      });
-    }
-  });
-
   api.onDevCompileDone(({ isFirstCompile }) => {
     if (isFirstCompile) {
       runDev(api).catch((error) => {
@@ -37,18 +28,10 @@ export default (api: IApi) => {
   });
 
   api.onBuildComplete(({ err }) => {
-    const { parallel } = api.config;
-
     if (err == null) {
-      if (parallel) {
-        buildElectron(api);
-      } else {
-        runBuild(api)
-          .then(() => buildElectron(api))
-          .catch((error) => {
-            console.error(error);
-          });
-      }
+      runBuild(api).catch((error) => {
+        console.error(error);
+      });
     }
   });
 

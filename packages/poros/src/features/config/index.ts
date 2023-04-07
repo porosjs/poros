@@ -41,5 +41,14 @@ export default (api: IApi) => {
         `You are using ${api.appData.umi.importSource}, please remove umi from your dependencies in package.json.`,
       );
     }
+
+    const hasElectron =
+      current.dependencies?.['electron'] ||
+      current.devDependencies?.['electron'];
+    if (!hasElectron) {
+      throw new Error(
+        `You are using ${api.appData.umi.importSource}, please install electron.`,
+      );
+    }
   });
 };

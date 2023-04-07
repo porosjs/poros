@@ -29,9 +29,13 @@
     "poros": "bin/poros.js"
   },
   "dependencies": {
-    "@umijs/plugins": "^4.0.64"
+    "@umijs/bundler-vite": "^4.0.64",
+    "@umijs/bundler-webpack": "^4.0.64",
+    "@umijs/plugins": "^4.0.64",
+    "electron-builder": "^23.6.0",
+    "yargs": "^17.7.1"
   },
   "devDependencies": {
-    "electron-builder": "^23.6.0"
+    "@types/yargs": "^17.0.24"
   }
 }
