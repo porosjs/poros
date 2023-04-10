@@ -1,3 +1,5 @@
+import WebpackBar from '@umijs/bundler-webpack/compiled/webpackbar';
+import ProgressPlugin from '@umijs/bundler-webpack/dist/plugins/ProgressPlugin';
 import { Env } from '@umijs/bundler-webpack/dist/types';
 import * as path from 'path';
 import type { IApi } from 'umi';
@@ -24,24 +26,17 @@ export default (api: IApi) => {
     config.target('electron-renderer');
 
     if (api.env === Env.production) {
-      config
-        .plugin('progress-plugin')
-        .use(require.resolve('@umijs/bundler-webpack/compiled/webpackbar'), [
-          {
-            name: 'RendererProcess',
-          },
-        ]);
+      config.plugin('progress-plugin').use(WebpackBar, [
+        {
+          name: 'RendererProcess',
+        },
+      ]);
     } else {
-      config
-        .plugin('progress-plugin-dev')
-        .use(
-          require.resolve('@umijs/bundler-webpack/dist/plugins/ProgressPlugin'),
-          [
-            {
-              name: 'RendererProcess',
-            },
-          ],
-        );
+      config.plugin('progress-plugin-dev').use(ProgressPlugin, [
+        {
+          name: 'RendererProcess',
+        },
+      ]);
     }
 
     return config;
