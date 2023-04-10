@@ -1,21 +1,49 @@
+import { Env } from '@umijs/bundler-webpack/dist/types';
 import * as path from 'path';
 import type { IApi } from 'umi';
 import { runBuild, runDev } from './compile';
 
 export default (api: IApi) => {
+  api.describe({ key: 'electron' });
+
   api.modifyConfig((config) => {
-    config.outputPath = path.join(process.cwd(), config.outputPath, 'bundled');
+    config.outputPath = path.join(
+      process.cwd(),
+      config.outputPath ?? 'dist',
+      'bundled',
+    );
 
     config.history = {
       type: 'hash',
     };
 
-    config.externals = { electron: `require('electron')`, ...config.externals };
     return config;
   });
 
   api.chainWebpack((config) => {
     config.target('electron-renderer');
+
+    if (api.env === Env.production) {
+      config
+        .plugin('progress-plugin')
+        .use(require.resolve('@umijs/bundler-webpack/compiled/webpackbar'), [
+          {
+            name: 'RendererProcess',
+          },
+        ]);
+    } else {
+      config
+        .plugin('progress-plugin-dev')
+        .use(
+          require.resolve('@umijs/bundler-webpack/dist/plugins/ProgressPlugin'),
+          [
+            {
+              name: 'RendererProcess',
+            },
+          ],
+        );
+    }
+
     return config;
   });
 
@@ -35,11 +63,11 @@ export default (api: IApi) => {
     }
   });
 
-  api.onGenerateFiles(() => {
-    api.writeTmpFile({
-      path: 'main/createProtocol.ts',
-      context: {},
-      tplPath: path.join(__dirname, '../../tpls/main/createProtocol.ts.tpl'),
-    });
-  });
+  // api.onGenerateFiles(() => {
+  //   api.writeTmpFile({
+  //     path: 'main/createProtocol.ts',
+  //     context: {},
+  //     tplPath: path.join(__dirname, '../../tpls/main/createProtocol.ts.tpl'),
+  //   });
+  // });
 };

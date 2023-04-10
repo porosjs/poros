@@ -6,8 +6,7 @@ process.title = 'poros';
 // @ts-ignore
 process.noDeprecation = '1';
 process.env.DID_YOU_KNOW = 'none';
-// disable since it's conflicted with typescript cjs + dynamic import
-// require('v8-compile-cache');
+process.env.APP_ROOT='src/renderer';
 // @ts-ignore
 require('../dist/cli')
     .run()

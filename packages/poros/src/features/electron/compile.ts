@@ -1,9 +1,11 @@
-import { fsExtra, lodash, rimraf } from '@umijs/utils';
+import { Env } from '@umijs/bundler-webpack/dist/types';
+import { fsExtra, lodash } from '@umijs/utils';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import { build } from 'electron-builder';
 import path from 'path';
 import { IApi } from 'umi';
 import yargs from 'yargs';
+import { PATHS } from '../../constants';
 import externalPackagesConfig from './external-packages.config';
 import {
   filterText,
@@ -12,6 +14,7 @@ import {
   getRendererBuildPath,
   getRootPkg,
   lazyImportFromCurrentPkg,
+  printMemoryUsage,
 } from './utils';
 
 const bundlerWebpack: typeof import('@umijs/bundler-webpack') =
@@ -90,12 +93,76 @@ async function buildElectron(api: IApi) {
 }
 
 async function buildMain(api: IApi) {
-  const mode: 'none' | 'development' | 'production' =
-    api.env === 'development' ? 'development' : 'production';
-  const outputPath =
-    mode === 'development' ? getDevBuildPath(api) : getMainBuildPath(api);
+  const enableVite = !!api.config.vite;
 
-  rimraf.sync(outputPath);
+  const outputPath =
+    api.env === 'development' ? getDevBuildPath(api) : getMainBuildPath(api);
+
+  const external: any[] = [...externalPackagesConfig, api.config.externals];
+
+  const chainWebpack = (config: any) => {
+    if (api.env === Env.production) {
+      config
+        .plugin('progress-plugin')
+        .use(require.resolve('@umijs/bundler-webpack/compiled/webpackbar'), [
+          {
+            name: 'MainProcess',
+            color: 'blue',
+          },
+        ]);
+    } else {
+      config
+        .plugin('progress-plugin-dev')
+        .use(
+          require.resolve('@umijs/bundler-webpack/dist/plugins/ProgressPlugin'),
+          [
+            {
+              name: 'MainProcess',
+            },
+          ],
+        );
+    }
+
+    return config;
+  };
+  const modifyWebpackConfig = async (memo: any) => {
+    memo.output.filename = 'main.js';
+    memo.target = 'electron-main';
+    memo.output.library = 'main';
+    memo.output.libraryTarget = 'commonjs2';
+    return memo;
+  };
+  const modifyViteConfig = async (memo: any) => {
+    memo.build.rollupOptions.output.entryFileNames = 'main.js';
+    memo.build.lib.formats = ['cjs'];
+
+    return memo;
+  };
+
+  const opts: any = {
+    config: {
+      ...api.config,
+      external,
+      outputPath,
+    },
+    env: api.env,
+    cwd: process.cwd(),
+    rootDir: PATHS.MAIN_SRC,
+    entry: { main: PATHS.MAIN_INDEX },
+    ...(enableVite
+      ? { modifyViteConfig }
+      : { chainWebpack, modifyWebpackConfig }),
+    async onBuildComplete() {
+      printMemoryUsage();
+    },
+    clean: true,
+  };
+
+  if (enableVite) {
+    await bundlerVite.build(opts);
+  } else {
+    await bundlerWebpack.build(opts);
+  }
 }
 
 async function buildPreload(api: IApi) {}

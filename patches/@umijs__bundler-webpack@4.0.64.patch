@@ -1,0 +1,70 @@
+diff --git a/dist/build.d.ts b/dist/build.d.ts
+index b4daff9f101ef9d7a814d555ff9ef0d2e30bc331..98b6fa3bb9625b589ac47755a7a95febd85b8a29 100644
+--- a/dist/build.d.ts
++++ b/dist/build.d.ts
+@@ -16,6 +16,6 @@ declare type IOpts = {
+     extraBabelPresets?: any[];
+     clean?: boolean;
+     watch?: boolean;
+-} & Pick<IConfigOpts, 'cache' | 'pkg'>;
++} & Pick<IConfigOpts, 'cache' | 'pkg' | 'env'>;
+ export declare function build(opts: IOpts): Promise<webpack.Stats>;
+ export {};
+diff --git a/dist/build.js b/dist/build.js
+index 16d14434ca235961590b98fd8fc6f0aee0620b29..7c2f1e3e571c832ef723c624bedd58acf5bec0f7 100644
+--- a/dist/build.js
++++ b/dist/build.js
+@@ -47,7 +47,7 @@ async function build(opts) {
+   const webpackConfig = await configModule.getConfig({
+     cwd: opts.cwd,
+     rootDir: opts.rootDir,
+-    env: import_types.Env.production,
++    env: opts.env ?? import_types.Env.production,
+     entry: opts.entry,
+     userConfig: opts.config,
+     analyze: process.env.ANALYZE,
+diff --git a/dist/dev.d.ts b/dist/dev.d.ts
+index 33a95d05144f450d2e8210b79f06b6c1053179ce..432b78077a94a52020c3f2a65b1bbe50215c51ca 100644
+--- a/dist/dev.d.ts
++++ b/dist/dev.d.ts
+@@ -1,5 +1,4 @@
+ /// <reference types="node" />
+-import { MFSU } from '@umijs/mfsu';
+ import type { Worker } from 'worker_threads';
+ import webpack from '../compiled/webpack';
+ import type { IOpts as IConfigOpts } from './config/config';
+@@ -33,7 +32,7 @@ declare type IOpts = {
+ export declare function ensureSerializableValue(obj: any): any;
+ export declare function dev(opts: IOpts): Promise<void>;
+ export declare function setup(opts: IOpts): Promise<{
+-    mfsu: MFSU | null;
++    mfsu: any;
+     webpackConfig: webpack.Configuration;
+ }>;
+ export {};
+diff --git a/dist/plugins/EsbuildMinifyFix.js b/dist/plugins/EsbuildMinifyFix.js
+index 7e5978e5cd685a9a214971a9ab26c599341b5edf..84b7d387dc4439354e7fd0bda671599a7dfe4e1f 100644
+--- a/dist/plugins/EsbuildMinifyFix.js
++++ b/dist/plugins/EsbuildMinifyFix.js
+@@ -65,6 +65,9 @@ var EsbuildMinifyFix = class {
+         if (!(info == null ? void 0 : info.minimized)) {
+           return false;
+         }
++        if (info == null ? void 0 : info.copied) {
++          return false;
++        }
+         if (info == null ? void 0 : info.EsbuildMinifyFix) {
+           return false;
+         }
+diff --git a/dist/server/ws.d.ts b/dist/server/ws.d.ts
+index 70e63bd611a619265f8c455f2c547c847e7c2515..d4216a0761c358a88ce4d2f0c03af53ed02a4d26 100644
+--- a/dist/server/ws.d.ts
++++ b/dist/server/ws.d.ts
+@@ -8,6 +8,6 @@ import { Server as HttpsServer } from 'https';
+ import WebSocket from '../../compiled/ws';
+ export declare function createWebSocketServer(server: HttpServer | HttpsServer | Http2Server | Server): {
+     send(message: string): void;
+-    wss: WebSocket.Server;
++    wss: WebSocket.Server<WebSocket.WebSocket>;
+     close(): void;
+ };
