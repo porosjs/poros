@@ -1,3 +1,5 @@
+import WebpackBar from '@umijs/bundler-webpack/compiled/webpackbar';
+import ProgressPlugin from '@umijs/bundler-webpack/dist/plugins/ProgressPlugin';
 import { Env } from '@umijs/bundler-webpack/dist/types';
 import { fsExtra, lodash } from '@umijs/utils';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
@@ -14,7 +16,6 @@ import {
   getRendererBuildPath,
   getRootPkg,
   lazyImportFromCurrentPkg,
-  printMemoryUsage,
 } from './utils';
 
 const bundlerWebpack: typeof import('@umijs/bundler-webpack') =
@@ -102,26 +103,21 @@ async function buildMain(api: IApi) {
 
   const chainWebpack = (config: any) => {
     if (api.env === Env.production) {
-      config
-        .plugin('progress-plugin')
-        .use(require.resolve('@umijs/bundler-webpack/compiled/webpackbar'), [
-          {
-            name: 'MainProcess',
-            color: 'blue',
-          },
-        ]);
+      config.plugin('progress-plugin').use(WebpackBar, [
+        {
+          name: 'MainProcess',
+          color: 'blue',
+        },
+      ]);
     } else {
-      config
-        .plugin('progress-plugin-dev')
-        .use(
-          require.resolve('@umijs/bundler-webpack/dist/plugins/ProgressPlugin'),
-          [
-            {
-              name: 'MainProcess',
-            },
-          ],
-        );
+      config.plugin('progress-plugin-dev').use(ProgressPlugin, [
+        {
+          name: 'MainProcess',
+        },
+      ]);
     }
+
+    config.plugins.delete('fastRefresh');
 
     return config;
   };
@@ -152,9 +148,6 @@ async function buildMain(api: IApi) {
     ...(enableVite
       ? { modifyViteConfig }
       : { chainWebpack, modifyWebpackConfig }),
-    async onBuildComplete() {
-      printMemoryUsage();
-    },
     clean: true,
   };
 

@@ -1,4 +1,6 @@
+import path from 'path';
 import { IApi } from 'umi';
+import { PATHS } from '../../constants';
 import { getSchemas } from './schema';
 
 export default (api: IApi) => {
@@ -17,11 +19,21 @@ export default (api: IApi) => {
     ]);
   }
 
-  api.modifyConfig((memo, args) => {
+  api.modifyPaths((paths) => {
+    paths.absTmpPath = PATHS.ABS_TMP_PATH;
+    paths.absNodeModulesPath = PATHS.ABS_NODE_MODULES_PATH;
+    paths.absPagesPath = path.join(PATHS.RENDERER_SRC, 'pages');
+
+    return paths;
+  });
+
+  api.modifyConfig((memo) => {
     memo.alias = {
       ...memo.alias,
+      '@': PATHS.SRC,
+      '@@': PATHS.ABS_TMP_PATH,
       'poros/renderer': 'umi',
-      'poros/main': `${args.paths.absTmpPath}/plugin-electron/export`,
+      'poros/main': `${PATHS.ABS_TMP_PATH}/plugin-electron/export`,
     };
     return memo;
   });

@@ -1,4 +1,4 @@
-import { logger, yParser } from '@umijs/utils';
+import { chalk, logger, yParser } from '@umijs/utils';
 import { dev } from 'umi/dist/cli/dev';
 import {
   checkLocal,
@@ -37,6 +37,8 @@ export async function run(opts: IOpts = {}) {
     process.env.UMI_PRESETS = opts.presets.join(',');
   }
   if (!opts.defaultConfigFiles && command === DEV_COMMAND) {
+    const version = require('../package.json').version;
+    logger.info(chalk.cyan.bold(`Poros v${version}`));
     dev();
   } else if (command === 'version' || command === 'v') {
     const version = require('../package.json').version;

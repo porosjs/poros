@@ -48,6 +48,8 @@ export default (api: IApi) => {
         console.error(error);
       });
     }
+
+    console.log(api.paths);
   });
 
   api.onBuildComplete(({ err }) => {

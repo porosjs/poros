@@ -56,6 +56,20 @@ index 7e5978e5cd685a9a214971a9ab26c599341b5edf..84b7d387dc4439354e7fd0bda671599a
          if (info == null ? void 0 : info.EsbuildMinifyFix) {
            return false;
          }
+diff --git a/dist/server/server.js b/dist/server/server.js
+index 2b1b709a430e01ed22b6abd6fca51314bd0f7314..ac68dc43b94a1731a9caedc19347a16c6acd4abc 100644
+--- a/dist/server/server.js
++++ b/dist/server/server.js
+@@ -209,9 +209,6 @@ async function createServer(opts) {
+   const port = opts.port || 8e3;
+   server.listen(port, () => {
+     const banner = (0, import_utils.getDevBanner)(protocol, opts.host, port);
+-    console.log(banner.before);
+-    import_utils.logger.ready(banner.main);
+-    console.log(banner.after);
+   });
+   return server;
+ }
 diff --git a/dist/server/ws.d.ts b/dist/server/ws.d.ts
 index 70e63bd611a619265f8c455f2c547c847e7c2515..d4216a0761c358a88ce4d2f0c03af53ed02a4d26 100644
 --- a/dist/server/ws.d.ts
