@@ -1,8 +1,10 @@
 import WebpackBar from '@umijs/bundler-webpack/compiled/webpackbar';
 import ProgressPlugin from '@umijs/bundler-webpack/dist/plugins/ProgressPlugin';
 import { Env } from '@umijs/bundler-webpack/dist/types';
+import { BaseGenerator } from '@umijs/utils';
 import * as path from 'path';
 import type { IApi } from 'umi';
+import { PATHS } from '../../constants';
 import { runBuild, runDev } from './compile';
 
 export default (api: IApi) => {
@@ -23,18 +25,18 @@ export default (api: IApi) => {
   });
 
   api.chainWebpack((config) => {
-    config.target('electron-renderer');
+    config.target(api.config.rendererTarget ?? 'web');
 
     if (api.env === Env.production) {
       config.plugin('progress-plugin').use(WebpackBar, [
         {
-          name: 'RendererProcess',
+          name: 'Renderer',
         },
       ]);
     } else {
       config.plugin('progress-plugin-dev').use(ProgressPlugin, [
         {
-          name: 'RendererProcess',
+          name: 'Renderer',
         },
       ]);
     }
@@ -48,8 +50,6 @@ export default (api: IApi) => {
         console.error(error);
       });
     }
-
-    console.log(api.paths);
   });
 
   api.onBuildComplete(({ err }) => {
@@ -60,11 +60,12 @@ export default (api: IApi) => {
     }
   });
 
-  // api.onGenerateFiles(() => {
-  //   api.writeTmpFile({
-  //     path: 'main/createProtocol.ts',
-  //     context: {},
-  //     tplPath: path.join(__dirname, '../../tpls/main/createProtocol.ts.tpl'),
-  //   });
-  // });
+  api.onGenerateFiles(async () => {
+    const generator = new BaseGenerator({
+      path: path.join(__dirname, '../../..', 'templates'),
+      target: PATHS.PLUGIN_PATH,
+      slient: true,
+    });
+    await generator.run();
+  });
 };

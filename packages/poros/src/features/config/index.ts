@@ -21,7 +21,7 @@ export default (api: IApi) => {
 
   api.modifyPaths((paths) => {
     paths.absTmpPath = PATHS.ABS_TMP_PATH;
-    paths.absNodeModulesPath = PATHS.ABS_NODE_MODULES_PATH;
+    paths.absSrcPath = PATHS.RENDERER_SRC;
     paths.absPagesPath = path.join(PATHS.RENDERER_SRC, 'pages');
 
     return paths;
@@ -33,7 +33,6 @@ export default (api: IApi) => {
       '@': PATHS.SRC,
       '@@': PATHS.ABS_TMP_PATH,
       'poros/renderer': 'umi',
-      'poros/main': `${PATHS.ABS_TMP_PATH}/plugin-electron/export`,
     };
     return memo;
   });

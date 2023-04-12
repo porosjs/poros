@@ -6,7 +6,6 @@ process.title = 'poros';
 // @ts-ignore
 process.noDeprecation = '1';
 process.env.DID_YOU_KNOW = 'none';
-process.env.APP_ROOT='src/renderer';
 // @ts-ignore
 require('../dist/cli')
     .run()

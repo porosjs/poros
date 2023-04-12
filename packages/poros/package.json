@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "templates"
   ],
   "scripts": {
     "build": "poros-scripts father build",
@@ -32,6 +33,7 @@
     "@umijs/bundler-vite": "4.0.64",
     "@umijs/bundler-webpack": "4.0.64",
     "@umijs/plugins": "4.0.64",
+    "@umijs/preset-umi": "4.0.64",
     "electron-builder": "^23.6.0",
     "yargs": "^17.7.1"
   },

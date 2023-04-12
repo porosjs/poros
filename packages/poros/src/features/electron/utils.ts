@@ -1,6 +1,7 @@
 import { fsExtra, importLazy, logger } from '@umijs/utils';
 import path, { dirname } from 'path';
 import { IApi } from 'umi';
+import { PLUGIN_DIR_NAME } from '../../constants';
 
 /**
  * lazy require dep from current package position (preset-umi)
@@ -49,7 +50,7 @@ export function getAbsOutputPath(api: IApi) {
  * @param api
  */
 export function getDevBuildPath(api: IApi) {
-  return path.join(api.paths.absTmpPath, 'plugin-electron', 'build');
+  return path.join(api.paths.absTmpPath, PLUGIN_DIR_NAME, 'build');
 }
 
 /**
@@ -80,14 +81,15 @@ export function filterText(s: string) {
           'Warning: This is an experimental feature and could change at any time.',
         ) &&
         !it.includes('No type errors found') &&
-        !it.includes('webpack: Compiled successfully.')
+        !it.includes('webpack: Compiled successfully.') &&
+        it !== 'undefined'
       );
     });
 
-  if (lines.length === 0) {
+  if (!lines || lines.length === 0) {
     return null;
   }
-  return '  ' + lines.join(`\n  `) + '\n';
+  return lines.join(`\n  `) + '\n';
 }
 
 export function printMemoryUsage() {
