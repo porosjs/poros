@@ -85,8 +85,6 @@ importers:
 
   packages/create-poros: {}
 
-  packages/plugins: {}
-
   packages/poros:
     dependencies:
       '@umijs/bundler-vite':

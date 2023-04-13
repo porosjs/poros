@@ -1,10 +1,8 @@
-import { Menu, Tray, app, protocol } from 'electron';
+import createProtocol from '@@/plugin-electron/createProtocol';
+import { BrowserWindow, Tray, app, protocol } from 'electron';
 import path from 'path';
 
-import menu, { menuItems } from './menu';
-import Server from './server/Server';
-import { getResourcePath } from './utils/main/utils';
-import WindowFactory from './windows/WindowFactory';
+const isDevelopment = process.env.NODE_ENV === 'development';
 
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } },
@@ -13,44 +11,26 @@ protocol.registerSchemesAsPrivileged([
 export default class PorosApplication {
   private tray: Tray | null = null;
 
-  private server: Server;
-  private windowFactory: WindowFactory;
+  mainWindow?: BrowserWindow;
 
-  constructor() {
-    this.windowFactory = WindowFactory.getInstance();
-    this.server = new Server();
-  }
-
-  callListenOnHttpServer() {
-    return this.server.listen();
-  }
-
-  initTray() {
-    this.tray = new Tray(path.join(getResourcePath(), './logo.ico'));
-
-    this.tray.setContextMenu(menu);
-
-    this.tray.addListener('click', () => {
-      this.windowFactory.mainWindow?.show();
+  createWindow() {
+    this.mainWindow = new BrowserWindow({
+      width: 800,
+      height: 600,
+      webPreferences: {
+        contextIsolation: true,
+        preload: path.join(__dirname, 'preload/index.js'),
+      },
     });
-  }
-
-  initAppMenu() {
-    const _menu = Menu.buildFromTemplate([
-      {
-        label: app.name,
-        submenu: menuItems,
-      },
-      {
-        role: 'editMenu',
-      },
-    ]);
-    Menu.setApplicationMenu(_menu);
+    if (isDevelopment) {
+      this.mainWindow.loadURL(`http://localhost:${process.env.PORT ?? 8000}`);
+    } else {
+      createProtocol('app');
+      this.mainWindow.loadURL('app://./index.html');
+    }
   }
 
   async initElectronAppObject() {
-    Menu.setApplicationMenu(null);
-
     app.commandLine.appendSwitch('disable-renderer-backgrounding');
     app.commandLine.appendSwitch(
       'webrtc-max-cpu-consumption-percentage',
@@ -59,7 +39,7 @@ export default class PorosApplication {
 
     await app.whenReady();
 
-    this.windowFactory.init();
+    this.createWindow();
 
     app.setAppUserModelId(app.name);
 
@@ -67,13 +47,9 @@ export default class PorosApplication {
       app.exit(0);
     });
 
-    app.on('second-instance', () => {
-      this.windowFactory.mainWindow?.show();
-    });
+    app.on('second-instance', () => {});
 
-    app.addListener('activate', () => {
-      this.windowFactory.mainWindow?.show();
-    });
+    app.addListener('activate', () => {});
   }
 
   async start() {
@@ -84,7 +60,6 @@ export default class PorosApplication {
     }
 
     await this.initElectronAppObject();
-    this.callListenOnHttpServer();
   }
 }
 
