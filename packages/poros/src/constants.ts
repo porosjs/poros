@@ -9,5 +9,11 @@ export const PATHS = {
   RENDERER_SRC: join(process.cwd(), 'src/renderer'),
   PRELOAD_SRC: join(process.cwd(), 'src/preload'),
   ABS_TMP_PATH: join(process.cwd(), 'src/.poros'),
+  ABS_PROD_TMP_PATH: join(process.cwd(), 'src/.poros-production'),
   PLUGIN_PATH: join(process.cwd(), 'src/.poros', PLUGIN_DIR_NAME),
+  PROD_PLUGIN_PATH: join(
+    process.cwd(),
+    'src/.poros-production',
+    PLUGIN_DIR_NAME,
+  ),
 } as const;

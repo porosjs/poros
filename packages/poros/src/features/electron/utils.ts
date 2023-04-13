@@ -26,7 +26,7 @@ export function getRootPkg(api: IApi) {
  * @param api
  */
 export function getMainBuildPath(api: IApi) {
-  return path.join(getAbsOutputPath(api), 'electron');
+  return path.join(getRendererBuildPath(api), 'electron');
 }
 
 /**
@@ -34,14 +34,6 @@ export function getMainBuildPath(api: IApi) {
  * @param api
  */
 export function getRendererBuildPath(api: IApi) {
-  return path.join(getAbsOutputPath(api), 'bundled');
-}
-
-/**
- * 获取打包目录
- * @param api
- */
-export function getAbsOutputPath(api: IApi) {
   return api.paths.absOutputPath;
 }
 
@@ -92,11 +84,11 @@ export function filterText(s: string) {
   return lines.join(`\n  `) + '\n';
 }
 
-export function printMemoryUsage() {
+export function printMemoryUsage(type: string) {
   const used = process.memoryUsage().heapUsed / 1024 / 1024;
   const rss = process.memoryUsage().rss / 1024 / 1024;
   logger.info(
-    `Memory Usage: ${Math.round(used * 100) / 100} MB (RSS: ${
+    `[${type}] Memory Usage: ${Math.round(used * 100) / 100} MB (RSS: ${
       Math.round(rss * 100) / 100
     } MB)`,
   );

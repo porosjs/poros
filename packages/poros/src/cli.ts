@@ -36,14 +36,14 @@ export async function run(opts: IOpts = {}) {
   if (opts?.presets) {
     process.env.UMI_PRESETS = opts.presets.join(',');
   }
+  const version = require('../package.json').version;
   if (!opts.defaultConfigFiles && command === DEV_COMMAND) {
-    const version = require('../package.json').version;
     logger.info(chalk.cyan.bold(`Poros v${version}`));
     dev();
   } else if (command === 'version' || command === 'v') {
-    const version = require('../package.json').version;
     console.log(`poros@${version}`);
   } else {
+    logger.info(chalk.cyan.bold(`Poros v${version}`));
     try {
       await new Service({
         defaultConfigFiles: opts.defaultConfigFiles || null,

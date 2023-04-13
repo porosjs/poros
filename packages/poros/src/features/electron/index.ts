@@ -63,7 +63,8 @@ export default (api: IApi) => {
   api.onGenerateFiles(async () => {
     const generator = new BaseGenerator({
       path: path.join(__dirname, '../../..', 'templates'),
-      target: PATHS.PLUGIN_PATH,
+      target:
+        api.env === 'development' ? PATHS.PLUGIN_PATH : PATHS.PROD_PLUGIN_PATH,
       slient: true,
     });
     await generator.run();

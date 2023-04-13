@@ -16,6 +16,7 @@ import {
   getRendererBuildPath,
   getRootPkg,
   lazyImportFromCurrentPkg,
+  printMemoryUsage,
 } from './utils';
 
 const bundlerWebpack: typeof import('@umijs/bundler-webpack') =
@@ -36,14 +37,14 @@ async function buildElectron(api: IApi) {
   //删除不需要的依赖
   Object.keys(buildPkg.dependencies).forEach((dependency) => {
     if (
-      !externals.includes(dependency) ||
+      !externals[dependency] ||
       !externalPackagesConfig.includes(dependency)
     ) {
       delete buildPkg.dependencies[dependency];
     }
   });
 
-  externals.forEach((external: string) => {
+  Object.keys(externals).forEach((external: string) => {
     if (!buildPkg.dependencies[external]) {
       buildPkg.dependencies[external] = require(path.join(
         api.paths.absNodeModulesPath,
@@ -59,17 +60,17 @@ async function buildElectron(api: IApi) {
   fsExtra.rmSync(buildPath, { recursive: true, force: true });
 
   // Prevent electron-builder from installing app deps
-  fsExtra.ensureDirSync(`${absOutputPath}/bundled/node_modules`);
+  fsExtra.ensureDirSync(`${absOutputPath}/node_modules`);
 
   fsExtra.writeFileSync(
-    `${absOutputPath}/bundled/package.json`,
+    `${absOutputPath}/package.json`,
     JSON.stringify(buildPkg, null, 2),
   );
 
   const defaultBuildConfig = {
     directories: {
-      output: absOutputPath,
-      app: `${absOutputPath}/bundled`,
+      output: path.join(absOutputPath, '..'),
+      app: `${absOutputPath}`,
     },
     files: ['**'],
     extends: null,
@@ -97,7 +98,7 @@ async function buildMain(api: IApi) {
   const enableVite = !!api.config.vite;
 
   const outputPath =
-    api.env === 'development' ? getDevBuildPath(api) : getMainBuildPath(api);
+    api.env === Env.development ? getDevBuildPath(api) : getMainBuildPath(api);
 
   const external: any[] = [...externalPackagesConfig, api.config.externals];
 
@@ -148,6 +149,11 @@ async function buildMain(api: IApi) {
     ...(enableVite
       ? { modifyViteConfig }
       : { chainWebpack, modifyWebpackConfig }),
+    ...(api.env === Env.production && {
+      onBuildComplete() {
+        printMemoryUsage('Main');
+      },
+    }),
     clean: api.env !== 'development',
   };
 
@@ -162,7 +168,7 @@ async function buildPreload(api: IApi) {
   const enableVite = !!api.config.vite;
 
   const outputPath = path.join(
-    api.env === 'development' ? getDevBuildPath(api) : getMainBuildPath(api),
+    api.env === Env.development ? getDevBuildPath(api) : getMainBuildPath(api),
     'preload',
   );
 
@@ -223,6 +229,11 @@ async function buildPreload(api: IApi) {
     ...(enableVite
       ? { modifyViteConfig }
       : { chainWebpack, modifyWebpackConfig }),
+    ...(api.env === Env.production && {
+      onBuildComplete() {
+        printMemoryUsage('Preload');
+      },
+    }),
     clean: api.env !== 'development',
   };
 
@@ -233,11 +244,15 @@ async function buildPreload(api: IApi) {
   }
 }
 
+let spawnProcess: ChildProcessWithoutNullStreams | null = null;
 export const runDev = async (api: IApi) => {
   await buildMain(api);
   await buildPreload(api);
 
-  let spawnProcess: ChildProcessWithoutNullStreams | null = null;
+  if (spawnProcess !== null) {
+    spawnProcess.kill('SIGKILL');
+    spawnProcess = null;
+  }
 
   spawnProcess = spawn('electron', [
     path.join(getDevBuildPath(api), 'main.js'),

@@ -20,7 +20,8 @@ export default (api: IApi) => {
   }
 
   api.modifyPaths((paths) => {
-    paths.absTmpPath = PATHS.ABS_TMP_PATH;
+    paths.absTmpPath =
+      api.env === 'development' ? PATHS.ABS_TMP_PATH : PATHS.ABS_PROD_TMP_PATH;
     paths.absSrcPath = PATHS.RENDERER_SRC;
     paths.absPagesPath = path.join(PATHS.RENDERER_SRC, 'pages');
 
@@ -31,7 +32,10 @@ export default (api: IApi) => {
     memo.alias = {
       ...memo.alias,
       '@': PATHS.SRC,
-      '@@': PATHS.ABS_TMP_PATH,
+      '@@':
+        api.env === 'development'
+          ? PATHS.ABS_TMP_PATH
+          : PATHS.ABS_PROD_TMP_PATH,
       'poros/renderer': 'umi',
     };
     return memo;
