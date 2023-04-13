@@ -34,7 +34,9 @@
     "@umijs/bundler-webpack": "4.0.64",
     "@umijs/plugins": "4.0.64",
     "@umijs/preset-umi": "4.0.64",
+    "@umijs/utils": "4.0.64",
     "electron-builder": "^23.6.0",
+    "umi": "4.0.64",
     "yargs": "^17.7.1"
   },
   "devDependencies": {

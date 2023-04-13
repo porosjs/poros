@@ -21,15 +21,12 @@
   },
   "keywords": [],
   "author": "王建明 <wangjianming.x@gmail.com>",
-  "dependencies": {
-    "@umijs/utils": "4.0.64",
-    "umi": "4.0.64"
-  },
   "devDependencies": {
     "@changesets/cli": "^2.26.1",
     "@manypkg/get-packages": "^2.1.0",
     "@pnpm/lockfile-file": "^8.0.1",
     "@types/resolve": "^1.20.2",
+    "@umijs/utils": "4.0.64",
     "@vercel/ncc": "^0.36.1",
     "dts-packer": "^0.0.3",
     "father": "^4.1.8",

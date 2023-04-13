@@ -28,5 +28,9 @@
   },
   "bin": {
     "create-poros": "bin/create-poros.js"
+  },
+  "dependencies": {
+    "@umijs/utils": "4.0.64",
+    "umi": "4.0.64"
   }
 }
