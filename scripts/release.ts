@@ -86,14 +86,14 @@ import { assert, eachPkg, getPkgs } from './.internal/utils';
   // await $`git commit --all --message "release: ${version}"`;
 
   // git tag
-  if (tag !== 'canary') {
-    logger.event('git tag');
-    await $`git tag v${version}`;
-  }
+  // if (tag !== 'canary') {
+  //   logger.event('git tag');
+  //   await $`git tag v${version}`;
+  // }
 
-  // git push
-  logger.event('git push');
-  await $`git push origin ${branch} --tags`;
+  // // git push
+  // logger.event('git push');
+  // await $`git push origin ${branch} --tags`;
 
   // pnpm publish
   logger.event('pnpm publish');
