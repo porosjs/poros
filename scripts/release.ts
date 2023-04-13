@@ -32,10 +32,6 @@ import { assert, eachPkg, getPkgs } from './.internal/utils';
     'npm registry is not https://registry.npmjs.org/',
   );
 
-  // check package.json
-  logger.event('check package.json info');
-  await $`npm run check:packageFiles`;
-
   // clean
   logger.event('clean');
   eachPkg(pkgs, ({ dir, name }) => {
