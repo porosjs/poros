@@ -44,7 +44,7 @@ interface ITemplateParams extends ITemplatePluginParams {
   email: string;
   withHusky: boolean;
   extraNpmrc: string;
-  electronMirrors: string;
+  electronMirror: string;
 }
 
 enum ENpmClient {
@@ -60,7 +60,7 @@ enum ETemplate {
   plugin = 'plugin',
 }
 
-const TAOBAO_ELECTRON_MIRRORS = 'https://npmmirror.com/mirrors/electron/';
+const TAOBAO_ELECTRON_MIRROR = 'https://npmmirror.com/mirrors/electron/';
 
 export interface IDefaultData extends ITemplateParams {
   appTemplate?: ETemplate;
@@ -76,7 +76,7 @@ const DEFAULT_DATA = {
   registry: ERegistry.npm,
   withHusky: false,
   extraNpmrc: '',
-  electronMirrors: '',
+  electronMirror: '',
   appTemplate: ETemplate.app,
   name: 'demo',
 } satisfies IDefaultData;
@@ -239,9 +239,9 @@ export default async ({
             extraNpmrc: isPnpm ? pnpmExtraNpmrc : '',
             pluginName,
             name: name ?? 'demo',
-            electronMirrors:
+            electronMirror:
               !isPlugin && registry === ERegistry.taobao
-                ? TAOBAO_ELECTRON_MIRRORS
+                ? TAOBAO_ELECTRON_MIRROR
                 : '',
           } satisfies ITemplateParams),
     });

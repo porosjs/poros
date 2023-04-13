@@ -1,6 +1,6 @@
 {
   "name": "poros",
-  "version": "1.0.0",
+  "version": "1.0.0-alpha.0",
   "private": true,
   "scripts": {
     "bootstrap": "poros-scripts bootstrap",
@@ -40,8 +40,6 @@
     "poros-scripts": "workspace:*",
     "prettier": "^2.8.7",
     "prettier-plugin-organize-imports": "^3.2.2",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
     "resolve": "^1.22.1",
     "rimraf": "^4.4.1",
     "tsx": "^3.12.6",

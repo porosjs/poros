@@ -16,8 +16,8 @@
   },
   "dependencies": {
     "poros": "{{{ version }}}",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@types/node": "^17.0.13",
