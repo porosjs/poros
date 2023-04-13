@@ -44,7 +44,7 @@ import { assert, eachPkg, getPkgs } from './.internal/utils';
   await $`npm run build:release`;
 
   // bump version
-  logger.event('bump version');
+  // logger.event('bump version');
   const version = require(PATHS.ROOT_CONFIG).version;
   let tag = 'latest';
   if (
@@ -81,9 +81,9 @@ import { assert, eachPkg, getPkgs } from './.internal/utils';
   await $`pnpm i`;
   $.verbose = true;
 
-  // commit
-  logger.event('commit');
-  await $`git commit --all --message "release: ${version}"`;
+  // // commit
+  // logger.event('commit');
+  // await $`git commit --all --message "release: ${version}"`;
 
   // git tag
   if (tag !== 'canary') {
