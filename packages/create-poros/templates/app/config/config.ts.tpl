@@ -1,21 +1,10 @@
 import { defineConfig } from 'poros';
+import builder from './builder';
+import routes from './routes';
 
 export default defineConfig({
-  access: {},
+  npmClient: 'pnpm',
   model: {},
-  initialState: {},
-  request: {},
-  routes: [
-    {
-      path: '/',
-      redirect: '/home',
-    },
-    {
-      name: '首页',
-      path: '/home',
-      component: './Home',
-    },
-  ],
-  npmClient: '{{{ npmClient }}}',
+  routes,
+  builder,
 });
-

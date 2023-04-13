@@ -18,6 +18,7 @@ enum ERegistry {
   npm = 'https://registry.npmjs.com/',
   taobao = 'https://registry.npmmirror.com/',
 }
+
 interface IArgs extends yParser.Arguments {
   default?: boolean;
   git?: boolean;
@@ -35,6 +36,7 @@ interface ITemplatePluginParams {
 }
 
 interface ITemplateParams extends ITemplatePluginParams {
+  name: string;
   version: string;
   npmClient: ENpmClient;
   registry: string;
@@ -42,6 +44,7 @@ interface ITemplateParams extends ITemplatePluginParams {
   email: string;
   withHusky: boolean;
   extraNpmrc: string;
+  electronMirrors: string;
 }
 
 enum ENpmClient {
@@ -57,6 +60,8 @@ enum ETemplate {
   plugin = 'plugin',
 }
 
+const TAOBAO_ELECTRON_MIRRORS = 'https://npmmirror.com/mirrors/electron/';
+
 export interface IDefaultData extends ITemplateParams {
   appTemplate?: ETemplate;
 }
@@ -71,7 +76,9 @@ const DEFAULT_DATA = {
   registry: ERegistry.npm,
   withHusky: false,
   extraNpmrc: '',
+  electronMirrors: '',
   appTemplate: ETemplate.app,
+  name: 'demo',
 } satisfies IDefaultData;
 
 interface IGeneratorOpts {
@@ -146,6 +153,7 @@ export default async ({
       initialValue: ERegistry.npm,
     })) as ERegistry;
   };
+  const isPlugin = appTemplate === ETemplate.plugin;
   const internalTemplatePrompts = async () => {
     intro(chalk.bgHex('#19BDD2')(' create-poros '));
 
@@ -165,7 +173,6 @@ export default async ({
     }
 
     // plugin extra questions
-    const isPlugin = appTemplate === ETemplate.plugin;
     if (isPlugin) {
       pluginName = (await text({
         message: `What's the plugin name?`,
@@ -231,6 +238,11 @@ export default async ({
             withHusky,
             extraNpmrc: isPnpm ? pnpmExtraNpmrc : '',
             pluginName,
+            name: name ?? 'demo',
+            electronMirrors:
+              !isPlugin && registry === ERegistry.taobao
+                ? TAOBAO_ELECTRON_MIRRORS
+                : '',
           } satisfies ITemplateParams),
     });
     await generator.run();
