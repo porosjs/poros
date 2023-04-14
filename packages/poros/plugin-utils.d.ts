@@ -1,1 +1,1 @@
-export * from 'umi/plugin-utils';
+export * from '@porosjs/umi/plugin-utils';

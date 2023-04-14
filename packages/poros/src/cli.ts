@@ -1,11 +1,11 @@
-import { chalk, logger, yParser } from '@umijs/utils';
-import { dev } from 'umi/dist/cli/dev';
+import { dev } from '@porosjs/umi/dist/cli/dev';
 import {
   checkLocal,
   checkVersion as checkNodeVersion,
-} from 'umi/dist/cli/node';
-import { DEV_COMMAND } from 'umi/dist/constants';
-import { Service } from 'umi/dist/service/service';
+} from '@porosjs/umi/dist/cli/node';
+import { DEV_COMMAND } from '@porosjs/umi/dist/constants';
+import { Service } from '@porosjs/umi/dist/service/service';
+import { chalk, logger, yParser } from '@umijs/utils';
 
 interface IOpts {
   presets?: string[];
