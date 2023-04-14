@@ -1,9 +1,9 @@
-import WebpackBar from '@umijs/bundler-webpack/compiled/webpackbar';
-import ProgressPlugin from '@umijs/bundler-webpack/dist/plugins/ProgressPlugin';
-import { Env } from '@umijs/bundler-webpack/dist/types';
+import WebpackBar from '@porosjs/bundler-webpack/compiled/webpackbar';
+import ProgressPlugin from '@porosjs/bundler-webpack/dist/plugins/ProgressPlugin';
+import { Env } from '@porosjs/bundler-webpack/dist/types';
+import type { IApi } from '@porosjs/umi';
 import { BaseGenerator } from '@umijs/utils';
 import * as path from 'path';
-import type { IApi } from 'umi';
 import { PATHS } from '../../constants';
 import { runBuild, runDev } from './compile';
 

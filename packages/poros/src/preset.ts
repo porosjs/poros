@@ -1,4 +1,4 @@
-import type { IApi } from 'umi';
+import type { IApi } from '@porosjs/umi';
 
 export default (api: IApi) => {
   return {

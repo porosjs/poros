@@ -1,1 +1,1 @@
-export * from 'umi';
+export * from '@porosjs/umi';

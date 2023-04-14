@@ -1,6 +1,6 @@
+import { IApi } from '@porosjs/umi';
 import { fsExtra, importLazy, logger } from '@umijs/utils';
 import path, { dirname } from 'path';
-import { IApi } from 'umi';
 import { PLUGIN_DIR_NAME } from '../../constants';
 
 /**

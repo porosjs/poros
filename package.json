@@ -60,12 +60,5 @@
   "engines": {
     "node": ">=14",
     "pnpm": ">=8"
-  },
-  "pnpm": {
-    "patchedDependencies": {
-      "@umijs/bundler-webpack@4.0.64": "patches/@umijs__bundler-webpack@4.0.64.patch",
-      "@umijs/bundler-vite@4.0.64": "patches/@umijs__bundler-vite@4.0.64.patch",
-      "@umijs/preset-umi@4.0.64": "patches/@umijs__preset-umi@4.0.64.patch"
-    }
   }
 }

@@ -1,11 +1,11 @@
-import WebpackBar from '@umijs/bundler-webpack/compiled/webpackbar';
-import ProgressPlugin from '@umijs/bundler-webpack/dist/plugins/ProgressPlugin';
-import { Env } from '@umijs/bundler-webpack/dist/types';
+import WebpackBar from '@porosjs/bundler-webpack/compiled/webpackbar';
+import ProgressPlugin from '@porosjs/bundler-webpack/dist/plugins/ProgressPlugin';
+import { Env } from '@porosjs/bundler-webpack/dist/types';
+import { IApi } from '@porosjs/umi';
 import { chalk, fsExtra, glob, lodash, logger } from '@umijs/utils';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import { build } from 'electron-builder';
 import path from 'path';
-import { IApi } from 'umi';
 import yargs from 'yargs';
 import { PATHS } from '../../constants';
 import externalPackagesConfig from './external-packages.config';
@@ -19,10 +19,10 @@ import {
   printMemoryUsage,
 } from './utils';
 
-const bundlerWebpack: typeof import('@umijs/bundler-webpack') =
-  lazyImportFromCurrentPkg('@umijs/bundler-webpack');
-const bundlerVite: typeof import('@umijs/bundler-vite') =
-  lazyImportFromCurrentPkg('@umijs/bundler-vite');
+const bundlerWebpack: typeof import('@porosjs/bundler-webpack') =
+  lazyImportFromCurrentPkg('@porosjs/bundler-webpack');
+const bundlerVite: typeof import('@porosjs/bundler-vite') =
+  lazyImportFromCurrentPkg('@porosjs/bundler-vite');
 
 async function buildElectron(api: IApi) {
   const { builder, externals } = api.config;

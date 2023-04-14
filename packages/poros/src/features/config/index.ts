@@ -1,5 +1,5 @@
+import { IApi } from '@porosjs/umi';
 import path from 'path';
-import { IApi } from 'umi';
 import { PATHS } from '../../constants';
 import { getSchemas } from './schema';
 
@@ -36,7 +36,7 @@ export default (api: IApi) => {
         api.env === 'development'
           ? PATHS.ABS_TMP_PATH
           : PATHS.ABS_PROD_TMP_PATH,
-      'poros/renderer': 'umi',
+      'poros/renderer': '@porosjs/umi',
     };
     return memo;
   });
@@ -50,7 +50,8 @@ export default (api: IApi) => {
 
   api.onCheckPkgJSON(({ current }) => {
     const hasUmi =
-      current.dependencies?.['umi'] || current.devDependencies?.['umi'];
+      current.dependencies?.['@porosjs/umi'] ||
+      current.devDependencies?.['@porosjs/umi'];
     if (hasUmi) {
       throw new Error(
         `You are using ${api.appData.umi.importSource}, please remove umi from your dependencies in package.json.`,
