@@ -1,4 +1,5 @@
 import { IApi } from '@porosjs/umi';
+import { set } from '@umijs/utils/compiled/lodash';
 import path from 'path';
 import { PATHS } from '../../constants';
 import { getSchemas } from './schema';
@@ -29,6 +30,10 @@ export default (api: IApi) => {
   });
 
   api.modifyConfig((memo) => {
+    if (memo.mfsu !== false) {
+      set(memo, 'mfsu.shared.react.singleton', true);
+      set(memo, 'mfsu.shared.react-dom.singleton', true);
+    }
     memo.alias = {
       ...memo.alias,
       '@': PATHS.SRC,
