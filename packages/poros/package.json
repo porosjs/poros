@@ -1,6 +1,6 @@
 {
   "name": "poros",
-  "version": "1.0.0-alpha.3",
+  "version": "1.0.0-alpha.7",
   "description": "poros",
   "main": "index.js",
   "types": "index.d.ts",
@@ -30,11 +30,11 @@
     "poros": "bin/poros.js"
   },
   "dependencies": {
-    "@porosjs/bundler-vite": "4.0.65-fork.1",
-    "@porosjs/bundler-webpack": "4.0.65-fork.1",
-    "@porosjs/umi": "4.0.65-fork.2",
-    "@umijs/plugins": "4.0.64",
-    "@umijs/utils": "4.0.64",
+    "@porosjs/bundler-vite": "4.0.65-fork.2",
+    "@porosjs/bundler-webpack": "4.0.65-fork.2",
+    "@porosjs/umi": "4.0.65-fork.6",
+    "@umijs/plugins": "4.0.65",
+    "@umijs/utils": "4.0.65",
     "electron-builder": "^23.6.0",
     "yargs": "^17.7.1"
   },
