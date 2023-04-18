@@ -66,6 +66,9 @@ export default (api: IApi) => {
       target:
         api.env === 'development' ? PATHS.PLUGIN_PATH : PATHS.PROD_PLUGIN_PATH,
       slient: true,
+      data: {
+        port: api.appData.port,
+      },
     });
     await generator.run();
   });

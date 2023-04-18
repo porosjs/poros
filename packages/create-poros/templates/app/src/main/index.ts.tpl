@@ -1,4 +1,4 @@
-import createProtocol from '@@/plugin-electron/createProtocol';
+import { createProtocol, port } from '@@/plugin-electron/exports';
 import { BrowserWindow, Tray, app, protocol } from 'electron';
 import path from 'path';
 
@@ -23,7 +23,7 @@ export default class PorosApplication {
       },
     });
     if (isDevelopment) {
-      this.mainWindow.loadURL(`http://localhost:${process.env.PORT ?? 8000}`);
+      this.mainWindow.loadURL(`http://localhost:${port}`);
     } else {
       createProtocol('app');
       this.mainWindow.loadURL('app://./index.html');

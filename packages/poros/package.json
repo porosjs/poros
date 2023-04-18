@@ -6,12 +6,14 @@
   "types": "index.d.ts",
   "files": [
     "dist",
-    "templates"
+    "templates",
+    "scripts"
   ],
   "scripts": {
     "build": "poros-scripts father build",
     "build:deps": "poros-scripts bundleDeps",
-    "dev": "poros-scripts father dev"
+    "dev": "poros-scripts father dev",
+    "postinstall": "node scripts/postinstall"
   },
   "repository": {
     "type": "git",
@@ -33,6 +35,8 @@
     "@porosjs/bundler-vite": "4.0.65-fork.2",
     "@porosjs/bundler-webpack": "4.0.65-fork.2",
     "@porosjs/umi": "4.0.65-fork.6",
+    "@umijs/bundler-vite": "4.0.65",
+    "@umijs/bundler-webpack": "4.0.65",
     "@umijs/plugins": "4.0.65",
     "@umijs/utils": "4.0.65",
     "electron-builder": "^23.6.0",

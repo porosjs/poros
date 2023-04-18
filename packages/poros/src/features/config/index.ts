@@ -50,6 +50,7 @@ export default (api: IApi) => {
     memo.umi.name = 'Poros';
     memo.umi.importSource = 'poros';
     memo.umi.cliName = 'poros';
+
     return memo;
   });
 
