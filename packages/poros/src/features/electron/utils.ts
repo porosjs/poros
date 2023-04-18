@@ -1,5 +1,5 @@
 import { IApi } from '@porosjs/umi';
-import { fsExtra, importLazy, logger } from '@umijs/utils';
+import { chalk, fsExtra, importLazy, logger, stripAnsi } from '@umijs/utils';
 import path, { dirname } from 'path';
 import { PLUGIN_DIR_NAME } from '../../constants';
 
@@ -92,4 +92,41 @@ export function printMemoryUsage(type: string) {
       Math.round(rss * 100) / 100
     } MB)`,
   );
+}
+
+const BORDERS = {
+  TL: chalk.gray.dim('╔'),
+  TR: chalk.gray.dim('╗'),
+  BL: chalk.gray.dim('╚'),
+  BR: chalk.gray.dim('╝'),
+  V: chalk.gray.dim('║'),
+  H_PURE: '═',
+};
+
+export function getDevBanner(offset = 8) {
+  const content = chalk.green.bold('  Electron app launch success  ');
+
+  const maxLen = stripAnsi(content).length;
+
+  // prepare all output lines
+  const beforeLines = [
+    `${BORDERS.TL}${chalk.gray.dim(''.padStart(maxLen, BORDERS.H_PURE))}${
+      BORDERS.TR
+    }`,
+  ];
+  const mainLine = `${BORDERS.V}${content}${''.padStart(
+    maxLen - stripAnsi(content).length,
+  )}${BORDERS.V}`;
+  const afterLines = [
+    `${BORDERS.BL}${chalk.gray.dim(''.padStart(maxLen, BORDERS.H_PURE))}${
+      BORDERS.BR
+    }`,
+  ];
+
+  // join lines as 3 parts for vertical middle output with logger
+  return {
+    before: beforeLines.map((l) => l.padStart(l.length + offset)).join('\n'),
+    main: mainLine,
+    after: afterLines.map((l) => l.padStart(l.length + offset)).join('\n'),
+  };
 }

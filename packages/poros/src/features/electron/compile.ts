@@ -2,7 +2,7 @@ import WebpackBar from '@porosjs/bundler-webpack/compiled/webpackbar';
 import ProgressPlugin from '@porosjs/bundler-webpack/dist/plugins/ProgressPlugin';
 import { Env } from '@porosjs/bundler-webpack/dist/types';
 import { IApi } from '@porosjs/umi';
-import { chalk, fsExtra, glob, lodash, logger } from '@umijs/utils';
+import { fsExtra, glob, lodash, logger } from '@umijs/utils';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import { build } from 'electron-builder';
 import path from 'path';
@@ -11,6 +11,7 @@ import { PATHS } from '../../constants';
 import externalPackagesConfig from './external-packages.config';
 import {
   filterText,
+  getDevBanner,
   getDevBuildPath,
   getMainBuildPath,
   getRendererBuildPath,
@@ -275,7 +276,11 @@ export const runDev = async (api: IApi) => {
     }
   });
 
-  logger.ready(chalk.bold('Application launched'));
+  const banner = getDevBanner();
+
+  console.log(banner.before);
+  logger.ready(banner.main);
+  console.log(banner.after);
 };
 
 export const runBuild = async (api: IApi) => {
