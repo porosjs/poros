@@ -2,9 +2,7 @@ import WebpackBar from '@porosjs/bundler-webpack/compiled/webpackbar';
 import ProgressPlugin from '@porosjs/bundler-webpack/dist/plugins/ProgressPlugin';
 import { Env } from '@porosjs/bundler-webpack/dist/types';
 import type { IApi } from '@porosjs/umi';
-import { BaseGenerator } from '@umijs/utils';
 import * as path from 'path';
-import { PATHS } from '../../constants';
 import { runBuild, runDev } from './compile';
 
 export default (api: IApi) => {
@@ -58,18 +56,5 @@ export default (api: IApi) => {
         console.error(error);
       });
     }
-  });
-
-  api.onGenerateFiles(async () => {
-    const generator = new BaseGenerator({
-      path: path.join(__dirname, '../../..', 'templates'),
-      target:
-        api.env === 'development' ? PATHS.PLUGIN_PATH : PATHS.PROD_PLUGIN_PATH,
-      slient: true,
-      data: {
-        port: api.appData.port,
-      },
-    });
-    await generator.run();
   });
 };

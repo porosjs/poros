@@ -4,15 +4,17 @@
   "private": true,
   "author": "{{{ author }}}",
   "scripts": {
-    "start": "poros dev",
-    "build:win": "poros build --win  --x64 --ia32",
-    "build:mac": "poros build --mac",
     "build:linux": "poros build --linux",
+    "build:mac": "poros build --mac",
+    "build:win": "poros build --win  --x64 --ia32",
+    "dev": "poros dev",
     "format": "prettier --cache --write .",
+    "postinstall": "poros setup",
+    "prepare": "husky install",
     "rebuild-deps": "poros rebuild-deps",{{#withHusky}}
     "prepare": "husky install",{{/withHusky}}
-    "postinstall": "poros setup",
-    "setup": "poros setup"
+    "setup": "poros setup",
+    "start": "poros dev"
   },
   "dependencies": {
     "poros": "{{{ version }}}",

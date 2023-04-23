@@ -7,7 +7,7 @@ import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import { build } from 'electron-builder';
 import path from 'path';
 import yargs from 'yargs';
-import { PATHS } from '../../constants';
+import { PATHS, PLUGIN_DIR_NAME } from '../../constants';
 import externalPackagesConfig from './external-packages.config';
 import {
   filterText,
@@ -142,6 +142,7 @@ async function buildMain(api: IApi) {
       ...api.config,
       external,
       outputPath,
+      alias: { ...api.config.alias, poros: `@@/${PLUGIN_DIR_NAME}/exports` },
     },
     env: api.env,
     cwd: process.cwd(),
@@ -261,13 +262,13 @@ export const runDev = async (api: IApi) => {
   spawnProcess.stdout.on('data', (data) => {
     const log = filterText(data.toString());
     if (log) {
-      logger.info(`[Electron] ${log}`);
+      logger.info(`[Main] ${log}`);
     }
   });
   spawnProcess.stderr.on('data', (data) => {
     const log = filterText(data.toString());
     if (log) {
-      logger.error(`[Electron] ${log}`);
+      logger.error(`[Main] ${log}`);
     }
   });
   spawnProcess.on('close', (_, signal) => {

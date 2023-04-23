@@ -1,4 +1,5 @@
 import { IApi } from '@porosjs/umi';
+import { BaseGenerator, winPath } from '@umijs/utils';
 import { set } from '@umijs/utils/compiled/lodash';
 import path from 'path';
 import { PATHS } from '../../constants';
@@ -41,8 +42,9 @@ export default (api: IApi) => {
         api.env === 'development'
           ? PATHS.ABS_TMP_PATH
           : PATHS.ABS_PROD_TMP_PATH,
-      'poros/renderer': '@porosjs/umi',
+      poros: `@@/exports`,
     };
+
     return memo;
   });
 
@@ -72,5 +74,21 @@ export default (api: IApi) => {
         `You are using ${api.appData.umi.importSource}, please install electron.`,
       );
     }
+  });
+
+  api.onGenerateFiles(async () => {
+    const generator = new BaseGenerator({
+      path: path.join(__dirname, '../../..', 'templates'),
+      target:
+        api.env === 'development' ? PATHS.PLUGIN_PATH : PATHS.PROD_PLUGIN_PATH,
+      data: {
+        port: api.appData.port ?? 8000,
+        electronLogPath: winPath(
+          path.dirname(require.resolve('electron-log/package.json')),
+        ),
+      },
+      slient: true,
+    });
+    await generator.run();
   });
 };

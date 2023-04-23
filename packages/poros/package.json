@@ -34,12 +34,14 @@
   "dependencies": {
     "@porosjs/bundler-vite": "4.0.65-fork.2",
     "@porosjs/bundler-webpack": "4.0.65-fork.2",
-    "@porosjs/umi": "4.0.65-fork.6",
+    "@porosjs/plugins": "workspace:*",
+    "@porosjs/umi": "4.0.65-fork.7",
     "@umijs/bundler-vite": "4.0.65",
     "@umijs/bundler-webpack": "4.0.65",
     "@umijs/plugins": "4.0.65",
     "@umijs/utils": "4.0.65",
     "electron-builder": "^23.6.0",
+    "electron-log": "^4.4.8",
     "yargs": "^17.7.1"
   },
   "devDependencies": {

@@ -6,6 +6,8 @@ import {
 import { DEV_COMMAND } from '@porosjs/umi/dist/constants';
 import { Service } from '@porosjs/umi/dist/service/service';
 import { chalk, logger, yParser } from '@umijs/utils';
+// @ts-ignore
+import { installAppDeps } from 'electron-builder/out/cli/install-app-deps';
 
 interface IOpts {
   presets?: string[];
@@ -42,6 +44,12 @@ export async function run(opts: IOpts = {}) {
     dev();
   } else if (command === 'version' || command === 'v') {
     console.log(`poros@${version}`);
+  } else if (command === 'rebuild-deps') {
+    installAppDeps({
+      ...args,
+      platform: process.platform,
+      arch: process.arch === 'arm' ? 'armv7l' : process.arch,
+    });
   } else {
     logger.info(chalk.cyan.bold(`Poros v${version}`));
     try {
