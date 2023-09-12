@@ -68,7 +68,7 @@ export interface IDefaultData extends ITemplateParams {
 
 const pkg = require('../package');
 const DEFAULT_DATA = {
-  pluginName: 'umi-plugin-demo',
+  pluginName: 'poros-plugin-demo',
   email: 'i@domain.com',
   author: 'poros',
   version: pkg.version,
@@ -100,13 +100,13 @@ export default async ({
   const author = email && username ? `${username} <${email}>` : '';
 
   // plugin params
-  let pluginName = `umi-plugin-${name || 'demo'}`;
+  let pluginName = `poros-plugin-${name || 'demo'}`;
 
   const target = name ? join(cwd, name) : cwd;
 
   const { isCancel, text, select, intro, outro } = clackPrompts;
   const exitPrompt = () => {
-    outro(chalk.red('Exit create-umi'));
+    outro(chalk.red('Exit create-poros'));
     process.exit(1);
   };
   const selectAppTemplate = async () => {
