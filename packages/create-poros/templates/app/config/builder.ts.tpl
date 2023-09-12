@@ -11,7 +11,6 @@ export default {
   },
   dmg: {
     sign: false,
-    background: 'build/background.png',
     contents: [
       {
         type: 'dir',
@@ -32,7 +31,6 @@ export default {
   },
   win: {
     target: ['nsis'],
-    icon: 'build/icon.ico',
     publisherName: 'Poros',
     verifyUpdateCodeSignature: false,
   },

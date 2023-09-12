@@ -29,12 +29,6 @@ export default class PorosApplication {
   }
 
   async initElectronAppObject() {
-    app.commandLine.appendSwitch('disable-renderer-backgrounding');
-    app.commandLine.appendSwitch(
-      'webrtc-max-cpu-consumption-percentage',
-      '100',
-    );
-
     await app.whenReady();
 
     this.createWindow();
