@@ -22,13 +22,13 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@electron/notarize": "^2.1.0",
     "@types/node": "^17.0.13",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "electron": "^22.3.1",
     "electron-builder": "^23.6.0",
-    "electron-devtools-installer": "^3.2.0",
-    "electron-notarize": "^1.2.2",{{#withHusky}}
+    "electron-devtools-installer": "^3.2.0",{{#withHusky}}
     "husky": "^8.0.1",{{/withHusky}}
     "lint-staged": "^13.0.3",
     "prettier": "^2.7.1",
