@@ -1,6 +1,6 @@
 {
   "name": "@porosjs/plugins",
-  "version": "1.0.0-alpha.3",
+  "version": "1.0.0-alpha.8",
   "description": "@porosjs/plugins",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -26,7 +26,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@porosjs/umi": "4.0.65-fork.7",
+    "@porosjs/umi": "4.0.65-fork",
     "@tanstack/react-query": "^4.29.3",
     "@tanstack/react-query-devtools": "^4.29.3",
     "intl": "1.2.5",

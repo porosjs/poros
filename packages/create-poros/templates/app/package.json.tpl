@@ -9,10 +9,9 @@
     "build:win": "poros build --win  --x64 --ia32",
     "dev": "poros dev",
     "format": "prettier --cache --write .",
-    "postinstall": "poros setup",
-    "prepare": "husky install",
-    "rebuild-deps": "poros rebuild-deps",{{#withHusky}}
+    "postinstall": "poros setup",{{#withHusky}}
     "prepare": "husky install",{{/withHusky}}
+    "rebuild-deps": "poros rebuild-deps",
     "setup": "poros setup",
     "start": "poros dev"
   },

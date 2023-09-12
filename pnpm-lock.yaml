@@ -1,5 +1,9 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 importers:
 
   .:
@@ -71,8 +75,8 @@ importers:
   packages/create-poros:
     dependencies:
       '@porosjs/umi':
-        specifier: 4.0.65-fork.2
-        version: 4.0.65-fork.2(@babel/core@7.21.4)(eslint@8.38.0)(jest@29.5.0)(postcss@8.4.22)(prettier@2.8.7)(react-dom@18.2.0)(react@18.2.0)(styled-components@5.3.9)(stylelint@14.16.1)(typescript@5.0.4)(webpack@5.79.0)
+        specifier: 4.0.65-fork
+        version: 4.0.65-fork(@babel/core@7.21.4)(eslint@8.38.0)(jest@29.5.0)(postcss@8.4.22)(prettier@2.8.7)(react-dom@18.2.0)(react@18.2.0)(styled-components@5.3.9)(stylelint@14.16.1)(typescript@5.0.4)(webpack@5.79.0)
       '@umijs/utils':
         specifier: 4.0.65
         version: 4.0.65
@@ -80,8 +84,8 @@ importers:
   packages/plugins:
     dependencies:
       '@porosjs/umi':
-        specifier: 4.0.65-fork.7
-        version: 4.0.65-fork.7(@babel/core@7.21.4)(eslint@8.38.0)(jest@29.5.0)(postcss@8.4.22)(prettier@2.8.7)(react-dom@18.2.0)(react@16.14.0)(styled-components@5.3.9)(stylelint@14.16.1)(typescript@5.0.4)(webpack@5.79.0)
+        specifier: 4.0.65-fork
+        version: 4.0.65-fork(@babel/core@7.21.4)(eslint@8.38.0)(jest@29.5.0)(postcss@8.4.22)(prettier@2.8.7)(react-dom@18.2.0)(react@16.14.0)(styled-components@5.3.9)(stylelint@14.16.1)(typescript@5.0.4)(webpack@5.79.0)
       '@tanstack/react-query':
         specifier: ^4.29.3
         version: 4.29.3(react-dom@18.2.0)(react@16.14.0)
@@ -98,17 +102,17 @@ importers:
   packages/poros:
     dependencies:
       '@porosjs/bundler-vite':
-        specifier: 4.0.65-fork.2
-        version: 4.0.65-fork.2(postcss@8.4.22)
+        specifier: 4.0.65-fork
+        version: 4.0.65-fork(postcss@8.4.22)
       '@porosjs/bundler-webpack':
-        specifier: 4.0.65-fork.2
-        version: 4.0.65-fork.2(styled-components@5.3.9)(typescript@5.0.4)(webpack@5.79.0)
+        specifier: 4.0.65-fork
+        version: 4.0.65-fork(styled-components@5.3.9)(typescript@5.0.4)(webpack@5.79.0)
       '@porosjs/plugins':
         specifier: workspace:*
         version: link:../plugins
       '@porosjs/umi':
-        specifier: 4.0.65-fork.7
-        version: 4.0.65-fork.7(@babel/core@7.21.4)(eslint@8.38.0)(jest@29.5.0)(postcss@8.4.22)(prettier@2.8.7)(react-dom@17.0.2)(react@16.14.0)(styled-components@5.3.9)(stylelint@14.16.1)(typescript@5.0.4)(webpack@5.79.0)
+        specifier: 4.0.65-fork
+        version: 4.0.65-fork(@babel/core@7.21.4)(eslint@8.38.0)(jest@29.5.0)(postcss@8.4.22)(prettier@2.8.7)(react-dom@17.0.2)(react@16.14.0)(styled-components@5.3.9)(stylelint@14.16.1)(typescript@5.0.4)(webpack@5.79.0)
       '@umijs/bundler-vite':
         specifier: 4.0.65
         version: 4.0.65(postcss@8.4.22)
@@ -3307,8 +3311,8 @@ packages:
     engines: {node: '>=12.22.0'}
     dev: true
 
-  /@porosjs/bundler-vite@4.0.65-fork.2(postcss@8.4.22):
-    resolution: {integrity: sha512-U/Llc9fuh5rvVBx/JEp0UtKxuOt4aIHs14AfbEikbx3U/m1Tb6Fp8ytlfuCyVQtYCmQ7EoTytbovIhb1/vkglA==}
+  /@porosjs/bundler-vite@4.0.65-fork(postcss@8.4.22):
+    resolution: {integrity: sha512-ZE8igt/OI54mWofgsAhtvT+CTjS6t9ZufJpXvPmA7ce81xJ/MxOlLm1yprQDysb4lMNSjDmDOTG91Op2h55RFg==}
     hasBin: true
     dependencies:
       '@svgr/core': 6.5.1
@@ -3330,8 +3334,8 @@ packages:
       - terser
     dev: false
 
-  /@porosjs/bundler-webpack@4.0.65-fork.2(styled-components@5.3.9)(typescript@5.0.4)(webpack@5.79.0):
-    resolution: {integrity: sha512-Z4wtfiIzkHq+OVj14wj+5utQGON8dKL00SDtKLaGLFKE73KQW/lKPLqUiLnV0ZrQwSmE+tFMagFBfhsMjhxTcw==}
+  /@porosjs/bundler-webpack@4.0.65-fork(styled-components@5.3.9)(typescript@5.0.4)(webpack@5.79.0):
+    resolution: {integrity: sha512-oo7hNtYsaaxtRuZYaMbguuAh8lk4CLNWQ1huvB7yY645KC0bo/4Ycfgh8nvPqX9FhtMtNrMsGdCOzHUN3pnEmw==}
     hasBin: true
     dependencies:
       '@pmmmwh/react-refresh-webpack-plugin': 0.5.10(react-refresh@0.14.0)(webpack@5.79.0)
@@ -3369,65 +3373,8 @@ packages:
       - webpack-plugin-serve
     dev: false
 
-  /@porosjs/preset-umi@4.0.65-fork.2(postcss@8.4.22)(styled-components@5.3.9)(typescript@5.0.4)(webpack@5.79.0):
-    resolution: {integrity: sha512-vzquE3+UX10Cjlk28v8ii29+Z40cZO3lHj88l1PMAQfaHS64CCPjXCUqg02VIEWaYI0HQ3MiebKnW2bBeBciIQ==}
-    dependencies:
-      '@iconify/utils': 2.1.1
-      '@porosjs/bundler-vite': 4.0.65-fork.2(postcss@8.4.22)
-      '@porosjs/bundler-webpack': 4.0.65-fork.2(styled-components@5.3.9)(typescript@5.0.4)(webpack@5.79.0)
-      '@svgr/core': 6.5.1
-      '@umijs/ast': 4.0.65
-      '@umijs/babel-preset-umi': 4.0.65(styled-components@5.3.9)
-      '@umijs/bundler-utils': 4.0.65
-      '@umijs/core': 4.0.65
-      '@umijs/did-you-know': 1.0.3
-      '@umijs/es-module-parser': 0.0.7
-      '@umijs/history': 5.3.1
-      '@umijs/mfsu': 4.0.65
-      '@umijs/plugin-run': 4.0.65
-      '@umijs/renderer-react': 4.0.65(react-dom@18.1.0)(react@18.1.0)
-      '@umijs/server': 4.0.65
-      '@umijs/ui': 3.0.0-alpha.0
-      '@umijs/utils': 4.0.65
-      '@umijs/zod2ts': 4.0.65
-      babel-plugin-dynamic-import-node: 2.3.3
-      click-to-react-component: 1.0.8(react-dom@18.1.0)(react@18.1.0)
-      core-js: 3.28.0
-      current-script-polyfill: 1.0.0
-      enhanced-resolve: 5.9.3
-      fast-glob: 3.2.12
-      html-webpack-plugin: 5.5.0(webpack@5.79.0)
-      path-to-regexp: 1.7.0
-      postcss-prefix-selector: 1.16.0(postcss@8.4.22)
-      react: 18.1.0
-      react-dom: 18.1.0(react@18.1.0)
-      react-router: 6.3.0(react@18.1.0)
-      react-router-dom: 6.3.0(react-dom@18.1.0)(react@18.1.0)
-      regenerator-runtime: 0.13.11
-    transitivePeerDependencies:
-      - '@types/node'
-      - '@types/react'
-      - '@types/webpack'
-      - postcss
-      - rollup
-      - sass
-      - sockjs-client
-      - styled-components
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-      - type-fest
-      - typescript
-      - vue-template-compiler
-      - webpack
-      - webpack-dev-server
-      - webpack-hot-middleware
-      - webpack-plugin-serve
-    dev: false
-
-  /@porosjs/preset-umi@4.0.65-fork.7(postcss@8.4.22)(styled-components@5.3.9)(typescript@5.0.4)(webpack@5.79.0):
-    resolution: {integrity: sha512-GFEcZpe0rpuJeWjtOKGdDs9FwbwRYqr9GXvbjwPm5iDYZmkZv2vXkAI75jDFYPe52gd1pCzowX2G4IJrqqWzDg==}
+  /@porosjs/preset-umi@4.0.65-fork(postcss@8.4.22)(styled-components@5.3.9)(typescript@5.0.4)(webpack@5.79.0):
+    resolution: {integrity: sha512-2mdZr4EB1RjdQOc5Ei7sKnFKP22l3a2evS+WGUxmsYCt+zfUmDDEBJrRWI4WTFv9q0gnAAAJZ27dCvxMcyxiCQ==}
     dependencies:
       '@iconify/utils': 2.1.1
       '@svgr/core': 6.5.1
@@ -3483,66 +3430,13 @@ packages:
       - webpack-plugin-serve
     dev: false
 
-  /@porosjs/umi@4.0.65-fork.2(@babel/core@7.21.4)(eslint@8.38.0)(jest@29.5.0)(postcss@8.4.22)(prettier@2.8.7)(react-dom@18.2.0)(react@18.2.0)(styled-components@5.3.9)(stylelint@14.16.1)(typescript@5.0.4)(webpack@5.79.0):
-    resolution: {integrity: sha512-7YYcxsEdAmJdHEoXJ2sbV+a1XqSxALLH5mgAu9MDs0EmOrIhdMrYtgOYvRw2SwwZVfhqilqUt59p4OHJjssBbw==}
+  /@porosjs/umi@4.0.65-fork(@babel/core@7.21.4)(eslint@8.38.0)(jest@29.5.0)(postcss@8.4.22)(prettier@2.8.7)(react-dom@17.0.2)(react@16.14.0)(styled-components@5.3.9)(stylelint@14.16.1)(typescript@5.0.4)(webpack@5.79.0):
+    resolution: {integrity: sha512-VeJ9p8uLDAAxFs3UEsA1UXL+lylYxsNW4knJq84gOwBhD8S3hyODo+LU7MARJ4FGlMXHqsnIMw8Sur/Ntvo5Hg==}
     engines: {node: '>=14'}
     hasBin: true
     dependencies:
       '@babel/runtime': 7.21.0
-      '@porosjs/bundler-webpack': 4.0.65-fork.2(styled-components@5.3.9)(typescript@5.0.4)(webpack@5.79.0)
-      '@porosjs/preset-umi': 4.0.65-fork.2(postcss@8.4.22)(styled-components@5.3.9)(typescript@5.0.4)(webpack@5.79.0)
-      '@umijs/bundler-utils': 4.0.65
-      '@umijs/core': 4.0.65
-      '@umijs/lint': 4.0.65(eslint@8.38.0)(jest@29.5.0)(styled-components@5.3.9)(stylelint@14.16.1)(typescript@5.0.4)
-      '@umijs/renderer-react': 4.0.65(react-dom@18.2.0)(react@18.2.0)
-      '@umijs/server': 4.0.65
-      '@umijs/test': 4.0.65(@babel/core@7.21.4)
-      '@umijs/utils': 4.0.65
-      prettier-plugin-organize-imports: 3.2.2(prettier@2.8.7)(typescript@5.0.4)
-      prettier-plugin-packagejson: 2.4.3(prettier@2.8.7)
-    transitivePeerDependencies:
-      - '@babel/core'
-      - '@types/node'
-      - '@types/react'
-      - '@types/webpack'
-      - '@volar/vue-language-plugin-pug'
-      - '@volar/vue-typescript'
-      - eslint
-      - jest
-      - postcss
-      - postcss-html
-      - postcss-jsx
-      - postcss-less
-      - postcss-markdown
-      - postcss-scss
-      - prettier
-      - react
-      - react-dom
-      - rollup
-      - sass
-      - sockjs-client
-      - styled-components
-      - stylelint
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-      - type-fest
-      - typescript
-      - vue-template-compiler
-      - webpack
-      - webpack-dev-server
-      - webpack-hot-middleware
-      - webpack-plugin-serve
-    dev: false
-
-  /@porosjs/umi@4.0.65-fork.7(@babel/core@7.21.4)(eslint@8.38.0)(jest@29.5.0)(postcss@8.4.22)(prettier@2.8.7)(react-dom@17.0.2)(react@16.14.0)(styled-components@5.3.9)(stylelint@14.16.1)(typescript@5.0.4)(webpack@5.79.0):
-    resolution: {integrity: sha512-59xM3hw2TrRQA3oXpQhDiH6Re6mmI01iMhII1IwDKjyGHSiB/Kewy7un8mQfBFA4uAOaHGvoQWRnlh5fkH0vow==}
-    engines: {node: '>=14'}
-    hasBin: true
-    dependencies:
-      '@babel/runtime': 7.21.0
-      '@porosjs/preset-umi': 4.0.65-fork.7(postcss@8.4.22)(styled-components@5.3.9)(typescript@5.0.4)(webpack@5.79.0)
+      '@porosjs/preset-umi': 4.0.65-fork(postcss@8.4.22)(styled-components@5.3.9)(typescript@5.0.4)(webpack@5.79.0)
       '@umijs/bundler-utils': 4.0.65
       '@umijs/bundler-webpack': 4.0.65(styled-components@5.3.9)(typescript@5.0.4)(webpack@5.79.0)
       '@umijs/core': 4.0.65
@@ -3589,18 +3483,71 @@ packages:
       - webpack-plugin-serve
     dev: false
 
-  /@porosjs/umi@4.0.65-fork.7(@babel/core@7.21.4)(eslint@8.38.0)(jest@29.5.0)(postcss@8.4.22)(prettier@2.8.7)(react-dom@18.2.0)(react@16.14.0)(styled-components@5.3.9)(stylelint@14.16.1)(typescript@5.0.4)(webpack@5.79.0):
-    resolution: {integrity: sha512-59xM3hw2TrRQA3oXpQhDiH6Re6mmI01iMhII1IwDKjyGHSiB/Kewy7un8mQfBFA4uAOaHGvoQWRnlh5fkH0vow==}
+  /@porosjs/umi@4.0.65-fork(@babel/core@7.21.4)(eslint@8.38.0)(jest@29.5.0)(postcss@8.4.22)(prettier@2.8.7)(react-dom@18.2.0)(react@16.14.0)(styled-components@5.3.9)(stylelint@14.16.1)(typescript@5.0.4)(webpack@5.79.0):
+    resolution: {integrity: sha512-VeJ9p8uLDAAxFs3UEsA1UXL+lylYxsNW4knJq84gOwBhD8S3hyODo+LU7MARJ4FGlMXHqsnIMw8Sur/Ntvo5Hg==}
     engines: {node: '>=14'}
     hasBin: true
     dependencies:
       '@babel/runtime': 7.21.0
-      '@porosjs/preset-umi': 4.0.65-fork.7(postcss@8.4.22)(styled-components@5.3.9)(typescript@5.0.4)(webpack@5.79.0)
+      '@porosjs/preset-umi': 4.0.65-fork(postcss@8.4.22)(styled-components@5.3.9)(typescript@5.0.4)(webpack@5.79.0)
       '@umijs/bundler-utils': 4.0.65
       '@umijs/bundler-webpack': 4.0.65(styled-components@5.3.9)(typescript@5.0.4)(webpack@5.79.0)
       '@umijs/core': 4.0.65
       '@umijs/lint': 4.0.65(eslint@8.38.0)(jest@29.5.0)(styled-components@5.3.9)(stylelint@14.16.1)(typescript@5.0.4)
       '@umijs/renderer-react': 4.0.65(react-dom@18.2.0)(react@16.14.0)
+      '@umijs/server': 4.0.65
+      '@umijs/test': 4.0.65(@babel/core@7.21.4)
+      '@umijs/utils': 4.0.65
+      prettier-plugin-organize-imports: 3.2.2(prettier@2.8.7)(typescript@5.0.4)
+      prettier-plugin-packagejson: 2.4.3(prettier@2.8.7)
+    transitivePeerDependencies:
+      - '@babel/core'
+      - '@types/node'
+      - '@types/react'
+      - '@types/webpack'
+      - '@volar/vue-language-plugin-pug'
+      - '@volar/vue-typescript'
+      - eslint
+      - jest
+      - postcss
+      - postcss-html
+      - postcss-jsx
+      - postcss-less
+      - postcss-markdown
+      - postcss-scss
+      - prettier
+      - react
+      - react-dom
+      - rollup
+      - sass
+      - sockjs-client
+      - styled-components
+      - stylelint
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+      - type-fest
+      - typescript
+      - vue-template-compiler
+      - webpack
+      - webpack-dev-server
+      - webpack-hot-middleware
+      - webpack-plugin-serve
+    dev: false
+
+  /@porosjs/umi@4.0.65-fork(@babel/core@7.21.4)(eslint@8.38.0)(jest@29.5.0)(postcss@8.4.22)(prettier@2.8.7)(react-dom@18.2.0)(react@18.2.0)(styled-components@5.3.9)(stylelint@14.16.1)(typescript@5.0.4)(webpack@5.79.0):
+    resolution: {integrity: sha512-VeJ9p8uLDAAxFs3UEsA1UXL+lylYxsNW4knJq84gOwBhD8S3hyODo+LU7MARJ4FGlMXHqsnIMw8Sur/Ntvo5Hg==}
+    engines: {node: '>=14'}
+    hasBin: true
+    dependencies:
+      '@babel/runtime': 7.21.0
+      '@porosjs/preset-umi': 4.0.65-fork(postcss@8.4.22)(styled-components@5.3.9)(typescript@5.0.4)(webpack@5.79.0)
+      '@umijs/bundler-utils': 4.0.65
+      '@umijs/bundler-webpack': 4.0.65(styled-components@5.3.9)(typescript@5.0.4)(webpack@5.79.0)
+      '@umijs/core': 4.0.65
+      '@umijs/lint': 4.0.65(eslint@8.38.0)(jest@29.5.0)(styled-components@5.3.9)(stylelint@14.16.1)(typescript@5.0.4)
+      '@umijs/renderer-react': 4.0.65(react-dom@18.2.0)(react@18.2.0)
       '@umijs/server': 4.0.65
       '@umijs/test': 4.0.65(@babel/core@7.21.4)
       '@umijs/utils': 4.0.65
@@ -5622,7 +5569,7 @@ packages:
       babel-plugin-syntax-jsx: 6.18.0
       lodash: 4.17.21
       picomatch: 2.3.1
-      styled-components: 5.3.9(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)
+      styled-components: 5.3.9(react-dom@18.2.0)(react-is@18.2.0)(react@16.14.0)
 
   /babel-plugin-syntax-jsx@6.18.0:
     resolution: {integrity: sha512-qrPaCSo9c8RHNRHIotaufGbuOBN8rtdC4QrrFFc43vyWCCz7Kl7GL1PGaXtMGQZUXrkCjNEgxDfmAuAabr/rlw==}
@@ -11574,7 +11521,6 @@ packages:
       loose-envify: 1.4.0
       react: 16.14.0
       scheduler: 0.23.0
-    dev: false
 
   /react-dom@18.2.0(react@18.2.0):
     resolution: {integrity: sha512-6IMTriUmvsjHUjNtEDudZfuDQUoWXVxKHhlEGSk81n4YFS+r/Kl99wXiwlVXtPBtJenozv2P+hxDsw9eA7Xo6g==}
@@ -11584,6 +11530,7 @@ packages:
       loose-envify: 1.4.0
       react: 18.2.0
       scheduler: 0.23.0
+    dev: false
 
   /react-error-overlay@6.0.9:
     resolution: {integrity: sha512-nQTTcUu+ATDbrSD1BZHr5kgSD4oF8OFjxun8uAaL8RwPBacGBNPf/yAuVVdx17N8XNzRDMrZ9XcKZHCjPW+9ew==}
@@ -11889,6 +11836,7 @@ packages:
     engines: {node: '>=0.10.0'}
     dependencies:
       loose-envify: 1.4.0
+    dev: false
 
   /reactcss@1.2.3(react@16.14.0):
     resolution: {integrity: sha512-KiwVUcFu1RErkI97ywr8nvx8dNOpT03rbnma0SSalTYjkrPYaEajR4a/MRt6DZ46K6arDRbWMNHF+xH7G7n/8A==}
@@ -12788,7 +12736,7 @@ packages:
       shallowequal: 1.1.0
       supports-color: 5.5.0
 
-  /styled-components@5.3.9(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0):
+  /styled-components@5.3.9(react-dom@18.2.0)(react-is@18.2.0)(react@16.14.0):
     resolution: {integrity: sha512-Aj3kb13B75DQBo2oRwRa/APdB5rSmwUfN5exyarpX+x/tlM/rwZA2vVk2vQgVSP6WKaZJHWwiFrzgHt+CLtB4A==}
     engines: {node: '>=10'}
     peerDependencies:
@@ -12804,8 +12752,8 @@ packages:
       babel-plugin-styled-components: 2.1.1(styled-components@5.3.9)
       css-to-react-native: 3.2.0
       hoist-non-react-statics: 3.3.2
-      react: 18.2.0
-      react-dom: 18.2.0(react@18.2.0)
+      react: 16.14.0
+      react-dom: 18.2.0(react@16.14.0)
       react-is: 18.2.0
       shallowequal: 1.1.0
       supports-color: 5.5.0
