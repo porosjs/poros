@@ -5,9 +5,15 @@
   "main": "index.js",
   "types": "index.d.ts",
   "files": [
+    "bin",
     "dist",
-    "templates",
-    "scripts"
+    "eslint.js",
+    "index.d.ts",
+    "index.esm.js",
+    "plugin-utils.d.ts",
+    "plugin-utils.js",
+    "prettier.js",
+    "stylelint.js"
   ],
   "scripts": {
     "build": "poros-scripts father build",
