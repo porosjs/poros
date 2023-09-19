@@ -1,8 +1,6 @@
-import { createProtocol, port } from '@@/plugin-electron/exports';
 import { BrowserWindow, Tray, app, protocol } from 'electron';
 import path from 'path';
-
-const isDevelopment = process.env.NODE_ENV === 'development';
+import { createProtocol, isDev, port } from 'poros';
 
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } },
@@ -22,7 +20,7 @@ export default class PorosApplication {
         preload: path.join(__dirname, 'preload/index.js'),
       },
     });
-    if (isDevelopment) {
+    if (isDev) {
       this.mainWindow.loadURL(`http://localhost:${port}`);
     } else {
       createProtocol('app');
@@ -31,12 +29,6 @@ export default class PorosApplication {
   }
 
   async initElectronAppObject() {
-    app.commandLine.appendSwitch('disable-renderer-backgrounding');
-    app.commandLine.appendSwitch(
-      'webrtc-max-cpu-consumption-percentage',
-      '100',
-    );
-
     await app.whenReady();
 
     this.createWindow();

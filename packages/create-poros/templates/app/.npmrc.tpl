@@ -1,3 +1,3 @@
 registry={{{ registry }}}
-{{#electronMirrors}}electron_mirror={{{electronMirrors}}}{{/electronMirrors}}
+{{#electronMirror}}electron_mirror={{{electronMirror}}}{{/electronMirror}}
 {{{ extraNpmrc }}}
