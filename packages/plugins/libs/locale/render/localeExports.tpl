@@ -1,5 +1,6 @@
 import {
   createIntl,
+  useIntl as originUseIntl,
   IntlShape,
   MessageDescriptor,
 } from '{{{ reactIntlPkgPath }}}';
@@ -12,25 +13,11 @@ export {
   createIntl,
 };
 export {
-  FormattedDate,
-  FormattedDateParts,
-  FormattedDisplayName,
-  FormattedHTMLMessage,
-  FormattedList,
-  FormattedMessage,
-  FormattedNumber,
-  FormattedNumberParts,
-  FormattedPlural,
-  FormattedRelativeTime,
-  FormattedTime,
-  FormattedTimeParts,
   IntlContext,
   IntlProvider,
   RawIntlProvider,
   createIntlCache,
-  defineMessages,
   injectIntl,
-  useIntl,
 } from '{{{ reactIntlPkgPath }}}';
 
 let g_intl: IntlShape;
@@ -252,37 +239,18 @@ export const setLocale = (lang: string, realReload: boolean = true) => {
 
 let firstWaring = true;
 
-/**
- * intl.formatMessage 的语法糖
- * @deprecated 使用此 api 会造成切换语言的时候无法自动刷新，请使用 useIntl 或 injectIntl
- * @param descriptor { id : string, defaultMessage : string }
- * @param values { [key:string] : string }
- * @returns string
- */
-export const formatMessage: IntlShape['formatMessage'] = (
-  descriptor: MessageDescriptor,
-  values: any,
-) => {
-  if (firstWaring) {
-    warning(
-      false,
-      `Using this API will cause automatic refresh when switching languages, please use useIntl or injectIntl.
-
-使用此 api 会造成切换语言的时候无法自动刷新，请使用 useIntl 或 injectIntl。
-
-http://j.mp/37Fkd5Q
-      `,
-    );
-    firstWaring = false;
-  }
-  if (!g_intl) {
-    setIntl(getLocale());
-  }
-  return g_intl.formatMessage(descriptor, values);
-};
 
 /**
  * 获取语言列表
  * @returns string[]
  */
 export const getAllLocales = () => Object.keys(localeInfo);
+
+/**
+ * useIntl语法糖，直接返回formatMessage
+ * @returns string[]
+ */
+export const useIntl = (id:string, values?: string | number | boolean | null | undefined | Date): string => {
+  const { formatMessage } = originUseIntl();
+  return formatMessage({ id, values});
+}

@@ -100,7 +100,7 @@ export default (api: IApi) => {
 
   api.onGenerateFiles(async () => {
     const localeTpl = readFileSync(
-      join(__dirname, '../libs/locale/locale.tpl'),
+      join(__dirname, '../libs/locale/render/locale.tpl'),
       'utf-8',
     );
     // moment2dayjs
@@ -166,17 +166,17 @@ export default (api: IApi) => {
         DefaultLang: defaultLocale,
         momentPkgPath,
       }),
-      path: 'locale.tsx',
+      path: 'render/locale.tsx',
     });
 
     const localeExportsTpl = readFileSync(
-      join(__dirname, '../libs/locale/localeExports.tpl'),
+      join(__dirname, '../libs/locale/render/localeExports.tpl'),
       'utf-8',
     );
     const localeDirName = 'locales';
     const localeDirPath = join(api.paths!.absSrcPath!, '..', localeDirName);
     api.writeTmpFile({
-      path: 'localeExports.ts',
+      path: 'render/localeExports.ts',
       content: Mustache.render(localeExportsTpl, {
         EventEmitterPkg,
         BaseSeparator: baseSeparator,
@@ -203,11 +203,11 @@ export default (api: IApi) => {
     });
     // runtime.tsx
     const runtimeTpl = readFileSync(
-      join(__dirname, '../libs/locale/runtime.tpl'),
+      join(__dirname, '../libs/locale/render/runtime.tpl'),
       'utf-8',
     );
     api.writeTmpFile({
-      path: 'runtime.tsx',
+      path: 'render/runtime.tsx',
       content: Mustache.render(runtimeTpl, {
         Title: !!title,
       }),
@@ -215,12 +215,12 @@ export default (api: IApi) => {
 
     // SelectLang.tsx
     const selectLang = readFileSync(
-      join(__dirname, '../libs/locale/SelectLang.tpl'),
+      join(__dirname, '../libs/locale/render/SelectLang.tpl'),
       'utf-8',
     );
 
     api.writeTmpFile({
-      path: 'SelectLang.tsx',
+      path: 'render/SelectLang.tsx',
       content: Mustache.render(selectLang, {
         Antd: !!antd,
         LocaleList: localeList,
@@ -233,8 +233,8 @@ export default (api: IApi) => {
     api.writeTmpFile({
       path: 'index.ts',
       content: `
-export { addLocale, setLocale, getLocale, getIntl, useIntl, injectIntl, formatMessage, FormattedMessage, getAllLocales, FormattedDate, FormattedDateParts, FormattedDisplayName, FormattedHTMLMessage, FormattedList, FormattedNumber, FormattedNumberParts, FormattedPlural, FormattedRelativeTime, FormattedTime, FormattedTimeParts, IntlProvider, RawIntlProvider } from './localeExports';
-export { SelectLang } from './SelectLang';
+export { addLocale, setLocale, getLocale, getIntl, useIntl, injectIntl, getAllLocales, IntlProvider, RawIntlProvider } from './render/localeExports';
+export { SelectLang } from './render/SelectLang';
 `,
     });
     api.writeTmpFile({
@@ -255,7 +255,9 @@ export interface IRuntimeConfig {
   });
 
   // Runtime Plugin
-  api.addRuntimePlugin(() => [withTmpPath({ api, path: 'runtime.tsx' })]);
+  api.addRuntimePlugin(() => [
+    withTmpPath({ api, path: 'render/runtime.tsx' }),
+  ]);
   api.addRuntimePluginKey(() => ['locale']);
 
   // watch locale files
