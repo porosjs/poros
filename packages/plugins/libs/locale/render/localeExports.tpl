@@ -50,7 +50,7 @@ export const localeInfo: {[key: string]: any} = {
       ...{{lang}}{{country}}{{index}},
       {{/antdLocale}}
     },{{/Antd}}
-    momentLocale: '{{momentLocale}}',
+    dayjsLocale: '{{dayjsLocale}}',
   },
   {{/LocaleList}}
 };
@@ -59,13 +59,13 @@ export const localeInfo: {[key: string]: any} = {
  * 增加一个新的国际化语言
  * @param name 语言的 key
  * @param messages 对应的枚举对象
- * @param extraLocales momentLocale, antd 国际化
+ * @param extraLocales dayjsLocale, antd 国际化
  */
 export const addLocale = (
   name: string,
   messages: Object,
   extraLocales: {
-    momentLocale:string;
+    dayjsLocale:string;
     antd:string
   },
 ) => {
@@ -78,12 +78,12 @@ export const addLocale = (
     : messages;
 
 
-  const { momentLocale, antd } = extraLocales || {};
+  const { dayjsLocale, antd } = extraLocales || {};
   const locale = name.split('{{BaseSeparator}}')?.join('-')
   localeInfo[name] = {
     messages: mergeMessages,
     locale,
-    momentLocale: momentLocale,
+    dayjsLocale: dayjsLocale,
     {{#Antd}}antd,{{/Antd}}
   };
    // 如果这是的 name 和当前的locale 相同需要重新设置一下，不然更新不了

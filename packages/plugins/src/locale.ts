@@ -7,16 +7,15 @@ import {
   IGetLocaleFileListResult,
   exactLocalePaths,
   getAntdLocale,
+  getDayjsLocale,
   getLocaleList,
-  getMomentLocale,
   isNeedPolyfill,
 } from './utils/localeUtils';
 import { withTmpPath } from './utils/withTmpPath';
 
 interface ILocaleConfig {
   default?: string;
-  baseNavigator?: boolean;
-  useLocalStorage?: boolean;
+  useLocalStore?: boolean;
   /** title 开启国际化 */
   title?: boolean;
   antd?: boolean;
@@ -91,8 +90,7 @@ export default (api: IApi) => {
     return getLocaleList({
       localeFolder: 'locales',
       separator: api.config.locale?.baseSeparator,
-      absSrcPath: paths.absSrcPath,
-      absPagesPath: paths.absPagesPath,
+      absSrcPath: join(paths.absSrcPath, '..'),
       addAntdLocales,
       resolveKey,
     });
@@ -103,37 +101,37 @@ export default (api: IApi) => {
       join(__dirname, '../libs/locale/render/locale.tpl'),
       'utf-8',
     );
-    // moment2dayjs
-    const resolveKey = api.config.moment2dayjs ? 'dayjs' : 'moment';
-    const momentPkgPath = winPath(
+    // dayjs2dayjs
+    const resolveKey = api.config.dayjs2dayjs ? 'dayjs' : 'dayjs';
+    const dayjsPkgPath = winPath(
       dirname(require.resolve(`${resolveKey}/package.json`)),
     );
     const EventEmitterPkg = winPath(
       dirname(require.resolve('event-emitter/package')),
     );
 
-    const { baseSeparator, baseNavigator, antd, title, useLocalStorage } = {
+    const { baseSeparator, antd, title, useLocalStorage } = {
       ...defaultConfig,
       ...(api.config.locale as ILocaleConfig),
     };
     const defaultLocale = api.config.locale?.default || `zh${baseSeparator}CN`;
     const localeList = await getList(resolveKey);
-    const momentLocales = localeList
-      .map(({ momentLocale }) => momentLocale)
+    const dayjsLocales = localeList
+      .map(({ dayjsLocale }) => dayjsLocale)
       .filter((locale) => locale);
     const antdLocales = localeList
       .map(({ antdLocale }) => antdLocale)
       .filter((locale) => locale);
 
-    let MomentLocales = momentLocales;
-    let DefaultMomentLocale = '';
-    // set moment default accounding to locale.default
-    if (!MomentLocales.length && api.config.locale?.default) {
+    let DayjsLocales = dayjsLocales;
+    let DefaultDayjsLocale = '';
+    // set dayjs default accounding to locale.default
+    if (!DayjsLocales.length && api.config.locale?.default) {
       const [lang, country = ''] = defaultLocale.split(baseSeparator);
-      const { momentLocale } = getMomentLocale(lang, country, resolveKey);
-      if (momentLocale) {
-        MomentLocales = [momentLocale];
-        DefaultMomentLocale = momentLocale;
+      const { dayjsLocale } = getDayjsLocale(lang, country, resolveKey);
+      if (dayjsLocale) {
+        DayjsLocales = [dayjsLocale];
+        DefaultDayjsLocale = dayjsLocale;
       }
     }
 
@@ -155,8 +153,8 @@ export default (api: IApi) => {
 
     api.writeTmpFile({
       content: Mustache.render(localeTpl, {
-        MomentLocales,
-        DefaultMomentLocale,
+        DayjsLocales,
+        DefaultDayjsLocale,
         NormalizeAntdLocalesName,
         DefaultAntdLocales,
         Antd: !!antd,
@@ -164,7 +162,7 @@ export default (api: IApi) => {
         BaseSeparator: baseSeparator,
         DefaultLocale: defaultLocale,
         DefaultLang: defaultLocale,
-        momentPkgPath,
+        dayjsPkgPath,
       }),
       path: 'render/locale.tsx',
     });
@@ -180,7 +178,6 @@ export default (api: IApi) => {
       content: Mustache.render(localeExportsTpl, {
         EventEmitterPkg,
         BaseSeparator: baseSeparator,
-        BaseNavigator: baseNavigator,
         UseLocalStorage: !!useLocalStorage,
         LocaleDir: localeDirName,
         ExistLocaleDir: existsSync(localeDirPath),
@@ -262,8 +259,7 @@ export interface IRuntimeConfig {
 
   // watch locale files
   api.addTmpGenerateWatcherPaths(async () => {
-    const resolveKey = api.config.moment2dayjs ? 'dayjs' : 'moment';
-    const localeList = await getList(resolveKey);
+    const localeList = await getList('dayjs');
     return exactLocalePaths(localeList);
   });
 };

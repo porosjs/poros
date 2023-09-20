@@ -3,12 +3,12 @@ import React from 'react';
 import { ConfigProvider } from 'antd';
 {{/Antd}}
 
-{{#MomentLocales.length}}
-import moment from '{{{momentPkgPath}}}';
-{{#MomentLocales}}
-import '{{{momentPkgPath}}}/locale/{{.}}';
-{{/MomentLocales}}
-{{/MomentLocales.length}}
+{{#DayjsLocales.length}}
+import dayjs from '{{{dayjsPkgPath}}}';
+{{#DayjsLocales}}
+import '{{{dayjsPkgPath}}}/locale/{{.}}';
+{{/DayjsLocales}}
+{{/DayjsLocales.length}}
 import { RawIntlProvider, getLocale, getDirection , setIntl, getIntl, localeInfo, event, LANG_CHANGE_EVENT } from './localeExports';
 
 {{#DefaultAntdLocales}}
@@ -19,11 +19,11 @@ import {{NormalizeAntdLocalesName}} from '{{{.}}}';
 
 export function _onCreate() {
   const locale = getLocale();
-  {{#MomentLocales.length}}
-  if (moment?.locale) {
-    moment.locale(localeInfo[locale]?.momentLocale || '{{{DefaultMomentLocale}}}');
+  {{#DayjsLocales.length}}
+  if (dayjs?.locale) {
+    dayjs.locale(localeInfo[locale]?.dayjsLocale || '{{{DefaultDayjsLocale}}}');
   }
-  {{/MomentLocales.length}}
+  {{/DayjsLocales.length}}
   setIntl(locale);
 }
 
@@ -35,16 +35,16 @@ const useIsomorphicLayoutEffect =
     : React.useEffect
 
 export const _LocaleContainer = (props:any) => {
-    const initLocale = getLocale();
-    const [locale, setLocale] = React.useState(initLocale);
+  const initLocale = getLocale();
+  const [locale, setLocale] = React.useState(initLocale);
   const [intl, setContainerIntl] = React.useState(() => getIntl(locale, true));
 
   const handleLangChange = (locale:string) => {
-    {{#MomentLocales.length}}
-    if (moment?.locale) {
-      moment.locale(localeInfo[locale]?.momentLocale || 'en');
+    {{#DayjsLocales.length}}
+    if (dayjs?.locale) {
+      dayjs.locale(localeInfo[locale]?.dayjsLocale || 'en');
     }
-    {{/MomentLocales.length}}
+    {{/DayjsLocales.length}}
     setLocale(locale);
     setContainerIntl(getIntl(locale));
   };

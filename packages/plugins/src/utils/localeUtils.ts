@@ -11,42 +11,41 @@ export interface IGetLocaleFileListOpts {
   localeFolder: string;
   separator?: string;
   absSrcPath?: string;
-  absPagesPath?: string;
   addAntdLocales: IAddAntdLocales;
   resolveKey: string;
 }
 
 /**
- * 获取 moment 包的 locale 名称
+ * 获取 dayjs 包的 locale 名称
  * @param lang 语言
  * @param country 国家
- * @param resolveKey 用来resolve的key，moment 或者 dayjs，为了使 dayjs 可以替换 moment
+ * @param resolveKey 用来resolve的key，dayjs 或者 dayjs，为了使 dayjs 可以替换 dayjs
  */
-export const getMomentLocale = (
+export const getDayjsLocale = (
   lang: string,
   country: string,
   resolveKey: string,
-): { momentLocale: string } => {
-  const momentLocation = require
+): { dayjsLocale: string } => {
+  const dayjsLocation = require
     .resolve(`${resolveKey}/locale/zh-cn`)
     .replace(/zh\-cn\.js$/, '');
 
   if (
     existsSync(
-      join(momentLocation, `${lang}-${country?.toLocaleLowerCase?.()}.js`),
+      join(dayjsLocation, `${lang}-${country?.toLocaleLowerCase?.()}.js`),
     )
   ) {
-    const momentLocale = `${lang}-${country?.toLocaleLowerCase?.()}`;
+    const dayjsLocale = `${lang}-${country?.toLocaleLowerCase?.()}`;
     return {
-      momentLocale,
+      dayjsLocale,
     };
   }
-  if (existsSync(join(momentLocation, `${lang}.js`))) {
+  if (existsSync(join(dayjsLocation, `${lang}.js`))) {
     return {
-      momentLocale: lang,
+      dayjsLocale: lang,
     };
   }
-  return { momentLocale: '' };
+  return { dayjsLocale: '' };
 };
 
 export const getAntdLocale = (lang: string, country: string): string =>
@@ -58,7 +57,7 @@ export interface IGetLocaleFileListResult {
   name: string;
   paths: string[];
   antdLocale: string[];
-  momentLocale: string;
+  dayjsLocale: string;
 }
 
 /**
@@ -83,9 +82,8 @@ export const getLocaleList = async (
     localeFolder,
     separator = '-',
     absSrcPath = '',
-    absPagesPath = '',
     addAntdLocales,
-    resolveKey = 'moment',
+    resolveKey = 'dayjs',
   } = opts;
   const localeFileMath = new RegExp(
     `^([a-z]{2})${separator}?([A-Z]{2})?\.(js|json|ts)$`,
@@ -96,13 +94,6 @@ export const getLocaleList = async (
       cwd: winPath(join(absSrcPath, localeFolder)),
     })
     .map((name) => winPath(join(absSrcPath, localeFolder, name)))
-    .concat(
-      glob
-        .sync(`**/${localeFolder}/*.{ts,js,json}`, {
-          cwd: absPagesPath,
-        })
-        .map((name) => winPath(join(absPagesPath, name))),
-    )
     .filter((p) => localeFileMath.test(basename(p)) && existsSync(p))
     .map((fullName) => {
       const fileName = basename(fullName);
@@ -120,7 +111,7 @@ export const getLocaleList = async (
 
   const promises = Object.keys(groups).map(async (name) => {
     const [lang, country = ''] = name.split(separator);
-    const { momentLocale } = getMomentLocale(lang, country, resolveKey);
+    const { dayjsLocale } = getDayjsLocale(lang, country, resolveKey);
     const antdLocale = lodash
       .uniq(await addAntdLocales({ lang, country }))
       .filter((localePath) => modulesHasLocale(localePath));
@@ -134,7 +125,7 @@ export const getLocaleList = async (
       country,
       antdLocale,
       paths: groups[name].map((item) => winPath(item.path)),
-      momentLocale,
+      dayjsLocale,
     };
   });
   return Promise.all(promises);
