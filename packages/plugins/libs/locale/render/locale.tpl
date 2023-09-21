@@ -9,7 +9,7 @@ import dayjs from '{{{dayjsPkgPath}}}';
 import '{{{dayjsPkgPath}}}/locale/{{.}}';
 {{/DayjsLocales}}
 {{/DayjsLocales.length}}
-import { RawIntlProvider, getLocale, getDirection , setIntl, getIntl, localeInfo, event, LANG_CHANGE_EVENT } from './localeExports';
+import { RawIntlProvider, getLocale, getDirection , setIntl, getIntl, localeInfo } from './localeExports';
 
 {{#DefaultAntdLocales}}
 import {{NormalizeAntdLocalesName}} from '{{{.}}}';

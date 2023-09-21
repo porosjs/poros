@@ -2,10 +2,8 @@ import {
   createIntl,
   useIntl as originUseIntl,
   IntlShape,
-  MessageDescriptor,
 } from '{{{ reactIntlPkgPath }}}';
 import { getPluginManager } from '../core/plugin';
-import EventEmitter from '{{{EventEmitterPkg}}}';
 // @ts-ignore
 import warning from '{{{ warningPkgPath }}}';
 
@@ -21,13 +19,6 @@ export {
 } from '{{{ reactIntlPkgPath }}}';
 
 let g_intl: IntlShape;
-
-const useLocalStorage = {{{UseLocalStorage}}};
-
-// @ts-ignore
-export const event = new EventEmitter();
-
-export const LANG_CHANGE_EVENT = Symbol('LANG_CHANGE');
 
 {{#LocaleList}}
 {{#antdLocale}}
@@ -56,57 +47,6 @@ export const localeInfo: {[key: string]: any} = {
 };
 
 /**
- * 增加一个新的国际化语言
- * @param name 语言的 key
- * @param messages 对应的枚举对象
- * @param extraLocales dayjsLocale, antd 国际化
- */
-export const addLocale = (
-  name: string,
-  messages: Object,
-  extraLocales: {
-    dayjsLocale:string;
-    antd:string
-  },
-) => {
-  if (!name) {
-    return;
-  }
-  // 可以合并
-  const mergeMessages = localeInfo[name]?.messages
-    ? Object.assign({}, localeInfo[name].messages, messages)
-    : messages;
-
-
-  const { dayjsLocale, antd } = extraLocales || {};
-  const locale = name.split('{{BaseSeparator}}')?.join('-')
-  localeInfo[name] = {
-    messages: mergeMessages,
-    locale,
-    dayjsLocale: dayjsLocale,
-    {{#Antd}}antd,{{/Antd}}
-  };
-   // 如果这是的 name 和当前的locale 相同需要重新设置一下，不然更新不了
-  if (locale === getLocale()) {
-    event.emit(LANG_CHANGE_EVENT, locale);
-  }
-};
-
-const applyRuntimeLocalePlugin = (initialValue: any) => {
-  return getPluginManager().applyPlugins({
-    key: 'locale',
-    type: 'modify',
-    initialValue
-  });
-}
-
-const _createIntl = (locale: string) => {
-    const runtimeLocale = applyRuntimeLocalePlugin(localeInfo[locale]);
-    const { cache, ...config } = runtimeLocale;
-    return createIntl(config, cache);
-}
-
-/**
  * 获取当前的 intl 对象，可以在 node 中使用
  * @param locale 需要切换的语言类型
  * @param changeIntl 是否不使用 g_intl
@@ -120,8 +60,8 @@ export const getIntl = (locale?: string, changeIntl?: boolean) => {
   // 获取当前 locale
   if (!locale) locale = getLocale();
   // 如果存在于 localeInfo 中
-  if (locale&&localeInfo[locale]) {
-    return _createIntl(locale);
+  if (locale && localeInfo[locale]) {
+    return createIntl(localeInfo[locale]);
   }
   {{#ExistLocaleDir}}
   // 不存在需要一个报错提醒
@@ -132,12 +72,12 @@ export const getIntl = (locale?: string, changeIntl?: boolean) => {
   {{/ExistLocaleDir}}
   // 使用 zh-CN
   if (localeInfo[{{{ DefaultLocale }}}]) {
-    return _createIntl({{{ DefaultLocale }}});
+    return createIntl(localeInfo[{{{ DefaultLocale }}}]);
   }
 
   // 如果还没有，返回一个空的
   return createIntl({
-    locale: {{{ DefaultLocale }}},
+    locale: localeInfo[{{{ DefaultLocale }}}],
     messages: {}
   });
 };
@@ -155,27 +95,8 @@ export const setIntl = (locale: string) => {
  * @returns string
  */
 export const getLocale = () => {
-  const runtimeLocale = applyRuntimeLocalePlugin({});
-  // runtime getLocale for user define
-  if (typeof runtimeLocale?.getLocale === 'function') {
-   return runtimeLocale.getLocale();
-  }
-  // please clear localStorage if you change the baseSeparator config
-  // because changing will break the app
-  const lang =
-      navigator.cookieEnabled && typeof localStorage !== 'undefined' && useLocalStorage
-        ? window.localStorage.getItem('umi_locale')
-        : '';
-  // support baseNavigator, default true
-  let browserLang;
-  {{#BaseNavigator}}
-  const isNavigatorLanguageValid =
-    typeof navigator !== 'undefined' && typeof navigator.language === 'string';
-  browserLang = isNavigatorLanguageValid
-    ? navigator.language.split('-').join('{{BaseSeparator}}')
-    : '';
-  {{/BaseNavigator}}
-  return lang || browserLang || {{{DefaultLocale}}};
+  const lang = store.get('lang');
+  return lang || {{{DefaultLocale}}};
 };
 
 
@@ -198,47 +119,11 @@ export const getDirection = () => {
  * @returns string
  */
 export const setLocale = (lang: string, realReload: boolean = true) => {
-  //const { pluginManager } = useAppContext();
-  //const runtimeLocale = pluginManagerapplyPlugins({
-  //  key: 'locale',
-  //  workaround: 不使用 ApplyPluginsType.modify 是为了避免循环依赖，与 fast-refresh 一起用时会有问题
-  //  type: 'modify',
-  //  initialValue: {},
-  //});
-
-  const updater = () => {
-    if (getLocale() !== lang) {
-       if (navigator.cookieEnabled && typeof window.localStorage !== 'undefined' && useLocalStorage) {
-          window.localStorage.setItem('umi_locale', lang || '');
-       }
-      setIntl(lang);
-      if (realReload) {
-        window.location.reload();
-      } else {
-        event.emit(LANG_CHANGE_EVENT, lang);
-        // chrome 不支持这个事件。所以人肉触发一下
-        if (window.dispatchEvent) {
-          const event = new Event('languagechange');
-          window.dispatchEvent(event);
-        }
-      }
-    }
+  if (getLocale() !== lang) {
+    store.set('lang', lang || '')
+    setIntl(lang);
   }
-
-  //if (typeof runtimeLocale?.setLocale === 'function') {
-  //  runtimeLocale.setLocale({
-  //    lang,
-  //    realReload,
-  //    updater: updater,
-  //  });
-  //  return;
-  //}
-
-  updater();
 };
-
-let firstWaring = true;
-
 
 /**
  * 获取语言列表
@@ -247,10 +132,12 @@ let firstWaring = true;
 export const getAllLocales = () => Object.keys(localeInfo);
 
 /**
- * useIntl语法糖，直接返回formatMessage
- * @returns string[]
+ * formatMessage语法糖
+ * @returns string
  */
-export const useIntl = (id:string, values?: string | number | boolean | null | undefined | Date): string => {
-  const { formatMessage } = originUseIntl();
-  return formatMessage({ id, values});
+export const i18n = (id:string, values?: string | number | boolean | null | undefined | Date): string => {
+  if (!g_intl) {
+    setIntl(getLocale());
+  }
+  return g_intl.formatMessage({ id }, values);
 }

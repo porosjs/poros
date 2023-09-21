@@ -15,7 +15,6 @@ import { withTmpPath } from './utils/withTmpPath';
 
 interface ILocaleConfig {
   default?: string;
-  useLocalStore?: boolean;
   /** title 开启国际化 */
   title?: boolean;
   antd?: boolean;
@@ -161,7 +160,6 @@ export default (api: IApi) => {
         Title: title && api.config.title,
         BaseSeparator: baseSeparator,
         DefaultLocale: defaultLocale,
-        DefaultLang: defaultLocale,
         dayjsPkgPath,
       }),
       path: 'render/locale.tsx',

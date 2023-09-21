@@ -4,5 +4,7 @@ export function getSchemas(): Record<string, ({}: { zod: typeof z }) => any> {
   return {
     builder: ({ zod }) => zod.record(zod.string(), zod.any()).optional(),
     rendererTarget: ({ zod }) => zod.enum(['electron-renderer', 'web']),
+    logger: ({ zod }) => zod.record(zod.string(), zod.any()).optional(),
+    localStore: ({ zod }) => zod.record(zod.string(), zod.any()).optional(),
   };
 }

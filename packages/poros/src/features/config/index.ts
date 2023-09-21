@@ -1,5 +1,5 @@
 import { IApi } from '@porosjs/umi';
-import { BaseGenerator, winPath } from '@umijs/utils';
+import { BaseGenerator, lodash, winPath } from '@umijs/utils';
 import { set } from '@umijs/utils/compiled/lodash';
 import path from 'path';
 import { PATHS } from '../../constants';
@@ -83,9 +83,23 @@ export default (api: IApi) => {
         api.env === 'development' ? PATHS.PLUGIN_PATH : PATHS.PROD_PLUGIN_PATH,
       data: {
         port: api.appData.port ?? 8000,
-        electronLogPath: winPath(
-          path.dirname(require.resolve('electron-log/package.json')),
-        ),
+        electronLogPath: winPath(require.resolve('electron-log')),
+        lodashMergePath: winPath(require.resolve('lodash/merge')),
+        loggerOptions: api.config.logger,
+        electronStorePath: winPath(require.resolve('electron-store')),
+        electronStoreOptions:
+          api.config.locale && api.config.localStore?.schema
+            ? lodash.merge(api.config.localStore, {
+                schema: {
+                  lang: {
+                    type: 'string',
+                    default:
+                      api.config.locale.default ||
+                      `zh${api.config.locale.baseSeparator || '-'}CN`,
+                  },
+                },
+              })
+            : api.config.localStore,
       },
       slient: true,
     });

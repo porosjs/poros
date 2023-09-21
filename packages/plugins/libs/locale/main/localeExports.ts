@@ -9,8 +9,6 @@ export {
 
 let g_intl: IntlShape;
 
-const useLocalStore = {{{UseLocalStore}}};
-
 {{#LocaleList}}
 {{#paths}}
 import lang_{{lang}}{{country}}{{index}} from "{{{path}}}";
@@ -84,11 +82,9 @@ export const getLocale = () => {
  */
 export const setLocale = (lang: string) => {
   if (getLocale() !== lang) {
-    if (useLocalStore) {
-      store.set('lang', lang || '')
-    }
-   setIntl(lang);
- }
+    store.set('lang', lang || '')
+    setIntl(lang);
+  }
 };
 
 
@@ -103,6 +99,8 @@ export const getAllLocales = () => Object.keys(localeInfo);
  * @returns string
  */
 export const i18n = (id:string, values?: string | number | boolean | null | undefined | Date): string => {
-  const intl = getIntl();
-  return intl.formatMessage({id}, values);
+  if (!g_intl) {
+    setIntl(getLocale());
+  }
+  return g_intl.formatMessage({ id }, values);
 }
