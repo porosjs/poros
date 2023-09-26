@@ -83,9 +83,11 @@ export default (api: IApi) => {
         api.env === 'development' ? PATHS.PLUGIN_PATH : PATHS.PROD_PLUGIN_PATH,
       data: {
         port: api.appData.port ?? 8000,
-        electronLogPath: winPath(require.resolve('electron-log')),
         lodashMergePath: winPath(require.resolve('lodash/merge')),
-        loggerOptions: api.config.logger,
+        electronLogPath: winPath(
+          path.dirname(require.resolve('electron-log/package.json')),
+        ),
+        electronLogOptions: api.config.logger,
         electronStorePath: winPath(require.resolve('electron-store')),
         electronStoreOptions:
           api.config.locale && api.config.localStore?.schema

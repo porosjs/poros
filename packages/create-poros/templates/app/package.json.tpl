@@ -25,8 +25,8 @@
     "@types/node": "^17.0.13",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
-    "electron": "^22.3.1",
-    "electron-builder": "^23.6.0",
+    "electron": "^26.2.2",
+    "electron-builder": "^24.6.4",
     "electron-devtools-installer": "^3.2.0",{{#withHusky}}
     "husky": "^8.0.1",{{/withHusky}}
     "lint-staged": "^13.0.3",

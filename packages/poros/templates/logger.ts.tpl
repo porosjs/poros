@@ -1,10 +1,8 @@
-import logger from '{{{electronLogPath}}}';
+import logger from '{{{electronLogPath}}}/main';
+{{#electronLogOptions}}
 import merge from '{{{lodashMergePath}}}'
 
-logger.initialize({ spyRendererConsole: true });
-
-{{#loggerOptions}}
-merge(logger, {{{loggerOptions}}})
-{{/loggerOptions}}
+merge(logger, {{{electronLogOptions}}})
+{{/electronLogOptions}}
 
 export default logger;
