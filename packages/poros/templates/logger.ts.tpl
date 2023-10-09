@@ -1,4 +1,4 @@
-import logger from '{{{electronLogPath}}}/main';
+import logger from '{{{electronLogPath}}}';
 {{#electronLogOptions}}
 import merge from '{{{lodashMergePath}}}'
 

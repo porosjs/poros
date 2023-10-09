@@ -17,13 +17,14 @@ protocol.registerSchemesAsPrivileged([
 
 function initialize() {
   app.whenReady().then(()=>{
-    logger.initialize({ preload: true, spyRendererConsole: true });
+    logger.initialize();
     localStore.initialize();
 
     protocol.handle(PROTOCOL_SCHEME, (req) => {
       const { host, pathname } = new URL(req.url);
       if (isDev) {
-        return net.fetch(`http://localhost:${port}/#/` + pathname, {
+        const isStatic  = /\.(.*)$/.test(pathname);
+        return net.fetch(`http://localhost:${port}` + `${isStatic ? '' : '/#'}` + pathname, {
           method: req.method,
           headers: req.headers,
           body: req.body,

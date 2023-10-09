@@ -1,6 +1,6 @@
 {
   "name": "poros",
-  "version": "1.0.0-alpha.18",
+  "version": "1.0.0-alpha.19",
   "description": "poros",
   "main": "index.js",
   "types": "index.d.ts",
