@@ -1,4 +1,5 @@
-// @ts-nocheck
+'use strict';
+
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('__localStore', {
