@@ -1,16 +1,23 @@
 // @ts-nocheck
-import { ipcRenderer } from 'electron';
 import logger from '{{{electronLogPath}}}/renderer';
+import { history } from 'poros';
+
+const _logger = new Proxy(logger, {
+  get: function(target, property) {
+    const _target = target.scope('#' + history.location.pathname);
+    return _target[property];
+  }
+});
 
 class LocalStore {
   get(key: string): any {
-    return ipcRenderer.sendSync('__IPC_ELECTRON_STORE_GET', key);
+    return __localStore.get(key);
   }
   set(key: string, val: any): void {
-    ipcRenderer.send('__IPC_ELECTRON_STORE_SET', key, val);
+    __localStore.set(key, val);
   }
 }
 
 const localStore = new LocalStore();
 
-export { logger, localStore };
+export { _logger as logger, localStore };

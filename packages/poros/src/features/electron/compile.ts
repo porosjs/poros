@@ -16,6 +16,7 @@ import {
   getMainBuildPath,
   getRendererBuildPath,
   getRootPkg,
+  isRendererLog,
   lazyImportFromCurrentPkg,
   printMemoryUsage,
 } from './utils';
@@ -260,15 +261,15 @@ export const runDev = async (api: IApi) => {
     path.join(getDevBuildPath(api), 'main.js'),
   ]);
   spawnProcess.stdout.on('data', (data) => {
-    const log = filterText(data.toString());
+    const log = filterText(data.toString())?.replace(/\s*$/g, '');
     if (log) {
-      logger.info(`[Main] ${log}`);
+      logger.info(`[${isRendererLog(log) ? 'Renderer' : 'Main'}] ${log}`);
     }
   });
   spawnProcess.stderr.on('data', (data) => {
-    const log = filterText(data.toString());
+    const log = filterText(data.toString())?.replace(/\s*$/g, '');
     if (log) {
-      logger.error(`[Main] ${log}`);
+      logger.info(`[${isRendererLog(log) ? 'Renderer' : 'Main'}] ${log}`);
     }
   });
   spawnProcess.on('close', (_, signal) => {

@@ -130,3 +130,12 @@ export function getDevBanner(offset = 8) {
     after: afterLines.map((l) => l.padStart(l.length + offset)).join('\n'),
   };
 }
+
+/**
+ * 判断是否是否为渲染进程日志打印，渲染进程日志包涵（path）scope
+ * @param content
+ * @returns
+ */
+export function isRendererLog(content: string) {
+  return /\(#\/.*\)/.test(content);
+}
