@@ -127,8 +127,6 @@ async function buildMain(api: IApi) {
   const modifyWebpackConfig = async (memo: any) => {
     memo.output.filename = 'main.js';
     memo.target = 'electron-main';
-    memo.output.library = 'main';
-    memo.output.libraryTarget = 'commonjs2';
     return memo;
   };
   const modifyViteConfig = async (memo: any) => {
@@ -200,8 +198,6 @@ async function buildPreload(api: IApi) {
   const modifyWebpackConfig = async (memo: any) => {
     memo.output.filename = '[name].js';
     memo.target = 'electron-preload';
-    memo.output.library = 'preload';
-    memo.output.libraryTarget = 'commonjs2';
     return memo;
   };
   const modifyViteConfig = async (memo: any) => {

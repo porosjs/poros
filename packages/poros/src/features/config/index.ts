@@ -1,6 +1,5 @@
 import { IApi } from '@porosjs/umi';
 import { BaseGenerator, lodash, winPath } from '@umijs/utils';
-import { set } from '@umijs/utils/compiled/lodash';
 import path from 'path';
 import { PATHS } from '../../constants';
 import { getSchemas } from './schema';
@@ -32,8 +31,8 @@ export default (api: IApi) => {
 
   api.modifyConfig((memo) => {
     if (memo.mfsu !== false) {
-      set(memo, 'mfsu.shared.react.singleton', true);
-      set(memo, 'mfsu.shared.react-dom.singleton', true);
+      lodash.set(memo, 'mfsu.shared.react.singleton', true);
+      lodash.set(memo, 'mfsu.shared.react-dom.singleton', true);
     }
     memo.alias = {
       ...memo.alias,
@@ -87,9 +86,11 @@ export default (api: IApi) => {
         electronLogPath: winPath(
           path.dirname(require.resolve('electron-log/package.json')),
         ),
-        electronLogOptions: api.config.logger,
+        electronLogOptions: api.config.logger
+          ? JSON.stringify(api.config.logger as Record<string, any>)
+          : false,
         electronStorePath: winPath(require.resolve('electron-store')),
-        electronStoreOptions:
+        electronStoreOptions: JSON.stringify(
           api.config.locale && api.config.localStore?.schema
             ? lodash.merge(api.config.localStore, {
                 schema: {
@@ -102,6 +103,7 @@ export default (api: IApi) => {
                 },
               })
             : api.config.localStore,
+        ),
       },
       slient: true,
     });
