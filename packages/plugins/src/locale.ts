@@ -100,8 +100,7 @@ export default (api: IApi) => {
       join(__dirname, '../libs/locale/render/locale.tpl'),
       'utf-8',
     );
-    // dayjs2dayjs
-    const resolveKey = api.config.dayjs2dayjs ? 'dayjs' : 'dayjs';
+    const resolveKey = 'dayjs';
     const dayjsPkgPath = winPath(
       dirname(require.resolve(`${resolveKey}/package.json`)),
     );
