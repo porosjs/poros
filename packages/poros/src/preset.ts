@@ -8,6 +8,8 @@ export default () => {
       require.resolve('@umijs/plugins/dist/model'),
       require.resolve('@umijs/plugins/dist/qiankun'),
       require.resolve('@porosjs/plugins/dist/react-query'),
+      require.resolve('@porosjs/plugins/dist/locale'),
+      require.resolve('@umijs/plugins/dist/antd'),
     ],
   };
 };
