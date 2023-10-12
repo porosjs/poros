@@ -25,18 +25,6 @@ export const packageNormalize = (packageName: string) =>
   packageName.replace(/[@\/\-.]/g, '_');
 
 export default (api: IApi) => {
-  let hasAntd = false;
-  try {
-    hasAntd = !!require.resolve('antd');
-  } catch (e) {
-    // api.logger.warn('antd is not installed. <SelecLang /> unavailable');
-  }
-
-  const defaultConfig = {
-    baseSeparator: '-',
-    antd: hasAntd,
-  };
-
   api.describe({
     key: 'locale',
     config: {
@@ -104,12 +92,10 @@ export default (api: IApi) => {
     const dayjsPkgPath = winPath(
       dirname(require.resolve(`${resolveKey}/package.json`)),
     );
-    const EventEmitterPkg = winPath(
-      dirname(require.resolve('event-emitter/package')),
-    );
 
-    const { baseSeparator, antd, title, useLocalStorage } = {
-      ...defaultConfig,
+    const { baseSeparator, antd, title } = {
+      baseSeparator: '-',
+      antd: !!api.config.antd,
       ...(api.config.locale as ILocaleConfig),
     };
     const defaultLocale = api.config.locale?.default || `zh${baseSeparator}CN`;
@@ -157,8 +143,6 @@ export default (api: IApi) => {
         DefaultAntdLocales,
         Antd: !!antd,
         Title: title && api.config.title,
-        BaseSeparator: baseSeparator,
-        DefaultLocale: defaultLocale,
         dayjsPkgPath,
       }),
       path: 'render/locale.tsx',
@@ -173,9 +157,6 @@ export default (api: IApi) => {
     api.writeTmpFile({
       path: 'render/localeExports.ts',
       content: Mustache.render(localeExportsTpl, {
-        EventEmitterPkg,
-        BaseSeparator: baseSeparator,
-        UseLocalStorage: !!useLocalStorage,
         LocaleDir: localeDirName,
         ExistLocaleDir: existsSync(localeDirPath),
         LocaleList: localeList.map((locale) => ({
@@ -227,7 +208,7 @@ export default (api: IApi) => {
     api.writeTmpFile({
       path: 'index.ts',
       content: `
-export { addLocale, setLocale, getLocale, getIntl, useIntl, injectIntl, getAllLocales, IntlProvider, RawIntlProvider } from './render/localeExports';
+export { setLocale, getLocale, getIntl, i18n, getAllLocales, IntlProvider, RawIntlProvider } from './render/localeExports';
 export { SelectLang } from './render/SelectLang';
 `,
     });
@@ -245,6 +226,42 @@ export interface IRuntimeConfig {
       cache?: IntlCache;
     } & OptionalIntlConfig;
 };`,
+    });
+
+    // main localeExports
+    const mainLocaleExportsTpl = readFileSync(
+      join(__dirname, '../libs/locale/main/localeExports.tpl'),
+      'utf-8',
+    );
+    api.writeTmpFile({
+      path: 'main/localeExports.ts',
+      content: Mustache.render(mainLocaleExportsTpl, {
+        LocaleList: localeList.map((locale) => ({
+          ...locale,
+          antdLocale: locale.antdLocale.map((antdLocale, index) => ({
+            locale: antdLocale,
+            index: index,
+          })),
+          paths: locale.paths.map((path, index) => ({
+            path,
+            index,
+          })),
+        })),
+        DefaultLocale: JSON.stringify(defaultLocale),
+        IntlPkgPath: winPath(dirname(require.resolve('@formatjs/intl'))),
+        ElectronLogPath: winPath(
+          dirname(require.resolve('electron-log/package.json')),
+        ),
+      }),
+    });
+
+    // preload
+    api.writeTmpFile({
+      path: '../plugin-electron/build/preload/locale-preload.js',
+      content: readFileSync(
+        join(__dirname, '../libs/locale/main/locale-preload.tpl'),
+        'utf-8',
+      ),
     });
   });
 

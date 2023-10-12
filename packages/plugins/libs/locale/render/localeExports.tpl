@@ -1,9 +1,7 @@
 import {
   createIntl,
-  useIntl as originUseIntl,
   IntlShape,
 } from '{{{ reactIntlPkgPath }}}';
-import { getPluginManager } from '../core/plugin';
 // @ts-ignore
 import warning from '{{{ warningPkgPath }}}';
 
@@ -95,7 +93,7 @@ export const setIntl = (locale: string) => {
  * @returns string
  */
 export const getLocale = () => {
-  const lang = store.get('lang');
+  const lang = __localStore.get('lang');
   return lang || {{{DefaultLocale}}};
 };
 
@@ -118,10 +116,9 @@ export const getDirection = () => {
  * @param realReload 是否刷新页面，默认刷新
  * @returns string
  */
-export const setLocale = (lang: string, realReload: boolean = true) => {
+export const setLocale = (lang: string) => {
   if (getLocale() !== lang) {
-    store.set('lang', lang || '')
-    setIntl(lang);
+    __changeLang(lang || '')
   }
 };
 

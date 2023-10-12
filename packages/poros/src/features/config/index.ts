@@ -104,6 +104,7 @@ export default (api: IApi) => {
               })
             : api.config.localStore,
         ),
+        localeEnable: !!api.config.locale,
       },
       slient: true,
     });

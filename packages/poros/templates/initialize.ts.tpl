@@ -6,6 +6,9 @@ import localStore from './localStore';
 import logger from './logger';
 import port from './port';
 import { isDev } from './utils';
+ {{#localeEnable}}
+ import { initialize as localeInitialize } from '../plugin-locale/main/localeExports';
+ {{/localeEnable}}
 
 const PROTOCOL_SCHEME = 'app';
 
@@ -19,6 +22,9 @@ function initialize() {
   app.whenReady().then(()=>{
     logger.initialize();
     localStore.initialize();
+    {{#localeEnable}}
+    localeInitialize();
+    {{/localeEnable}}
 
     protocol.handle(PROTOCOL_SCHEME, (req) => {
       const { host, pathname } = new URL(req.url);

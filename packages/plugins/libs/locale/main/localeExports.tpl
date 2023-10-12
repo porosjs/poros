@@ -1,7 +1,11 @@
 import {
   createIntl,
   IntlShape,
-} from '@formatjs/intl';
+} from '{{{IntlPkgPath}}}';
+import localStore from '../../plugin-electron/localStore';
+import { app, dialog, ipcMain } from 'electron';
+import electronApi from '{{{ElectronLogPath}}}/src/main/electronApi';
+import path from 'path';
 
 export {
   createIntl,
@@ -24,6 +28,14 @@ export const localeInfo: {[key: string]: any} = {
     locale: '{{locale}}',
   },
   {{/LocaleList}}
+};
+
+export const initialize = () => {
+  electronApi.setPreloadFileForSessions({ filePath: path.join(__dirname, 'preload/locale-preload.js') });
+
+  ipcMain.on('__IPC_LANG_CHANGE', async (event, lang) => {
+    setLocale(lang)
+  });
 };
 
 /**
@@ -70,7 +82,7 @@ export const setIntl = (locale: string) => {
  * @returns string
  */
 export const getLocale = () => {
-  const lang = store.get('lang');
+  const lang = localStore.get('lang');
   return lang || {{{DefaultLocale}}};
 };
 
@@ -82,11 +94,22 @@ export const getLocale = () => {
  */
 export const setLocale = (lang: string) => {
   if (getLocale() !== lang) {
-    store.set('lang', lang || '')
-    setIntl(lang);
+    // 重启程序
+    const index = dialog.showMessageBoxSync({
+      message: i18n('langChange.confirm.content'),
+      title: i18n('langChange.confirm.title'),
+      buttons: [i18n('langChange.confirm.action.cancel'), i18n('langChange.confirm.action.ok')],
+      cancelId: 0,
+      defaultId: 0,
+    });
+
+    if (index === 1) {
+      localStore.set('lang', lang || '')
+      app.relaunch();
+      app.exit(0);
+    }
   }
 };
-
 
 /**
  * 获取语言列表

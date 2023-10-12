@@ -15,8 +15,6 @@ import { RawIntlProvider, getLocale, getDirection , setIntl, getIntl, localeInfo
 import {{NormalizeAntdLocalesName}} from '{{{.}}}';
 {{/DefaultAntdLocales}}
 
-
-
 export function _onCreate() {
   const locale = getLocale();
   {{#DayjsLocales.length}}
@@ -50,16 +48,12 @@ export const _LocaleContainer = (props:any) => {
   };
 
   useIsomorphicLayoutEffect(() => {
-    event.on(LANG_CHANGE_EVENT, handleLangChange);
     {{#Title}}
     // avoid reset route title
     if (typeof document !== 'undefined' && intl.messages['{{.}}']) {
       document.title = intl.formatMessage({ id: '{{.}}' });
     }
     {{/Title}}
-    return () => {
-      event.off(LANG_CHANGE_EVENT, handleLangChange);
-    };
   }, []);
 
   {{#Antd}}
