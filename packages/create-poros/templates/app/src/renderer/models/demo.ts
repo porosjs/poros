@@ -2,7 +2,7 @@
 import { useState } from 'react';
 
 const useDemo = () => {
-  const [name, setName] = useState<string>('Poros');
+  const [name, setName] = useState<string>('Demo Model');
   return {
     name,
     setName,

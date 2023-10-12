@@ -1,6 +1,5 @@
 /node_modules
 /.env.local
-/.umirc.local.ts
 /config/config.local.ts
 /src/.poros
 /src/.poros-production

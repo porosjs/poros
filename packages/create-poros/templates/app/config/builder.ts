@@ -1,5 +1,3 @@
-import { productName } from '../package.json';
-
 export default {
   appId: 'com.electron.demo',
   copyright: `Copyright © ${new Date().getFullYear()} Poros`,
@@ -16,11 +14,9 @@ export default {
     allowElevation: true,
     allowToChangeInstallationDirectory: false,
     deleteAppDataOnUninstall: true,
-    artifactName: `${productName}-\${version}.\${ext}`,
     runAfterFinish: true,
     createDesktopShortcut: 'always',
     createStartMenuShortcut: true,
-    shortcutName: productName,
   },
 };
 

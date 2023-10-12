@@ -1,10 +1,7 @@
-import { BrowserWindow, Tray, app, protocol } from 'electron';
+import { i18n, initialize, logger } from 'poros';
+import { BrowserWindow, Tray, app } from 'electron';
 import path from 'path';
-import { createProtocol, isDev, port } from 'poros';
 
-protocol.registerSchemesAsPrivileged([
-  { scheme: 'app', privileges: { secure: true, standard: true } },
-]);
 
 export default class PorosApplication {
   private tray: Tray | null = null;
@@ -20,12 +17,7 @@ export default class PorosApplication {
         preload: path.join(__dirname, 'preload/index.js'),
       },
     });
-    if (isDev) {
-      this.mainWindow.loadURL(`http://localhost:${port}`);
-    } else {
-      createProtocol('app');
-      this.mainWindow.loadURL('app://./index.html');
-    }
+    this.mainWindow.loadURL('http://localhost:8000');
   }
 
   async initElectronAppObject() {
@@ -34,6 +26,8 @@ export default class PorosApplication {
     this.createWindow();
 
     app.setAppUserModelId(app.name);
+
+    logger.info(i18n('hello.poros'));
 
     app.on('before-quit', () => {
       app.exit(0);
@@ -50,6 +44,8 @@ export default class PorosApplication {
     if (!isSingle) {
       app.exit();
     }
+
+    initialize()
 
     await this.initElectronAppObject();
   }
