@@ -1,22 +1,23 @@
 {
-  "name": "demo",
+  "name": "{{{ name }}}",
   "version": "1.0.0",
   "private": true,
-  "author": "王建明 <jianming.wang@dilu.com>",
+  "author": "{{{ author }}}",
   "scripts": {
     "build:linux": "poros build --linux",
     "build:mac": "poros build --mac",
     "build:win": "poros build --win  --x64 --ia32",
     "dev": "poros dev",
     "format": "prettier --cache --write .",
-    "prepare": "husky install",
+    "postinstall": "poros setup",{{#withHusky}}
+    "prepare": "husky install",{{/withHusky}}
     "rebuild-deps": "poros rebuild-deps",
     "setup": "poros setup",
     "start": "poros dev"
   },
   "dependencies": {
     "antd": "^5.10.0",
-    "poros": "1.0.0-alpha.19",
+    "poros": "{{{ version }}}",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
@@ -27,8 +28,8 @@
     "@types/react-dom": "^18.0.0",
     "electron": "^26.2.2",
     "electron-builder": "^24.6.4",
-    "electron-devtools-installer": "^3.2.0",
-    "husky": "^8.0.1",
+    "electron-devtools-installer": "^3.2.0"{{#withHusky}}
+    "husky": "^8.0.1",{{/withHusky}}
     "lint-staged": "^13.0.3",
     "prettier": "^2.7.1",
     "prettier-plugin-organize-imports": "^2.0.0",

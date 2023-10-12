@@ -1,10 +1,10 @@
 import { defineConfig } from 'poros';
 import builder from './builder';
 import routes from './routes';
-import logger from './logger.conf';
+import logger from './logger';
 
 export default defineConfig({
-  npmClient: 'pnpm',
+  npmClient: {{{npmClient}}},
   model: {},
   antd: {},
   locale: {},
