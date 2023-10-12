@@ -31,9 +31,9 @@
     "electron-devtools-installer": "^3.2.0"{{#withHusky}}
     "husky": "^8.0.1",{{/withHusky}}
     "lint-staged": "^13.0.3",
-    "prettier": "^2.7.1",
-    "prettier-plugin-organize-imports": "^2.0.0",
-    "prettier-plugin-packagejson": "^2.0.0",
+    "prettier": "^3.0.3",
+    "prettier-plugin-organize-imports": "^3.2.3",
+    "prettier-plugin-packagejson": "^2.4.6",
     "typescript": "^5.0.2"
   }
 }
