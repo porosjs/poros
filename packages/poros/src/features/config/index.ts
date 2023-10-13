@@ -1,7 +1,9 @@
+import { Env } from '@porosjs/bundler-webpack/dist/types';
 import { IApi } from '@porosjs/umi';
-import { BaseGenerator, lodash, winPath } from '@umijs/utils';
+import { BaseGenerator, fsExtra, lodash, winPath } from '@umijs/utils';
 import path from 'path';
 import { PATHS } from '../../constants';
+import { getDevBuildPath, getMainBuildPath } from '../electron/utils';
 import { getSchemas } from './schema';
 
 export default (api: IApi) => {
@@ -79,7 +81,9 @@ export default (api: IApi) => {
     const generator = new BaseGenerator({
       path: path.join(__dirname, '../../..', 'templates'),
       target:
-        api.env === 'development' ? PATHS.PLUGIN_PATH : PATHS.PROD_PLUGIN_PATH,
+        api.env === Env.development
+          ? PATHS.PLUGIN_PATH
+          : PATHS.PROD_PLUGIN_PATH,
       data: {
         port: api.appData.port ?? 8000,
         lodashMergePath: winPath(require.resolve('lodash/merge')),
@@ -109,5 +113,27 @@ export default (api: IApi) => {
       slient: true,
     });
     await generator.run();
+  });
+
+  function genLocalStorePreload() {
+    fsExtra.copySync(
+      path.join(__dirname, '../local-store-preload.js'),
+      path.join(
+        api.env === Env.development
+          ? path.join(getDevBuildPath(api), './preload/local-store-preload.js')
+          : path.join(
+              getMainBuildPath(api),
+              '../preload/local-store-preload.js',
+            ),
+      ),
+      { overwrite: true },
+    );
+  }
+
+  api.onBeforeCompiler(() => {
+    genLocalStorePreload();
+  });
+  api.onBuildComplete(() => {
+    genLocalStorePreload();
   });
 };

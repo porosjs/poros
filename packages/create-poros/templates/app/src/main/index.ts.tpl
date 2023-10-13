@@ -1,11 +1,8 @@
-import { i18n, initialize, logger } from 'poros';
-import { BrowserWindow, Tray, app } from 'electron';
+import { BrowserWindow, app } from 'electron';
 import path from 'path';
-
+import { i18n, initialize, logger } from 'poros';
 
 export default class PorosApplication {
-  private tray: Tray | null = null;
-
   mainWindow?: BrowserWindow;
 
   createWindow() {
@@ -45,7 +42,7 @@ export default class PorosApplication {
       app.exit();
     }
 
-    initialize()
+    initialize();
 
     await this.initElectronAppObject();
   }

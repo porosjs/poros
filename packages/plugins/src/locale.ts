@@ -1,5 +1,5 @@
 import { IApi, RUNTIME_TYPE_FILE_NAME } from '@porosjs/umi';
-import { Mustache, lodash, winPath } from '@porosjs/umi/plugin-utils';
+import { Mustache, fsExtra, lodash, winPath } from '@porosjs/umi/plugin-utils';
 import { existsSync, readFileSync } from 'fs';
 import { dirname, join } from 'path';
 import {
@@ -254,15 +254,26 @@ export interface IRuntimeConfig {
         ),
       }),
     });
+  });
 
-    // preload
-    api.writeTmpFile({
-      path: '../plugin-electron/build/preload/locale-preload.js',
-      content: readFileSync(
-        join(__dirname, '../libs/locale/main/locale-preload.tpl'),
-        'utf-8',
-      ),
-    });
+  function genLocalePreload() {
+    fsExtra.copySync(
+      join(__dirname, '../libs/locale/main/locale-preload.js'),
+      api.env === 'development'
+        ? join(
+            api.paths.absTmpPath,
+            './plugin-electron/build/preload/locale-preload.js',
+          )
+        : join(api.paths.absOutputPath, './preload/locale-preload.js'),
+      { overwrite: true },
+    );
+  }
+
+  api.onBeforeCompiler(() => {
+    genLocalePreload();
+  });
+  api.onBuildComplete(() => {
+    genLocalePreload();
   });
 
   // Runtime Plugin

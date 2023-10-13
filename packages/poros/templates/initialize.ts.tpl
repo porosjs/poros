@@ -27,10 +27,9 @@ function initialize() {
     {{/localeEnable}}
 
     protocol.handle(PROTOCOL_SCHEME, (req) => {
-      const { host, pathname } = new URL(req.url);
+      const { pathname } = new URL(req.url);
       if (isDev) {
-        const isStatic  = /\.(.*)$/.test(pathname);
-        return net.fetch(`http://localhost:${port}` + `${isStatic ? '' : '/#'}` + pathname, {
+        return net.fetch(`http://localhost:${port}${pathname}`, {
           method: req.method,
           headers: req.headers,
           body: req.body,
@@ -38,7 +37,7 @@ function initialize() {
       }
 
       return net.fetch(
-        pathToFileURL(path.join(__dirname, decodeURI('index.html/#/' + pathname))).toString(),
+        pathToFileURL(path.join(__dirname, decodeURI(pathname))).toString(),
       );
     });
   })

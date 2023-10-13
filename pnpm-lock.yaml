@@ -75,8 +75,8 @@ importers:
   packages/create-poros:
     dependencies:
       '@porosjs/umi':
-        specifier: 4.0.65-fork
-        version: 4.0.65-fork(@babel/core@7.21.4)(eslint@8.38.0)(jest@29.5.0)(postcss@8.4.22)(prettier@2.8.7)(react-dom@18.2.0)(react@18.2.0)(styled-components@5.3.9)(stylelint@14.16.1)(typescript@5.0.4)(webpack@5.79.0)
+        specifier: 4.0.65-fork.4
+        version: 4.0.65-fork.4(@babel/core@7.21.4)(eslint@8.38.0)(jest@29.5.0)(postcss@8.4.22)(prettier@2.8.7)(react-dom@18.2.0)(react@18.2.0)(styled-components@5.3.9)(stylelint@14.16.1)(typescript@5.0.4)(webpack@5.79.0)
       '@umijs/utils':
         specifier: 4.0.65
         version: 4.0.65
@@ -87,8 +87,8 @@ importers:
         specifier: ^2.9.3
         version: 2.9.3(typescript@5.0.4)
       '@porosjs/umi':
-        specifier: 4.0.65-fork
-        version: 4.0.65-fork(@babel/core@7.21.4)(eslint@8.38.0)(jest@29.5.0)(postcss@8.4.22)(prettier@2.8.7)(react-dom@18.2.0)(react@16.14.0)(styled-components@5.3.9)(stylelint@14.16.1)(typescript@5.0.4)(webpack@5.79.0)
+        specifier: 4.0.65-fork.4
+        version: 4.0.65-fork.4(@babel/core@7.21.4)(eslint@8.38.0)(jest@29.5.0)(postcss@8.4.22)(prettier@2.8.7)(react-dom@18.2.0)(react@16.14.0)(styled-components@5.3.9)(stylelint@14.16.1)(typescript@5.0.4)(webpack@5.79.0)
       '@tanstack/react-query':
         specifier: ^4.29.3
         version: 4.29.3(react-dom@18.2.0)(react@16.14.0)
@@ -105,17 +105,17 @@ importers:
   packages/poros:
     dependencies:
       '@porosjs/bundler-vite':
-        specifier: 4.0.65-fork
-        version: 4.0.65-fork(postcss@8.4.22)
+        specifier: 4.0.65-fork.4
+        version: 4.0.65-fork.4(postcss@8.4.22)
       '@porosjs/bundler-webpack':
-        specifier: 4.0.65-fork
-        version: 4.0.65-fork(styled-components@5.3.9)(typescript@5.0.4)(webpack@5.79.0)
+        specifier: 4.0.65-fork.4
+        version: 4.0.65-fork.4(styled-components@5.3.9)(typescript@5.0.4)(webpack@5.79.0)
       '@porosjs/plugins':
         specifier: workspace:*
         version: link:../plugins
       '@porosjs/umi':
-        specifier: 4.0.65-fork
-        version: 4.0.65-fork(@babel/core@7.21.4)(eslint@8.38.0)(jest@29.5.0)(postcss@8.4.22)(prettier@2.8.7)(react-dom@17.0.2)(react@16.14.0)(styled-components@5.3.9)(stylelint@14.16.1)(typescript@5.0.4)(webpack@5.79.0)
+        specifier: 4.0.65-fork.4
+        version: 4.0.65-fork.4(@babel/core@7.21.4)(eslint@8.38.0)(jest@29.5.0)(postcss@8.4.22)(prettier@2.8.7)(react-dom@17.0.2)(react@16.14.0)(styled-components@5.3.9)(stylelint@14.16.1)(typescript@5.0.4)(webpack@5.79.0)
       '@umijs/bundler-vite':
         specifier: 4.0.65
         version: 4.0.65(postcss@8.4.22)
@@ -3421,8 +3421,8 @@ packages:
     engines: {node: '>=12.22.0'}
     dev: true
 
-  /@porosjs/bundler-vite@4.0.65-fork(postcss@8.4.22):
-    resolution: {integrity: sha512-ZE8igt/OI54mWofgsAhtvT+CTjS6t9ZufJpXvPmA7ce81xJ/MxOlLm1yprQDysb4lMNSjDmDOTG91Op2h55RFg==}
+  /@porosjs/bundler-vite@4.0.65-fork.4(postcss@8.4.22):
+    resolution: {integrity: sha512-9v8+ejApc1VDyFBvKRYFv+to3EmdxgXCYO8u2VJMjMBaf+taMvDXpM/mTKqIf/sSwP+67uWu3awNpFaz7tjScw==}
     hasBin: true
     dependencies:
       '@svgr/core': 6.5.1
@@ -3444,8 +3444,8 @@ packages:
       - terser
     dev: false
 
-  /@porosjs/bundler-webpack@4.0.65-fork(styled-components@5.3.9)(typescript@5.0.4)(webpack@5.79.0):
-    resolution: {integrity: sha512-oo7hNtYsaaxtRuZYaMbguuAh8lk4CLNWQ1huvB7yY645KC0bo/4Ycfgh8nvPqX9FhtMtNrMsGdCOzHUN3pnEmw==}
+  /@porosjs/bundler-webpack@4.0.65-fork.4(styled-components@5.3.9)(typescript@5.0.4)(webpack@5.79.0):
+    resolution: {integrity: sha512-dVXTP+bKvvp68DIW+Ul1OZSsdHXARXw13PAbAhZA/LofNHlgxoiwAqolLV/9WvXi8eOr+d4sQhRUQUl4UBPoBA==}
     hasBin: true
     dependencies:
       '@pmmmwh/react-refresh-webpack-plugin': 0.5.10(react-refresh@0.14.0)(webpack@5.79.0)
@@ -3483,8 +3483,8 @@ packages:
       - webpack-plugin-serve
     dev: false
 
-  /@porosjs/preset-umi@4.0.65-fork(postcss@8.4.22)(styled-components@5.3.9)(typescript@5.0.4)(webpack@5.79.0):
-    resolution: {integrity: sha512-2mdZr4EB1RjdQOc5Ei7sKnFKP22l3a2evS+WGUxmsYCt+zfUmDDEBJrRWI4WTFv9q0gnAAAJZ27dCvxMcyxiCQ==}
+  /@porosjs/preset-umi@4.0.65-fork.4(postcss@8.4.22)(styled-components@5.3.9)(typescript@5.0.4)(webpack@5.79.0):
+    resolution: {integrity: sha512-2msSNum+UPO/wh3iTp0a2Bz+d0eVkHuTOZhNB/xdIgzWXRXVrKcJJh8jeyR2Dn3QaJ6kaCmb/pFwvh9Cc1MBxA==}
     dependencies:
       '@iconify/utils': 2.1.1
       '@svgr/core': 6.5.1
@@ -3540,13 +3540,13 @@ packages:
       - webpack-plugin-serve
     dev: false
 
-  /@porosjs/umi@4.0.65-fork(@babel/core@7.21.4)(eslint@8.38.0)(jest@29.5.0)(postcss@8.4.22)(prettier@2.8.7)(react-dom@17.0.2)(react@16.14.0)(styled-components@5.3.9)(stylelint@14.16.1)(typescript@5.0.4)(webpack@5.79.0):
-    resolution: {integrity: sha512-VeJ9p8uLDAAxFs3UEsA1UXL+lylYxsNW4knJq84gOwBhD8S3hyODo+LU7MARJ4FGlMXHqsnIMw8Sur/Ntvo5Hg==}
+  /@porosjs/umi@4.0.65-fork.4(@babel/core@7.21.4)(eslint@8.38.0)(jest@29.5.0)(postcss@8.4.22)(prettier@2.8.7)(react-dom@17.0.2)(react@16.14.0)(styled-components@5.3.9)(stylelint@14.16.1)(typescript@5.0.4)(webpack@5.79.0):
+    resolution: {integrity: sha512-W+XECaLnDlfQNZp8TkRhb+5qNVe8tGynPIEflyhWfwYN3ByI4wqFvLDV4YeBpbfgLGehaMkuyySV6RwClhiAtA==}
     engines: {node: '>=14'}
     hasBin: true
     dependencies:
       '@babel/runtime': 7.21.0
-      '@porosjs/preset-umi': 4.0.65-fork(postcss@8.4.22)(styled-components@5.3.9)(typescript@5.0.4)(webpack@5.79.0)
+      '@porosjs/preset-umi': 4.0.65-fork.4(postcss@8.4.22)(styled-components@5.3.9)(typescript@5.0.4)(webpack@5.79.0)
       '@umijs/bundler-utils': 4.0.65
       '@umijs/bundler-webpack': 4.0.65(styled-components@5.3.9)(typescript@5.0.4)(webpack@5.79.0)
       '@umijs/core': 4.0.65
@@ -3593,13 +3593,13 @@ packages:
       - webpack-plugin-serve
     dev: false
 
-  /@porosjs/umi@4.0.65-fork(@babel/core@7.21.4)(eslint@8.38.0)(jest@29.5.0)(postcss@8.4.22)(prettier@2.8.7)(react-dom@18.2.0)(react@16.14.0)(styled-components@5.3.9)(stylelint@14.16.1)(typescript@5.0.4)(webpack@5.79.0):
-    resolution: {integrity: sha512-VeJ9p8uLDAAxFs3UEsA1UXL+lylYxsNW4knJq84gOwBhD8S3hyODo+LU7MARJ4FGlMXHqsnIMw8Sur/Ntvo5Hg==}
+  /@porosjs/umi@4.0.65-fork.4(@babel/core@7.21.4)(eslint@8.38.0)(jest@29.5.0)(postcss@8.4.22)(prettier@2.8.7)(react-dom@18.2.0)(react@16.14.0)(styled-components@5.3.9)(stylelint@14.16.1)(typescript@5.0.4)(webpack@5.79.0):
+    resolution: {integrity: sha512-W+XECaLnDlfQNZp8TkRhb+5qNVe8tGynPIEflyhWfwYN3ByI4wqFvLDV4YeBpbfgLGehaMkuyySV6RwClhiAtA==}
     engines: {node: '>=14'}
     hasBin: true
     dependencies:
       '@babel/runtime': 7.21.0
-      '@porosjs/preset-umi': 4.0.65-fork(postcss@8.4.22)(styled-components@5.3.9)(typescript@5.0.4)(webpack@5.79.0)
+      '@porosjs/preset-umi': 4.0.65-fork.4(postcss@8.4.22)(styled-components@5.3.9)(typescript@5.0.4)(webpack@5.79.0)
       '@umijs/bundler-utils': 4.0.65
       '@umijs/bundler-webpack': 4.0.65(styled-components@5.3.9)(typescript@5.0.4)(webpack@5.79.0)
       '@umijs/core': 4.0.65
@@ -3646,13 +3646,13 @@ packages:
       - webpack-plugin-serve
     dev: false
 
-  /@porosjs/umi@4.0.65-fork(@babel/core@7.21.4)(eslint@8.38.0)(jest@29.5.0)(postcss@8.4.22)(prettier@2.8.7)(react-dom@18.2.0)(react@18.2.0)(styled-components@5.3.9)(stylelint@14.16.1)(typescript@5.0.4)(webpack@5.79.0):
-    resolution: {integrity: sha512-VeJ9p8uLDAAxFs3UEsA1UXL+lylYxsNW4knJq84gOwBhD8S3hyODo+LU7MARJ4FGlMXHqsnIMw8Sur/Ntvo5Hg==}
+  /@porosjs/umi@4.0.65-fork.4(@babel/core@7.21.4)(eslint@8.38.0)(jest@29.5.0)(postcss@8.4.22)(prettier@2.8.7)(react-dom@18.2.0)(react@18.2.0)(styled-components@5.3.9)(stylelint@14.16.1)(typescript@5.0.4)(webpack@5.79.0):
+    resolution: {integrity: sha512-W+XECaLnDlfQNZp8TkRhb+5qNVe8tGynPIEflyhWfwYN3ByI4wqFvLDV4YeBpbfgLGehaMkuyySV6RwClhiAtA==}
     engines: {node: '>=14'}
     hasBin: true
     dependencies:
       '@babel/runtime': 7.21.0
-      '@porosjs/preset-umi': 4.0.65-fork(postcss@8.4.22)(styled-components@5.3.9)(typescript@5.0.4)(webpack@5.79.0)
+      '@porosjs/preset-umi': 4.0.65-fork.4(postcss@8.4.22)(styled-components@5.3.9)(typescript@5.0.4)(webpack@5.79.0)
       '@umijs/bundler-utils': 4.0.65
       '@umijs/bundler-webpack': 4.0.65(styled-components@5.3.9)(typescript@5.0.4)(webpack@5.79.0)
       '@umijs/core': 4.0.65
@@ -4353,7 +4353,7 @@ packages:
       ignore: 5.2.4
       natural-compare-lite: 1.4.0
       regexpp: 3.2.0
-      semver: 7.4.0
+      semver: 7.5.4
       tsutils: 3.21.0(typescript@5.0.4)
       typescript: 5.0.4
     transitivePeerDependencies:
@@ -6413,7 +6413,7 @@ packages:
       postcss-modules-scope: 3.0.0(postcss@8.4.22)
       postcss-modules-values: 4.0.0(postcss@8.4.22)
       postcss-value-parser: 4.2.0
-      semver: 7.4.0
+      semver: 7.5.4
       webpack: 5.79.0
 
   /css-prefers-color-scheme@6.0.3(postcss@8.4.22):

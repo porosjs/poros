@@ -28,7 +28,7 @@
     "@types/react-dom": "^18.0.0",
     "electron": "^26.2.2",
     "electron-builder": "^24.6.4",
-    "electron-devtools-installer": "^3.2.0"{{#withHusky}}
+    "electron-devtools-installer": "^3.2.0",{{#withHusky}}
     "husky": "^8.0.1",{{/withHusky}}
     "lint-staged": "^13.0.3",
     "prettier": "^3.0.3",
