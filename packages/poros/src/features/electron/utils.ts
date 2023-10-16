@@ -1,5 +1,12 @@
 import { IApi } from '@porosjs/umi';
-import { chalk, fsExtra, importLazy, logger, stripAnsi } from '@umijs/utils';
+import {
+  chalk,
+  fsExtra,
+  importLazy,
+  logger,
+  stripAnsi,
+  winPath,
+} from '@umijs/utils';
 import path, { dirname } from 'path';
 import { PLUGIN_DIR_NAME } from '../../constants';
 
@@ -77,11 +84,10 @@ export function filterText(s: string) {
         it !== 'undefined'
       );
     });
-
   if (!lines || lines.length === 0) {
     return null;
   }
-  return lines.join(`\n  `) + '\n';
+  return (lines.join(`\n  `) + '\n').replace(/\s*$/g, '');
 }
 
 export function printMemoryUsage(type: string) {
@@ -138,4 +144,8 @@ export function getDevBanner(offset = 8) {
  */
 export function isRendererLog(content: string) {
   return /\(#\/.*\)/.test(content);
+}
+
+export function pathIncludes(path: string, targetPath: string) {
+  return winPath(path).includes(winPath(targetPath));
 }

@@ -2,7 +2,8 @@ import WebpackBar from '@porosjs/bundler-webpack/compiled/webpackbar';
 import ProgressPlugin from '@porosjs/bundler-webpack/dist/plugins/ProgressPlugin';
 import { Env } from '@porosjs/bundler-webpack/dist/types';
 import { IApi } from '@porosjs/umi';
-import { fsExtra, glob, lodash, logger } from '@umijs/utils';
+import { chokidar, fsExtra, glob, lodash, logger } from '@umijs/utils';
+import { debounce } from '@umijs/utils/compiled/lodash';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import { build } from 'electron-builder';
 import path from 'path';
@@ -18,6 +19,7 @@ import {
   getRootPkg,
   isRendererLog,
   lazyImportFromCurrentPkg,
+  pathIncludes,
   printMemoryUsage,
 } from './utils';
 
@@ -25,6 +27,8 @@ const bundlerWebpack: typeof import('@porosjs/bundler-webpack') =
   lazyImportFromCurrentPkg('@porosjs/bundler-webpack');
 const bundlerVite: typeof import('@porosjs/bundler-vite') =
   lazyImportFromCurrentPkg('@porosjs/bundler-vite');
+
+const TIMEOUT = 500;
 
 async function buildElectron(api: IApi) {
   const { builder, externals } = api.config;
@@ -79,7 +83,7 @@ async function buildElectron(api: IApi) {
   };
 
   // 打包electron
-  logger.event('[Electron] building...');
+  logger.wait('[Electron] building...');
   const { configureBuildCommand } = require('electron-builder/out/builder');
   const builderArgs = yargs
     .command(['build', '*'], 'Build', configureBuildCommand)
@@ -157,6 +161,8 @@ async function buildMain(api: IApi) {
     }),
     clean: api.env !== 'development',
   };
+
+  logger.wait('[Main] Compiling...');
 
   if (enableVite) {
     await bundlerVite.build(opts);
@@ -236,6 +242,8 @@ async function buildPreload(api: IApi) {
     clean: api.env !== 'development',
   };
 
+  logger.wait('[Preload] Compiling...');
+
   if (enableVite) {
     await bundlerVite.build(opts);
   } else {
@@ -243,47 +251,102 @@ async function buildPreload(api: IApi) {
   }
 }
 
-let spawnProcess: ChildProcessWithoutNullStreams | null = null;
 export const runDev = async (api: IApi) => {
-  await buildMain(api);
+  let spawnProcess: ChildProcessWithoutNullStreams | null = null;
+  const electronPath = require(path.join(
+    process.cwd(),
+    'node_modules/electron',
+  ));
+
   await buildPreload(api);
+  await buildMain(api);
 
-  if (spawnProcess !== null) {
-    spawnProcess.kill('SIGKILL');
-    spawnProcess = null;
-  }
-
-  spawnProcess = spawn('electron', [
-    path.join(getDevBuildPath(api), 'main.js'),
-  ]);
-  spawnProcess.stdout.on('data', (data) => {
-    const log = filterText(data.toString())?.replace(/\s*$/g, '');
-    if (log) {
-      logger.info(`[${isRendererLog(log) ? 'Renderer' : 'Main'}] ${log}`);
+  let first = true;
+  const runMainDebounce = debounce(() => {
+    if (spawnProcess !== null) {
+      spawnProcess.kill('SIGKILL');
+      spawnProcess = null;
     }
-  });
-  spawnProcess.stderr.on('data', (data) => {
-    const log = filterText(data.toString())?.replace(/\s*$/g, '');
-    if (log) {
-      logger.info(`[${isRendererLog(log) ? 'Renderer' : 'Main'}] ${log}`);
-    }
-  });
-  spawnProcess.on('close', (_, signal) => {
-    if (signal != 'SIGKILL') {
-      process.exit(-1);
-    }
-  });
 
-  const banner = getDevBanner();
+    spawnProcess = spawn(electronPath, [
+      path.join(getDevBuildPath(api), 'main.js'),
+    ]);
+    spawnProcess.stdout.on('data', (data) => {
+      const log = filterText(data.toString());
+      if (log) {
+        logger.info(`[${isRendererLog(log) ? 'Renderer' : 'Main'}] ${log}`);
+      }
+    });
+    spawnProcess.stderr.on('data', (data) => {
+      const log = filterText(data.toString());
+      if (log) {
+        logger.error(`[${isRendererLog(log) ? 'Renderer' : 'Main'}] ${log}`);
+      }
+    });
+    spawnProcess.on('close', (_, signal) => {
+      if (signal !== 'SIGKILL') {
+        process.exit(-1);
+      }
+    });
 
-  console.log(banner.before);
-  logger.ready(banner.main);
-  console.log(banner.after);
+    if (first) {
+      const banner = getDevBanner();
+
+      console.log(banner.before);
+      logger.ready(banner.main);
+      console.log(banner.after);
+    }
+    first = false;
+  }, TIMEOUT);
+
+  const buildPreloadDebounced = debounce(() => buildPreload(api), TIMEOUT);
+  const buildMainDebounced = debounce(() => buildMain(api), TIMEOUT);
+
+  const watcher = chokidar.watch(
+    [
+      path.join(PATHS.MAIN_SRC, '**'),
+      path.join(PATHS.PRELOAD_SRC, '**'),
+      path.join(getDevBuildPath(api), '**'),
+    ],
+    {
+      ignoreInitial: true,
+    },
+  );
+  watcher
+    .on('unlink', (currentPath) => {
+      if (
+        spawnProcess !== null &&
+        pathIncludes(currentPath, getDevBuildPath(api))
+      ) {
+        spawnProcess.kill('SIGINT');
+        spawnProcess = null;
+      }
+    })
+    .on('add', (currentPath) => {
+      if (pathIncludes(currentPath, getDevBuildPath(api))) {
+        return runMainDebounce();
+      }
+    })
+    .on('change', (currentPath) => {
+      if (pathIncludes(currentPath, PATHS.MAIN_SRC)) {
+        return buildMainDebounced();
+      }
+
+      if (pathIncludes(currentPath, PATHS.PRELOAD_SRC)) {
+        return buildPreloadDebounced();
+      }
+
+      if (pathIncludes(currentPath, getDevBuildPath(api))) {
+        return runMainDebounce();
+      }
+    });
+
+  runMainDebounce();
 };
 
 export const runBuild = async (api: IApi) => {
-  await buildMain(api);
   await buildPreload(api);
+  await buildMain(api);
 
   await buildElectron(api);
 };
