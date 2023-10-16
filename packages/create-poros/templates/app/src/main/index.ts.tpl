@@ -1,6 +1,6 @@
 import { BrowserWindow, app } from 'electron';
 import path from 'path';
-import { i18n, initialize, logger } from 'poros';
+import { i18n, initialize, isDev, logger, port } from 'poros';
 
 export default class PorosApplication {
   mainWindow?: BrowserWindow;
@@ -14,7 +14,11 @@ export default class PorosApplication {
         preload: path.join(__dirname, 'preload/index.js'),
       },
     });
-    this.mainWindow.loadURL('http://localhost:8000');
+    if (isDev) {
+      this.mainWindow.loadURL(`http://localhost:${port}/#/home`);
+    } else {
+      this.mainWindow.loadURL('app://./index.html/#/home');
+    }
   }
 
   async initElectronAppObject() {

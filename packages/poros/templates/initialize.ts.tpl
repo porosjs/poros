@@ -4,8 +4,6 @@ import path from 'path';
 import { URL, pathToFileURL } from 'url';
 import localStore from './localStore';
 import logger from './logger';
-import port from './port';
-import { isDev } from './utils';
  {{#localeEnable}}
  import { initialize as localeInitialize } from '../plugin-locale/main/localeExports';
  {{/localeEnable}}
@@ -28,14 +26,6 @@ function initialize() {
 
     protocol.handle(PROTOCOL_SCHEME, (req) => {
       const { pathname } = new URL(req.url);
-      if (isDev) {
-        return net.fetch(`http://localhost:${port}${pathname}`, {
-          method: req.method,
-          headers: req.headers,
-          body: req.body,
-        });
-      }
-
       return net.fetch(
         pathToFileURL(path.join(__dirname, decodeURI(pathname))).toString(),
       );
