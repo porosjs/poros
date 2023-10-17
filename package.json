@@ -1,6 +1,6 @@
 {
   "name": "poros",
-  "version": "1.0.0-beta.5",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "bootstrap": "poros-scripts bootstrap",
@@ -19,7 +19,12 @@
     "changeset": "esno scripts/changeset.ts",
     "version-packages": "changeset version"
   },
-  "keywords": [],
+  "keywords": [
+    "electron",
+    "umi",
+    "react",
+    "typescript"
+  ],
   "author": "王建明 <wangjianming.x@gmail.com>",
   "devDependencies": {
     "@changesets/cli": "^2.26.1",
