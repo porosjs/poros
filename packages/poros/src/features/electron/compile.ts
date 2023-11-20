@@ -3,7 +3,7 @@ import ProgressPlugin from '@porosjs/bundler-webpack/dist/plugins/ProgressPlugin
 import { Env } from '@porosjs/bundler-webpack/dist/types';
 import { IApi } from '@porosjs/umi';
 import { chokidar, fsExtra, glob, lodash, logger } from '@umijs/utils';
-import { debounce } from '@umijs/utils/compiled/lodash';
+import { debounce, isEmpty } from '@umijs/utils/compiled/lodash';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import { build } from 'electron-builder';
 import path from 'path';
@@ -221,33 +221,35 @@ async function buildPreload(api: IApi) {
     })
     .reduce((memo, el) => ({ ...memo, [path.parse(el).name]: el }), {});
 
-  const opts: any = {
-    config: {
-      ...api.config,
-      external,
-      outputPath,
-    },
-    env: api.env,
-    cwd: process.cwd(),
-    rootDir: PATHS.PRELOAD_SRC,
-    entry,
-    ...(enableVite
-      ? { modifyViteConfig }
-      : { chainWebpack, modifyWebpackConfig }),
-    ...(api.env === Env.production && {
-      onBuildComplete() {
-        printMemoryUsage('Preload');
+  if (!isEmpty(entry)) {
+    const opts: any = {
+      config: {
+        ...api.config,
+        external,
+        outputPath,
       },
-    }),
-    clean: api.env !== 'development',
-  };
+      env: api.env,
+      cwd: process.cwd(),
+      rootDir: PATHS.PRELOAD_SRC,
+      entry,
+      ...(enableVite
+        ? { modifyViteConfig }
+        : { chainWebpack, modifyWebpackConfig }),
+      ...(api.env === Env.production && {
+        onBuildComplete() {
+          printMemoryUsage('Preload');
+        },
+      }),
+      clean: api.env !== 'development',
+    };
 
-  logger.wait('[Preload] Compiling...');
+    logger.wait('[Preload] Compiling...');
 
-  if (enableVite) {
-    await bundlerVite.build(opts);
-  } else {
-    await bundlerWebpack.build(opts);
+    if (enableVite) {
+      await bundlerVite.build(opts);
+    } else {
+      await bundlerWebpack.build(opts);
+    }
   }
 }
 

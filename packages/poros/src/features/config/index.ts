@@ -95,20 +95,29 @@ export default (api: IApi) => {
           : false,
         electronStorePath: winPath(require.resolve('electron-store')),
         electronStoreOptions: JSON.stringify(
-          api.config.locale && api.config.localStore?.schema
+          api.config.localStore?.schema
             ? lodash.merge(api.config.localStore, {
                 schema: {
-                  lang: {
-                    type: 'string',
-                    default:
-                      api.config.locale.default ||
-                      `zh${api.config.locale.baseSeparator || '-'}CN`,
-                  },
+                  ...(api.isPluginEnable('locale') && {
+                    lang: {
+                      type: 'string',
+                      default:
+                        api.config.locale.default ||
+                        `zh${api.config.locale.baseSeparator || '-'}CN`,
+                    },
+                  }),
+                  ...(api.isPluginEnable('qiankun-master') && {
+                    apps: {
+                      type: 'array',
+                      default: [],
+                    },
+                  }),
                 },
               })
             : api.config.localStore,
         ),
-        localeEnable: !!api.config.locale,
+        localeEnable: api.isPluginEnable('locale'),
+        qiankunMasterEnable: api.isPluginEnable('qiankun-master'),
       },
       slient: true,
     });

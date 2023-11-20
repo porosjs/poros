@@ -6,4 +6,7 @@ export { default as initialize } from './initialize';
 {{#localeEnable}}
 export * from '../plugin-locale/main/localeExports';
 {{/localeEnable}}
+{{#qiankunMasterEnable}}
+export * from '../plugin-qiankun-master/main/masterOptions';
+{{/qiankunMasterEnable}}
 export * from './utils';
