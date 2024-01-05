@@ -132,7 +132,7 @@ export const getAllLocales = () => Object.keys(localeInfo);
  * formatMessage语法糖
  * @returns string
  */
-export const i18n = (id:string, values?: string | number | boolean | null | undefined | Date): string => {
+export const i18n = (id:string, values?: Record<string, any>): string => {
   if (!g_intl) {
     setIntl(getLocale());
   }
