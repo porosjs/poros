@@ -116,6 +116,9 @@ export default (api: IApi) => {
               })
             : api.config.localStore,
         ),
+        electronLocalShortcutStorePath: winPath(
+          path.dirname(require.resolve('electron-localshortcut')),
+        ),
         localeEnable: api.isPluginEnable('locale'),
         qiankunMasterEnable: api.isPluginEnable('qiankun-master'),
       },

@@ -125,6 +125,7 @@ async function buildMain(api: IApi) {
     }
 
     config.plugins.delete('fastRefresh');
+    config.plugins.delete('mini-css-extract-plugin');
 
     return config;
   };
@@ -146,6 +147,7 @@ async function buildMain(api: IApi) {
       external,
       outputPath,
       alias: { ...api.config.alias, poros: `@@/${PLUGIN_DIR_NAME}/exports` },
+      fastRefresh: false,
     },
     env: api.env,
     cwd: process.cwd(),

@@ -29,7 +29,7 @@ More features will be integrated in the future.
 - model
 - react-query
 - antd
-- locale()
+- locale
 
 > You can use umi plugins directly. If you have any problems, please contact me.
 

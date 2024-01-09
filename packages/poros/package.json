@@ -1,6 +1,6 @@
 {
   "name": "poros",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "An electron react framework based on Umi",
   "main": "index.js",
   "types": "index.d.ts",
@@ -49,6 +49,7 @@
     "@umijs/plugins": "4.0.65",
     "@umijs/utils": "4.0.65",
     "electron-builder": "^24.6.4",
+    "electron-localshortcut": "^3.2.1",
     "electron-log": "5.0.0-rc.1",
     "electron-store": "^8.1.0",
     "yargs": "^17.7.1"
