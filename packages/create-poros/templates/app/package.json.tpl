@@ -34,6 +34,7 @@
     "prettier": "^3.0.3",
     "prettier-plugin-organize-imports": "^3.2.3",
     "prettier-plugin-packagejson": "^2.4.6",
+    "tslib": "^2.6.2",
     "typescript": "^5.0.2"
   }
 }

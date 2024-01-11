@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "@formatjs/intl": "^2.9.3",
-    "@porosjs/umi": "4.0.65-fork.4",
+    "@porosjs/umi": "4.0.65-fork.5",
     "@tanstack/react-query": "^4.29.3",
     "@tanstack/react-query-devtools": "^4.29.3",
     "@umijs/bundler-utils": "^4.0.88",
