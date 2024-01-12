@@ -1,98 +1,198 @@
+import { BrowserWindow, ipcMain } from 'electron';
 import { logger } from 'poros';
 import PorosBrowserWindow from './PorosBrowserWindow';
 
 interface Type<T = any> extends Function {
   new (...args: any[]): T;
-  multiple: boolean;
+  single: boolean;
 }
 
 class PorosWindowManager {
-  private static instanceMap: Map<string, PorosBrowserWindow | PorosBrowserWindow[]> = new Map();
+  private static instanceNameMap: Map<
+    string,
+    PorosBrowserWindow | Record<number, PorosBrowserWindow>
+  > = new Map();
+  private static instanceIdMap: Map<number, PorosBrowserWindow> = new Map();
+
+  static initialize() {
+    ipcMain.handle('__IPC_RENDER_MAIN_EXEC', (event, methodName: string, ...args: any[]) => {
+      const bw = BrowserWindow.fromWebContents(event.sender);
+      if (!bw) {
+        throw Error('PorosBrowserWindow instance not found');
+      }
+
+      const id = bw.id;
+      const instance = this.getById(id);
+
+      if (!instance) return;
+      // @ts-ignore
+      if (!instance.ipcHandles?.includes(methodName)) {
+        throw Error(`${instance.constructor.name}.${methodName} not a ipc method`);
+      }
+
+      const method = (instance as any)[methodName] as (...arg: any[]) => any;
+
+      return method.apply(instance, args);
+    });
+  }
 
   static create(
-    clazz: Type<PorosBrowserWindow>,
-    properties?: PropertyDescriptorMap & ThisType<any>,
+    constructor: Type<PorosBrowserWindow>,
+    ...properties: ConstructorParameters<typeof constructor>
   ) {
-    const isMultiple = this.canMultiple(clazz);
-    const isExist = this.instanceMap.has(clazz.name);
+    const isMultiple = this.canMultiple(constructor);
+    const isExist = this.instanceNameMap.has(constructor.name);
 
     if (!isMultiple && isExist) {
-      logger.warn(`${clazz.name} is exist, duplication is not allowed`);
+      logger.warn(`${constructor.name} is exist, duplication is not allowed`);
       return;
     }
 
-    let instance: PorosBrowserWindow;
+    let instance: PorosBrowserWindow = new constructor(...properties);
 
-    if (properties) instance = Object.create(clazz, properties);
-    else instance = Object.create(clazz);
+    instance.on('closed', () => {
+      this.instanceIdMap.delete(instance.id);
 
-    console.log('============', clazz, instance)
+      if (constructor.single) {
+        // 单开窗口
+        this.instanceNameMap.delete(constructor.name);
+      } else {
+        // 多开窗口
+        const instances = this.getByConstructor(constructor) as Record<number, PorosBrowserWindow>;
+        delete instances[instance.id];
+        if (!Object.keys(instances).length) {
+          this.instanceNameMap.delete(constructor.name);
+        }
+      }
+    });
 
     if (isMultiple) {
-      const instances = (this.instanceMap.get(clazz.name) as PorosBrowserWindow[]) ?? [];
-      instances.push(instance);
+      const instances =
+        (this.instanceNameMap.get(constructor.name) as Record<number, PorosBrowserWindow>) ?? {};
+      instances[instance.id] = instance;
     } else {
-      this.instanceMap.set(clazz.name, instance);
+      this.instanceNameMap.set(constructor.name, instance);
+    }
+
+    this.instanceIdMap.set(instance.id, instance);
+
+    return instance;
+  }
+
+  static destroy(id: number): void;
+  static destroy(constructor: Type<PorosBrowserWindow>): void;
+  static destroy(param: Type<PorosBrowserWindow> | number): void {
+    if (typeof param === 'number') {
+      this.destroyById(param);
+      return;
+    }
+
+    this.destroyByConstructor(param);
+  }
+
+  static destroyAll(excludes: Type<PorosBrowserWindow>[] = []) {
+    const excludeNames = excludes.map((item) => item.name);
+
+    const deleteList: string[] = [];
+    this.instanceNameMap.forEach((instance, key) => {
+      if (!excludeNames.includes(key)) {
+        deleteList.push(key);
+
+        if (instance instanceof PorosBrowserWindow) {
+          // 单开窗口
+          (instance as PorosBrowserWindow).destroy();
+        } else {
+          // 多开窗口
+          Object.values(instance as Record<number, PorosBrowserWindow>).forEach((item) =>
+            item.destroy(),
+          );
+        }
+      }
+    });
+
+    if (deleteList.length === this.instanceNameMap.size) this.instanceNameMap.clear();
+    else deleteList.forEach((item) => this.instanceNameMap.delete(item));
+  }
+
+  static get<T extends Type<PorosBrowserWindow>>(
+    constructor: T,
+  ):
+    | (T['single'] extends false ? Record<number, PorosBrowserWindow> : PorosBrowserWindow)
+    | undefined;
+  static get(id: number): PorosBrowserWindow | undefined;
+  static get(
+    param: Type<PorosBrowserWindow> | number,
+  ): Record<number, PorosBrowserWindow> | PorosBrowserWindow | undefined {
+    if (typeof param === 'number') {
+      return this.getById(param);
+    }
+
+    return this.getByConstructor(param);
+  }
+
+  private static getByConstructor(constructor: Type<PorosBrowserWindow>) {
+    const instance = this.instanceNameMap.get(constructor.name);
+
+    if (!instance) {
+      logger.warn(`${constructor.name} not exist`);
+      return undefined;
     }
 
     return instance;
   }
 
-  static destroy(clazz: Type<PorosBrowserWindow>) {
-    const instance = this.get(clazz);
-
-    this.instanceMap.delete(clazz.name);
-
-    if (Array.isArray(instance)) {
-      instance.forEach((item) => {
-        item.destroy();
-      });
-    } else {
-      if (instance?.isDestroyed()) {
-        logger.warn(`${clazz.name} is destroyed`);
-        return;
-      }
-
-      instance?.destroy();
-    }
-  }
-
-  static destroyAll(excludes: Type<PorosBrowserWindow>[]) {
-    const excludeNames = excludes.map((item) => item.name);
-
-    const newInstanceMap = new Map<string, PorosBrowserWindow | PorosBrowserWindow[]>();
-
-    this.instanceMap.forEach((value, key) => {
-      if (!excludeNames.includes(key)) {
-        if (Array.isArray(value)) {
-          value.forEach((item) => {
-            item.destroy();
-          });
-        } else {
-          value.destroy();
-        }
-      } else {
-        newInstanceMap.set(key, value);
-      }
-    });
-
-    this.instanceMap = newInstanceMap;
-  }
-
-  static get<T extends Type<PorosBrowserWindow>>(
-    clazz: T,
-  ): (T['multiple'] extends true ? PorosBrowserWindow[] : PorosBrowserWindow) | undefined {
-    const instance = this.instanceMap.get(clazz.name);
+  private static getById(id: number) {
+    const instance = this.instanceIdMap.get(id);
 
     if (!instance) {
-      logger.warn(`${clazz.name} not exist`);
+      logger.warn(`BrowserWindow[#${id}] not exist`);
+      return undefined;
     }
 
-    return instance as any;
+    return instance;
   }
 
-  private static canMultiple(clazz: Type<PorosBrowserWindow>) {
-    return clazz.multiple;
+  private static destroyByConstructor(constructor: Type<PorosBrowserWindow>) {
+    const instance = this.getByConstructor(constructor);
+
+    if (!instance) {
+      logger.warn(`${constructor.name} not exist`);
+      return undefined;
+    }
+
+    if (constructor.single) {
+      // 单开窗口
+      const _instance = instance as PorosBrowserWindow;
+      _instance.destroy();
+      this.instanceIdMap.delete(_instance.id);
+    } else {
+      // 多开窗口
+      const _instance = instance as Record<number, PorosBrowserWindow>;
+      Object.values(_instance).forEach((item) => {
+        item.destroy();
+        this.instanceIdMap.delete(item.id);
+      });
+    }
+
+    this.instanceNameMap.delete(constructor.name);
+  }
+
+  private static destroyById(id: number) {
+    const instance = this.getById(id);
+
+    if (!instance) {
+      logger.warn(`BrowserWindow[#${id}] not exist`);
+      return undefined;
+    }
+
+    instance.destroy();
+
+    this.instanceIdMap.delete(id);
+    this.instanceNameMap.delete(instance.constructor.name);
+  }
+
+  private static canMultiple(constructor: Type<PorosBrowserWindow>) {
+    return !constructor.single;
   }
 }
 

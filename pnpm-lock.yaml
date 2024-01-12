@@ -107,6 +107,9 @@ importers:
       react-intl:
         specifier: 3.12.1
         version: 3.12.1(react@16.14.0)
+      warning:
+        specifier: ^4.0.3
+        version: 4.0.3
 
   packages/poros:
     dependencies:
@@ -5886,7 +5889,7 @@ packages:
       babel-plugin-syntax-jsx: 6.18.0
       lodash: 4.17.21
       picomatch: 2.3.1
-      styled-components: 5.3.9(react-dom@17.0.2)(react-is@18.2.0)(react@16.14.0)
+      styled-components: 5.3.9(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)
 
   /babel-plugin-styled-components@2.1.1(styled-components@5.3.9):
     resolution: {integrity: sha512-c8lJlszObVQPguHkI+akXv8+Jgb9Ccujx0EetL7oIvwU100LxO6XAGe45qry37wUL40a5U9f23SYrivro2XKhA==}
@@ -5898,7 +5901,7 @@ packages:
       babel-plugin-syntax-jsx: 6.18.0
       lodash: 4.17.21
       picomatch: 2.3.1
-      styled-components: 5.3.9(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)
+      styled-components: 5.3.9(react-dom@18.2.0)(react-is@18.2.0)(react@16.14.0)
 
   /babel-plugin-syntax-jsx@6.18.0:
     resolution: {integrity: sha512-qrPaCSo9c8RHNRHIotaufGbuOBN8rtdC4QrrFFc43vyWCCz7Kl7GL1PGaXtMGQZUXrkCjNEgxDfmAuAabr/rlw==}
@@ -11907,6 +11910,7 @@ packages:
       object-assign: 4.1.1
       react: 16.14.0
       scheduler: 0.20.2
+    dev: false
 
   /react-dom@18.1.0(react@18.1.0):
     resolution: {integrity: sha512-fU1Txz7Budmvamp7bshe4Zi32d0ll7ect+ccxNu9FlObT605GOEB8BfO4tmRJ39R5Zj831VCpvQ05QPBW5yb+w==}
@@ -11926,7 +11930,6 @@ packages:
       loose-envify: 1.4.0
       react: 16.14.0
       scheduler: 0.23.0
-    dev: false
 
   /react-dom@18.2.0(react@18.2.0):
     resolution: {integrity: sha512-6IMTriUmvsjHUjNtEDudZfuDQUoWXVxKHhlEGSk81n4YFS+r/Kl99wXiwlVXtPBtJenozv2P+hxDsw9eA7Xo6g==}
@@ -12639,6 +12642,7 @@ packages:
     dependencies:
       loose-envify: 1.4.0
       object-assign: 4.1.1
+    dev: false
 
   /scheduler@0.22.0:
     resolution: {integrity: sha512-6QAm1BgQI88NPYymgGQLCZgvep4FyePDWFpXVK+zNSUgHwlqpJy8VEh8Et0KxTACS4VWwMousBElAZOH9nkkoQ==}
@@ -13134,7 +13138,7 @@ packages:
     resolution: {integrity: sha512-Dj1Okke1C3uKKwQcetra4jSuk0DqbzbYtXipzFlFMZtowbF1x7BKJwB9AayVMyFARvU8EDrZdcax4At/452cAg==}
     dev: false
 
-  /styled-components@5.3.9(react-dom@17.0.2)(react-is@18.2.0)(react@16.14.0):
+  /styled-components@5.3.9(react-dom@18.2.0)(react-is@18.2.0)(react@16.14.0):
     resolution: {integrity: sha512-Aj3kb13B75DQBo2oRwRa/APdB5rSmwUfN5exyarpX+x/tlM/rwZA2vVk2vQgVSP6WKaZJHWwiFrzgHt+CLtB4A==}
     engines: {node: '>=10'}
     peerDependencies:
@@ -13151,7 +13155,7 @@ packages:
       css-to-react-native: 3.2.0
       hoist-non-react-statics: 3.3.2
       react: 16.14.0
-      react-dom: 17.0.2(react@16.14.0)
+      react-dom: 18.2.0(react@16.14.0)
       react-is: 18.2.0
       shallowequal: 1.1.0
       supports-color: 5.5.0

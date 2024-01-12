@@ -1,17 +1,15 @@
 import { BrowserWindow, BrowserWindowConstructorOptions } from 'electron';
-import { isDev, localShortcut } from 'poros';
+import { isDev, localShortcut, port } from 'poros';
 
-export interface WindowOptions extends BrowserWindowConstructorOptions {}
+export interface PorosBrowserWindowOptions extends BrowserWindowConstructorOptions {}
 
 abstract class PorosBrowserWindow extends BrowserWindow {
   /**
-   * 支持窗口多开
+   * 是否单例
    */
-  static readonly multiple: boolean = false;
+  static readonly single: boolean = true;
 
-  isFinishLoad = false;
-
-  constructor(url: string, { show = true, ...windowOptions }: WindowOptions = {}) {
+  constructor(url: string, { show = true, ...windowOptions }: PorosBrowserWindowOptions = {}) {
     const options = {
       show: false,
       ...windowOptions,
@@ -25,14 +23,11 @@ abstract class PorosBrowserWindow extends BrowserWindow {
 
     super(options);
 
-    if (isDev) {
-      this.loadURL(`http://localhost:${port}/#/${url}`);
-    } else {
-      this.loadURL(`app://./index.html/#/${url}`);
-    }
-
-    this.webContents.on('did-finish-load', () => {
-      this.isFinishLoad = true;
+    const prefix = url.startsWith('/') ? '' : '/';
+    const pageUrl = isDev
+      ? `http://localhost:${port}/#${prefix}${url}`
+      : `app://./index.html/#${prefix}${url}`;
+    this.loadURL(pageUrl).then(() => {
       if (show) {
         this.show();
       }
@@ -62,7 +57,7 @@ abstract class PorosBrowserWindow extends BrowserWindow {
     }
   }
 
-  abstract registerWindowEvent(): void;
+  protected abstract registerWindowEvent(): void;
 }
 
 export default PorosBrowserWindow;

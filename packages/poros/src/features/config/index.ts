@@ -142,10 +142,24 @@ export default (api: IApi) => {
     );
   }
 
+  function genIPCPreload() {
+    fsExtra.copySync(
+      path.join(__dirname, '../ipc-preload.js'),
+      path.join(
+        api.env === Env.development
+          ? path.join(getDevBuildPath(api), './preload/ipc-preload.js')
+          : path.join(getMainBuildPath(api), '../preload/ipc-preload.js'),
+      ),
+      { overwrite: true },
+    );
+  }
+
   api.onBeforeCompiler(() => {
     genLocalStorePreload();
+    genIPCPreload();
   });
   api.onBuildComplete(() => {
     genLocalStorePreload();
+    genIPCPreload();
   });
 };
