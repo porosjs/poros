@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 export const IPC = {
   MainWindow: {
     foo(arg1: string, arg2: number): Promise<string> {
