@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-export const IPCInvoker = {
+export const ipcInvoker = {
   MainWindow: {
     foo(arg1: string, arg2: number): Promise<string> {
       return __invokeIPC('MainWindow.foo', arg1, arg2);
