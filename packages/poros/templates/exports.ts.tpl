@@ -12,4 +12,6 @@ export * from '../plugin-qiankun-master/main/masterOptions';
 {{/qiankunMasterEnable}}
 export * from './utils';
 export { default as PorosBrowserWindow } from './PorosBrowserWindow';
+export type { PorosBrowserWindowOptions } from './PorosBrowserWindow';
 export { default as PorosWindowManager } from './PorosWindowManager';
+export { IPCHandle } from './ipc/main';

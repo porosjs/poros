@@ -4,7 +4,7 @@ import path from 'path';
 import { URL, pathToFileURL } from 'url';
 import localStore from './localStore';
 import logger from './logger';
-import PorosWindowManager from './PorosWindowManager';
+import { initialize as ipcInitialize} from './ipc/main';
 {{#localeEnable}}
 import { initialize as localeInitialize } from '../plugin-locale/main/localeExports';
 {{/localeEnable}}
@@ -27,7 +27,7 @@ function initialize() {
   app.whenReady().then(()=>{
     logger.initialize();
     localStore.initialize();
-    PorosWindowManager..initialize();
+    ipcInitialize();
     {{#localeEnable}}
     localeInitialize();
     {{/localeEnable}}

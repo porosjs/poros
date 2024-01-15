@@ -1,4 +1,3 @@
-import { BrowserWindow, ipcMain } from 'electron';
 import { logger } from 'poros';
 import PorosBrowserWindow from './PorosBrowserWindow';
 
@@ -13,28 +12,6 @@ class PorosWindowManager {
     PorosBrowserWindow | Record<number, PorosBrowserWindow>
   > = new Map();
   private static instanceIdMap: Map<number, PorosBrowserWindow> = new Map();
-
-  static initialize() {
-    ipcMain.handle('__IPC_RENDER_MAIN_EXEC', (event, methodName: string, ...args: any[]) => {
-      const bw = BrowserWindow.fromWebContents(event.sender);
-      if (!bw) {
-        throw Error('PorosBrowserWindow instance not found');
-      }
-
-      const id = bw.id;
-      const instance = this.getById(id);
-
-      if (!instance) return;
-      // @ts-ignore
-      if (!instance.ipcHandles?.includes(methodName)) {
-        throw Error(`${instance.constructor.name}.${methodName} not a ipc method`);
-      }
-
-      const method = (instance as any)[methodName] as (...arg: any[]) => any;
-
-      return method.apply(instance, args);
-    });
-  }
 
   static create(
     constructor: Type<PorosBrowserWindow>,
@@ -70,6 +47,7 @@ class PorosWindowManager {
       const instances =
         (this.instanceNameMap.get(constructor.name) as Record<number, PorosBrowserWindow>) ?? {};
       instances[instance.id] = instance;
+      this.instanceNameMap.set(constructor.name, instances);
     } else {
       this.instanceNameMap.set(constructor.name, instance);
     }
@@ -120,11 +98,16 @@ class PorosWindowManager {
     | (T['single'] extends false ? Record<number, PorosBrowserWindow> : PorosBrowserWindow)
     | undefined;
   static get(id: number): PorosBrowserWindow | undefined;
+  static get(name: string): Record<number, PorosBrowserWindow> | PorosBrowserWindow;
   static get(
-    param: Type<PorosBrowserWindow> | number,
+    param: Type<PorosBrowserWindow> | number | string,
   ): Record<number, PorosBrowserWindow> | PorosBrowserWindow | undefined {
     if (typeof param === 'number') {
       return this.getById(param);
+    }
+
+    if (typeof param === 'string') {
+      return this.instanceNameMap.get(param);
     }
 
     return this.getByConstructor(param);
