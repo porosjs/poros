@@ -10,6 +10,7 @@ export default () => {
       require.resolve('@porosjs/plugins/dist/locale'),
       require.resolve('@umijs/plugins/dist/antd'),
       require.resolve('@porosjs/plugins/dist/qiankun'),
+      require.resolve('@porosjs/plugins/dist/ipc'),
     ],
   };
 };

@@ -78,6 +78,9 @@ export default (api: IApi) => {
   });
 
   api.onGenerateFiles(async () => {
+    // 获取主进程窗口类定义
+    const window = await getAllWindows(api);
+
     const generator = new BaseGenerator({
       path: path.join(__dirname, '../../..', 'templates'),
       target:
@@ -127,39 +130,56 @@ export default (api: IApi) => {
     await generator.run();
   });
 
-  function genLocalStorePreload() {
-    fsExtra.copySync(
-      path.join(__dirname, '../local-store-preload.js'),
-      path.join(
-        api.env === Env.development
-          ? path.join(getDevBuildPath(api), './preload/local-store-preload.js')
-          : path.join(
-              getMainBuildPath(api),
-              '../preload/local-store-preload.js',
-            ),
-      ),
-      { overwrite: true },
-    );
-  }
-
-  function genIPCPreload() {
-    fsExtra.copySync(
-      path.join(__dirname, '../ipc-preload.js'),
-      path.join(
-        api.env === Env.development
-          ? path.join(getDevBuildPath(api), './preload/ipc-preload.js')
-          : path.join(getMainBuildPath(api), '../preload/ipc-preload.js'),
-      ),
-      { overwrite: true },
-    );
-  }
+  api.addTmpGenerateWatcherPaths(() => {
+    return [path.join(PATHS.MAIN_SRC, 'windows')];
+  });
 
   api.onBeforeCompiler(() => {
-    genLocalStorePreload();
-    genIPCPreload();
+    genLocalStorePreload(api);
+    genIPCPreload(api);
   });
   api.onBuildComplete(() => {
-    genLocalStorePreload();
-    genIPCPreload();
+    genLocalStorePreload(api);
+    genIPCPreload(api);
   });
 };
+
+function genLocalStorePreload(api: IApi) {
+  fsExtra.copySync(
+    path.join(__dirname, '../local-store-preload.js'),
+    path.join(
+      api.env === Env.development
+        ? path.join(getDevBuildPath(api), './preload/local-store-preload.js')
+        : path.join(getMainBuildPath(api), '../preload/local-store-preload.js'),
+    ),
+    { overwrite: true },
+  );
+}
+
+function genIPCPreload(api: IApi) {
+  fsExtra.copySync(
+    path.join(__dirname, '../ipc-preload.js'),
+    path.join(
+      api.env === Env.development
+        ? path.join(getDevBuildPath(api), './preload/ipc-preload.js')
+        : path.join(getMainBuildPath(api), '../preload/ipc-preload.js'),
+    ),
+    { overwrite: true },
+  );
+}
+
+async function getAllWindows(api: IApi) {
+  const extraModels = await api.applyPlugins({
+    key: 'addExtraModels',
+    type: api.ApplyPluginsType.add,
+    initialValue: [],
+  });
+  return new ModelUtils(api, {
+    astTest({ node }) {
+      return t.isArrowFunctionExpression(node) || t.isFunctionDeclaration(node);
+    },
+  }).getAllModels({
+    sort: {},
+    extraModels: [...extraModels, ...(api.config.model.extraModels || [])],
+  });
+}

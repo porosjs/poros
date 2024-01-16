@@ -256,24 +256,11 @@ export interface IRuntimeConfig {
     });
   });
 
-  function genLocalePreload() {
-    fsExtra.copySync(
-      join(__dirname, '../libs/locale/main/locale-preload.js'),
-      api.env === 'development'
-        ? join(
-            api.paths.absTmpPath,
-            './plugin-electron/build/preload/locale-preload.js',
-          )
-        : join(api.paths.absOutputPath, './preload/locale-preload.js'),
-      { overwrite: true },
-    );
-  }
-
   api.onBeforeCompiler(() => {
-    genLocalePreload();
+    genLocalePreload(api);
   });
   api.onBuildComplete(() => {
-    genLocalePreload();
+    genLocalePreload(api);
   });
 
   // Runtime Plugin
@@ -288,3 +275,16 @@ export interface IRuntimeConfig {
     return exactLocalePaths(localeList);
   });
 };
+
+function genLocalePreload(api: IApi) {
+  fsExtra.copySync(
+    join(__dirname, '../libs/locale/main/locale-preload.js'),
+    api.env === 'development'
+      ? join(
+          api.paths.absTmpPath,
+          './plugin-electron/build/preload/locale-preload.js',
+        )
+      : join(api.paths.absOutputPath, './preload/locale-preload.js'),
+    { overwrite: true },
+  );
+}
