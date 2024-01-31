@@ -43,16 +43,19 @@ export class IPCUtils {
       importStr += `import type ${className} from '${filePath}';
 `;
 
-      content += `  ${className}: {
+      content += `
+  ${className}: {
 `;
       methods.forEach((methodName) => {
-        content += `   ${methodName}( ...args: Parameters<${className}['${methodName}']>): Promise<${className}['${methodName}'] extends (...args: any[]) => Promise<infer R> ? R : ReturnType<${className}['${methodName}']>> {
-          return __invokeIPC('${className}.${methodName}', ...args);
-        },`;
+        content += `    ${methodName}( ...args: Parameters<${className}['${methodName}']>): Promise<${className}['${methodName}'] extends (...args: any[]) => Promise<infer R> ? R : ReturnType<${className}['${methodName}']>> {
+      return __invokeIPC('${className}.${methodName}', ...args);
+    },
+`;
       });
       content += `  },`;
     });
-    content += '} as const;';
+    content += `
+} as const;`;
 
     return { import: importStr, content };
   }
