@@ -134,12 +134,8 @@ export class IPCUtils {
 
     const result: {
       className: string;
-      ipcHandles: {
-        methodName: string;
-        parameters: { name: string; type: string }[];
-        returnType: string;
-      }[];
-    } = { className: '', ipcHandles: [] };
+      methods: string[];
+    } = { className: '', methods: [] };
 
     const ast = parser.parse(content, {
       sourceType: 'module',
@@ -152,43 +148,11 @@ export class IPCUtils {
       },
       ClassMethod(path) {
         const methodName = (path.node.key as types.Identifier).name;
-        const returnTypeAnnotation = path.node.returnType;
         const methodDecorators = _self.getDecorators(path.node.decorators);
-        const methodParameters = _self.getParameters(path.node.params);
-        const returnType = returnTypeAnnotation
-          ? generator(returnTypeAnnotation).code
-          : 'void';
 
         if (methodDecorators.includes('IPCHandle')) {
-          result.ipcHandles.push({
-            methodName,
-            parameters: methodParameters,
-            returnType,
-          });
+          result.methods.push(methodName);
         }
-      },
-      ImportDeclaration(path) {
-        const importPath = path.node.source.value;
-        const importTypes: {
-          importPath: string;
-          typeName: string;
-          mode: string;
-        }[] = [];
-
-        path.node.specifiers.forEach((specifier) => {
-          if (types.isImportSpecifier(specifier)) {
-            const typeName = specifier.imported.name;
-            importTypes.push({ importPath, typeName, mode: 'specifier' });
-          } else if (types.isImportDefaultSpecifier(specifier)) {
-            const typeName = specifier.local.name;
-            importTypes.push({ importPath, typeName, mode: 'default' });
-          } else if (types.isImportNamespaceSpecifier(specifier)) {
-            const typeName = specifier.local.name;
-            importTypes.push({ importPath, typeName, mode: 'namespace' });
-          }
-        });
-
-        console.log(importTypes);
       },
     });
 
@@ -217,45 +181,5 @@ export class IPCUtils {
         return generator(decorator).code;
       }
     });
-  }
-
-  private getParameters(
-    params: types.LVal[],
-  ): { name: string; type: string }[] {
-    return params.map((param) => {
-      if (types.isIdentifier(param)) {
-        // 简单情况，参数为标识符
-        return { name: param.name, type: this.getTypeAnnotation(param) }; // 这里假设类型为 any，实际应根据需求获取类型信息
-      } else if (
-        types.isAssignmentPattern(param) &&
-        types.isIdentifier(param.left)
-      ) {
-        // 处理默认参数
-        return { name: param.left.name, type: this.getTypeAnnotation(param) }; // 这里假设类型为 any，实际应根据需求获取类型信息
-      } else {
-        // 处理其他情况，可能需要更复杂的逻辑
-        return { name: 'unknown', type: 'unknown' };
-      }
-    });
-  }
-
-  private getTypeAnnotation(param: types.LVal): string {
-    let type: string = 'any';
-    if (types.isIdentifier(param)) {
-      // 参数是标识符，查看是否有类型注解
-      if (param.typeAnnotation) {
-        type = generator(param.typeAnnotation).code;
-      }
-    } else if (
-      types.isAssignmentPattern(param) &&
-      types.isIdentifier(param.left)
-    ) {
-      // 处理默认参数，同样查看是否有类型注解
-      if (param.left.typeAnnotation) {
-        type = generator(param.left.typeAnnotation).code;
-      }
-    }
-
-    return type.replaceAll(':', '').trim();
   }
 }
