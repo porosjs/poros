@@ -78,9 +78,6 @@ export default (api: IApi) => {
   });
 
   api.onGenerateFiles(async () => {
-    // 获取主进程窗口类定义
-    const window = await getAllWindows(api);
-
     const generator = new BaseGenerator({
       path: path.join(__dirname, '../../..', 'templates'),
       target:
@@ -124,6 +121,7 @@ export default (api: IApi) => {
         ),
         localeEnable: api.isPluginEnable('locale'),
         qiankunMasterEnable: api.isPluginEnable('qiankun-master'),
+        ipcEnable: api.isPluginEnable('ipc'),
       },
       slient: true,
     });
@@ -136,11 +134,9 @@ export default (api: IApi) => {
 
   api.onBeforeCompiler(() => {
     genLocalStorePreload(api);
-    genIPCPreload(api);
   });
   api.onBuildComplete(() => {
     genLocalStorePreload(api);
-    genIPCPreload(api);
   });
 };
 
@@ -154,32 +150,4 @@ function genLocalStorePreload(api: IApi) {
     ),
     { overwrite: true },
   );
-}
-
-function genIPCPreload(api: IApi) {
-  fsExtra.copySync(
-    path.join(__dirname, '../ipc-preload.js'),
-    path.join(
-      api.env === Env.development
-        ? path.join(getDevBuildPath(api), './preload/ipc-preload.js')
-        : path.join(getMainBuildPath(api), '../preload/ipc-preload.js'),
-    ),
-    { overwrite: true },
-  );
-}
-
-async function getAllWindows(api: IApi) {
-  const extraModels = await api.applyPlugins({
-    key: 'addExtraModels',
-    type: api.ApplyPluginsType.add,
-    initialValue: [],
-  });
-  return new ModelUtils(api, {
-    astTest({ node }) {
-      return t.isArrowFunctionExpression(node) || t.isFunctionDeclaration(node);
-    },
-  }).getAllModels({
-    sort: {},
-    extraModels: [...extraModels, ...(api.config.model.extraModels || [])],
-  });
 }

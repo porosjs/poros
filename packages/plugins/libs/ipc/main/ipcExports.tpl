@@ -2,8 +2,8 @@
 import { BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
 import electronApi from '{{{electronLogPath}}}/src/main/electronApi';
-import PorosBrowserWindow from '../PorosBrowserWindow';
-import PorosWindowManager from '../PorosWindowManager';
+import PorosBrowserWindow from '../../plugin-electron/PorosBrowserWindow';
+import PorosWindowManager from '../../plugin-electron/PorosWindowManager';
 
 export function IPCHandle(
   target: PorosBrowserWindow,

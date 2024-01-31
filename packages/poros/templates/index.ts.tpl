@@ -21,5 +21,3 @@ class LocalStore {
 const localStore = new LocalStore();
 
 export { _logger as logger, localStore };
-
-export { ipcInvoker } from './ipc/renderer';

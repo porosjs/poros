@@ -4,13 +4,15 @@ import path from 'path';
 import { URL, pathToFileURL } from 'url';
 import localStore from './localStore';
 import logger from './logger';
-import { initialize as ipcInitialize} from './ipc/main';
 {{#localeEnable}}
 import { initialize as localeInitialize } from '../plugin-locale/main/localeExports';
 {{/localeEnable}}
 {{#qiankunMasterEnable}}
 import { getMasterAppDir } from '../plugin-qiankun-master/main/masterOptions';
 {{/qiankunMasterEnable}}
+{{#ipcEnable}}
+import { initialize as ipcInitialize } from '../plugin-ipc/main/ipcExports';
+{{/ipcEnable}}
 
 const PROTOCOL_SCHEME = 'app';
 
@@ -27,7 +29,9 @@ function initialize() {
   app.whenReady().then(()=>{
     logger.initialize();
     localStore.initialize();
+    {{#ipcEnable}}
     ipcInitialize();
+    {{/ipcEnable}}
     {{#localeEnable}}
     localeInitialize();
     {{/localeEnable}}
