@@ -10,12 +10,12 @@ import * as ts from 'typescript';
 
 export class IPCUtils {
   api: IApi;
-  count: number = 1;
+
   constructor(api: IApi | null) {
     this.api = api as IApi;
   }
 
-  getAllHandles() {
+  getAllInvokers() {
     const windows = glob
       .sync('**/*.{ts,js}', {
         cwd: join(process.cwd(), 'src/main/windows'),
@@ -24,20 +24,19 @@ export class IPCUtils {
       .map(winPath)
       .map((file) => {
         const content = readFileSync(file, 'utf-8');
-        return [file, content];
+        return { file, content };
       })
-      .filter(([file, content]) => {
+      .filter(({ file, content }) => {
         if (/\.d.ts$/.test(file)) return false;
         if (/\.(test|e2e|spec).([jt])sx?$/.test(file)) return false;
         return this.isWindowValid({ content, file });
       });
 
     // 生成.d.ts
-    this.genDTS(windows.map(([file]) => file));
-
-    return windows.map(([file, content]) =>
-      this.parseWindow({ content, file }),
-    );
+    this.genDTS(windows.map(({ file }) => file));
+    // 生成调用方法
+    const result = windows.map((item) => this.parseWindow(item));
+    return result;
   }
 
   private isWindowValid(opts: { content: string; file: string }) {
@@ -97,6 +96,12 @@ export class IPCUtils {
 
     // 获取编译后的 .d.ts 内容
     const emitResult = program.emit(undefined, (fileName, text) => {
+      // 替换import路径
+      const reg = /(import *.*from *')(.*)(')/gm;
+      text.replace(reg, () => {
+        return '';
+      });
+
       this.api.writeTmpFile({
         path: `renderer/types/${basename(fileName)}`,
         content: text,
@@ -155,8 +160,6 @@ export class IPCUtils {
         }
       },
     });
-
-    console.log(JSON.stringify(result));
 
     return result;
   }

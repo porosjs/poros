@@ -11,8 +11,6 @@ export default (api: IApi) => {
   });
 
   api.onGenerateFiles(async () => {
-    const ipcMethods = await getAllWindowIPCHandles(api);
-
     const mainExportsTpl = readFileSync(
       path.join(__dirname, '../libs/ipc/main/ipcExports.tpl'),
       'utf-8',
@@ -30,6 +28,8 @@ export default (api: IApi) => {
       path.join(__dirname, '../libs/ipc/renderer/ipcExports.tpl'),
       'utf-8',
     );
+
+    new IPCUtils(api).getAllInvokers();
 
     api.writeTmpFile({
       path: 'renderer/ipcExports.ts',
@@ -69,8 +69,4 @@ function genIPCPreload(api: IApi) {
     ),
     { overwrite: true },
   );
-}
-
-async function getAllWindowIPCHandles(api: IApi) {
-  return new IPCUtils(api).getAllHandles();
 }
