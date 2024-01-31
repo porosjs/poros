@@ -24,16 +24,15 @@ export default (api: IApi) => {
       }),
     });
 
-    const renderExportsTpl = readFileSync(
-      path.join(__dirname, '../libs/ipc/renderer/ipcExports.tpl'),
-      'utf-8',
-    );
-
-    new IPCUtils(api).getAllInvokers();
+    const invokers = new IPCUtils(api).getAllInvokers();
 
     api.writeTmpFile({
       path: 'renderer/ipcExports.ts',
-      content: Mustache.render(renderExportsTpl, {}),
+      content: `
+${invokers.import}
+
+${invokers.content}
+      `,
     });
 
     api.writeTmpFile({
