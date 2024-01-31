@@ -1,12 +1,11 @@
 import { IApi } from '@porosjs/umi';
-import { glob, logger, winPath } from '@porosjs/umi/plugin-utils';
+import { glob, winPath } from '@porosjs/umi/plugin-utils';
 import generator from '@umijs/bundler-utils/compiled/babel/generator';
 import * as parser from '@umijs/bundler-utils/compiled/babel/parser';
 import traverse from '@umijs/bundler-utils/compiled/babel/traverse';
 import * as types from '@umijs/bundler-utils/compiled/babel/types';
 import { readFileSync } from 'fs';
-import { basename, join } from 'path';
-import * as ts from 'typescript';
+import { join } from 'path';
 
 export class IPCUtils {
   api: IApi;
@@ -32,11 +31,30 @@ export class IPCUtils {
         return this.isWindowValid({ content, file });
       });
 
-    // 生成.d.ts
-    this.genDTS(windows.map(({ file }) => file));
-    // 生成调用方法
-    const result = windows.map((item) => this.parseWindow(item));
-    return result;
+    const result = windows.map((item) => ({
+      ...this.parseWindow(item),
+      file: item.file,
+    }));
+    let importStr = '';
+    let content = 'export const ipcInvoker = {';
+    result.forEach(({ className, methods, file }) => {
+      const filePath = file.substring(0, file.lastIndexOf('.'));
+
+      importStr += `import type ${className} from '${filePath}';
+`;
+
+      content += `  ${className}: {
+`;
+      methods.forEach((methodName) => {
+        content += `   ${methodName}( ...args: Parameters<${className}['${methodName}']>): Promise<${className}['${methodName}'] extends (...args: any[]) => Promise<infer R> ? R : ReturnType<${className}['${methodName}']>> {
+          return __invokeIPC('${className}.${methodName}', ...args);
+        },`;
+      });
+      content += `  },`;
+    });
+    content += '} as const;';
+
+    return { import: importStr, content };
   }
 
   private isWindowValid(opts: { content: string; file: string }) {
@@ -67,70 +85,6 @@ export class IPCUtils {
     });
 
     return ret;
-  }
-
-  private genDTS(files: string[]) {
-    // 获取编译结果
-    const program = ts.createProgram({
-      rootNames: files,
-      options: {
-        module: ts.ModuleKind.ESNext,
-        target: ts.ScriptTarget.ESNext,
-        strict: true,
-        alwaysStrict: true,
-        noImplicitReturns: true,
-        noImplicitThis: true,
-        removeComments: true,
-        strictPropertyInitialization: true,
-        strictBindCallApply: true,
-        strictFunctionTypes: true,
-        strictNullChecks: true,
-        noImplicitAny: true,
-        esModuleInterop: true,
-        declaration: true,
-        emitDeclarationOnly: true,
-        transpileOnly: true,
-        forkChecker: true,
-      },
-    });
-
-    // 获取编译后的 .d.ts 内容
-    const emitResult = program.emit(undefined, (fileName, text) => {
-      // 替换import路径
-      const reg = /(import *.*from *')(.*)(')/gm;
-      text.replace(reg, () => {
-        return '';
-      });
-
-      this.api.writeTmpFile({
-        path: `renderer/types/${basename(fileName)}`,
-        content: text,
-      });
-    });
-
-    if (emitResult.emitSkipped) {
-      const allDiagnostics = ts.getPreEmitDiagnostics(program);
-      allDiagnostics.forEach((diagnostic) => {
-        if (diagnostic.file) {
-          const { line, character } =
-            diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start!);
-          const message = ts.flattenDiagnosticMessageText(
-            diagnostic.messageText,
-            '\n',
-          );
-          logger.error(
-            `${diagnostic.file.fileName} (${line + 1},${
-              character + 1
-            }): ${message}`,
-          );
-        } else {
-          logger.error(
-            ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n'),
-          );
-        }
-      });
-      logger.error('PorosBrowserWindows compilation failed');
-    }
   }
 
   private parseWindow(opts: { content: string; file: string }) {
