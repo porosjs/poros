@@ -1,11 +1,12 @@
 import { IApi } from '@porosjs/umi';
-import { glob, winPath } from '@porosjs/umi/plugin-utils';
+import { glob, logger, winPath } from '@porosjs/umi/plugin-utils';
 import generator from '@umijs/bundler-utils/compiled/babel/generator';
 import * as parser from '@umijs/bundler-utils/compiled/babel/parser';
 import traverse from '@umijs/bundler-utils/compiled/babel/traverse';
 import * as types from '@umijs/bundler-utils/compiled/babel/types';
 import { readFileSync } from 'fs';
-import { join } from 'path';
+import { basename, join } from 'path';
+import * as ts from 'typescript';
 
 export class IPCUtils {
   api: IApi;
@@ -15,7 +16,7 @@ export class IPCUtils {
   }
 
   getAllHandles() {
-    return glob
+    const windows = glob
       .sync('**/*.{ts,js}', {
         cwd: join(process.cwd(), 'src/main/windows'),
         absolute: true,
@@ -29,8 +30,14 @@ export class IPCUtils {
         if (/\.d.ts$/.test(file)) return false;
         if (/\.(test|e2e|spec).([jt])sx?$/.test(file)) return false;
         return this.isWindowValid({ content, file });
-      })
-      .map(([file, content]) => this.parseWindow({ content, file }));
+      });
+
+    // 生成.d.ts
+    this.genDTS(windows.map(([file]) => file));
+
+    return windows.map(([file, content]) =>
+      this.parseWindow({ content, file }),
+    );
   }
 
   private isWindowValid(opts: { content: string; file: string }) {
@@ -61,6 +68,64 @@ export class IPCUtils {
     });
 
     return ret;
+  }
+
+  private genDTS(files: string[]) {
+    // 获取编译结果
+    const program = ts.createProgram({
+      rootNames: files,
+      options: {
+        module: ts.ModuleKind.ESNext,
+        target: ts.ScriptTarget.ESNext,
+        strict: true,
+        alwaysStrict: true,
+        noImplicitReturns: true,
+        noImplicitThis: true,
+        removeComments: true,
+        strictPropertyInitialization: true,
+        strictBindCallApply: true,
+        strictFunctionTypes: true,
+        strictNullChecks: true,
+        noImplicitAny: true,
+        esModuleInterop: true,
+        declaration: true,
+        emitDeclarationOnly: true,
+        transpileOnly: true,
+        forkChecker: true,
+      },
+    });
+
+    // 获取编译后的 .d.ts 内容
+    const emitResult = program.emit(undefined, (fileName, text) => {
+      this.api.writeTmpFile({
+        path: `renderer/types/${basename(fileName)}`,
+        content: text,
+      });
+    });
+
+    if (emitResult.emitSkipped) {
+      const allDiagnostics = ts.getPreEmitDiagnostics(program);
+      allDiagnostics.forEach((diagnostic) => {
+        if (diagnostic.file) {
+          const { line, character } =
+            diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start!);
+          const message = ts.flattenDiagnosticMessageText(
+            diagnostic.messageText,
+            '\n',
+          );
+          logger.error(
+            `${diagnostic.file.fileName} (${line + 1},${
+              character + 1
+            }): ${message}`,
+          );
+        } else {
+          logger.error(
+            ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n'),
+          );
+        }
+      });
+      logger.error('PorosBrowserWindows compilation failed');
+    }
   }
 
   private parseWindow(opts: { content: string; file: string }) {

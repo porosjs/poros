@@ -50,6 +50,10 @@ export { ipcInvoker } from './renderer/ipcExports';
   api.onBuildComplete(() => {
     genIPCPreload(api);
   });
+
+  api.addTmpGenerateWatcherPaths(() => {
+    return [path.join(process.cwd(), 'src/main/windows')];
+  });
 };
 
 function genIPCPreload(api: IApi) {
