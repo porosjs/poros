@@ -4,7 +4,7 @@
 try {
   const { contextBridge, ipcRenderer } = require('electron');
 
-  contextBridge.exposeInMainWorld('__invokeIPC', (methodName, ...args) =>
-    ipcRenderer.invoke('__IPC_RENDER_MAIN_EXEC', methodName, ...args),
+  contextBridge.exposeInMainWorld('__invokeIPC', (channel, ...args) =>
+    ipcRenderer.invoke(channel, ...args),
   );
 } catch (e) {}

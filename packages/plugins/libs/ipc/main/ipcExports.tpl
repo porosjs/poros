@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
 import electronApi from '{{{electronLogPath}}}/src/main/electronApi';
@@ -15,7 +14,6 @@ export function IPCHandle(
   }
 
   // 注册可执行IPC方法
-  // @ts-ignore
   target.ipcHandles = [...(target.ipcHandles ?? []), methodName];
 
   return descriptor;
@@ -57,8 +55,7 @@ export function initialize() {
     const single = instance instanceof PorosBrowserWindow;
 
     const methodExist = single
-      ? // @ts-ignore
-        instance.ipcHandles?.includes(_methodName)
+      ? instance.ipcHandles?.includes(_methodName)
       : Object.values(instance)[0].ipcHandles?.includes(_methodName);
 
     if (!methodExist)
@@ -76,5 +73,20 @@ export function initialize() {
         return method.apply(_instance, args);
       }),
     );
+  });
+
+  ipcMain.handle('__IPC_OPEN_WINDOW', (event, windowName: keyof typeof WINDOW_CLASS_MAP, ...args: any[]) => {
+    const instance = PorosWindowManager.get(windowName);
+    if(instance && instance instanceof PorosBrowserWindow){
+      instance.show();
+      return instance.id;
+    }
+
+    const WINDOW_CLASS_MAP = {
+{{#windows}}
+      '{{{className}}}': require('{{{importPath}}}').default,
+{{/windows}}
+    }
+    return PorosWindowManager.create(WINDOW_CLASS_MAP[windowName], ...args).id;
   });
 }

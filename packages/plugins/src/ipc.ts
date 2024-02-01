@@ -11,6 +11,9 @@ export default (api: IApi) => {
   });
 
   api.onGenerateFiles(async () => {
+    const util = new IPCUtils(api);
+
+    const windows = util.getAllWindows();
     const mainExportsTpl = readFileSync(
       path.join(__dirname, '../libs/ipc/main/ipcExports.tpl'),
       'utf-8',
@@ -21,10 +24,11 @@ export default (api: IApi) => {
         electronLogPath: winPath(
           path.dirname(require.resolve('electron-log/package.json')),
         ),
+        windows,
       }),
     });
 
-    const invokers = new IPCUtils(api).getAllInvokers();
+    const invokers = util.getAllInvokers();
 
     api.writeTmpFile({
       path: 'renderer/ipcExports.ts',

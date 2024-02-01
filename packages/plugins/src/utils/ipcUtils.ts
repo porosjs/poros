@@ -8,14 +8,18 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 
 export class IPCUtils {
-  api: IApi;
+  private api: IApi;
+  private windows: {
+    file: string;
+    importPath: string;
+    className: string;
+    methods: string[];
+    single: boolean;
+  }[];
 
   constructor(api: IApi | null) {
     this.api = api as IApi;
-  }
-
-  getAllInvokers() {
-    const windows = glob
+    this.windows = glob
       .sync('**/*.{ts,js}', {
         cwd: join(process.cwd(), 'src/main/windows'),
         absolute: true,
@@ -29,32 +33,49 @@ export class IPCUtils {
         if (/\.d.ts$/.test(file)) return false;
         if (/\.(test|e2e|spec).([jt])sx?$/.test(file)) return false;
         return this.isWindowValid({ content, file });
-      });
+      })
+      .map((item) => ({
+        ...this.parseWindow(item),
+        file: item.file,
+        importPath: item.file.substring(0, item.file.lastIndexOf('.')),
+      }));
+  }
 
-    const result = windows.map((item) => ({
-      ...this.parseWindow(item),
-      file: item.file,
-    }));
+  getAllWindows() {
+    return this.windows;
+  }
+
+  getAllInvokers() {
     let importStr = '';
     let content = 'export const ipcInvoker = {';
-    result.forEach(({ className, methods, file }) => {
-      const filePath = file.substring(0, file.lastIndexOf('.'));
-
-      importStr += `import type ${className} from '${filePath}';
+    this.windows.forEach(({ className, methods, importPath, single }) => {
+      importStr += `import type ${className} from '${importPath}';
 `;
 
       content += `
   ${className}: {
+    open(...args: ConstructorParameters<typeof ${className}>): Promise<number> {
+      return __invokeIPC('__IPC_OPEN_WINDOW', '${className}', ...args);
+    },
 `;
+
       methods.forEach((methodName) => {
-        content += `    ${methodName}( ...args: Parameters<${className}['${methodName}']>): Promise<${className}['${methodName}'] extends (...args: any[]) => Promise<infer R> ? R : ReturnType<${className}['${methodName}']>> {
-      return __invokeIPC('${className}.${methodName}', ...args);
+        const returnType = `${className}['${methodName}'] extends (...args: any[]) => Promise<infer R> ? R : ReturnType<${className}['${methodName}']>`;
+        content += `    ${methodName}(...args: Parameters<${className}['${methodName}']>): Promise<${
+          single ? returnType : `${returnType}[]`
+        }> {
+      return __invokeIPC('__IPC_RENDER_MAIN_EXEC', '${className}.${methodName}', ...args);
     },
 `;
       });
+
       content += `  },`;
     });
+
     content += `
+  invoke(windowId: number, method: string, ...args: any[]): Promise<any> {
+    return __invokeIPC('__IPC_RENDER_MAIN_EXEC', \`\${windowId}.\${method}\`, ...args);
+  }
 } as const;`;
 
     return { import: importStr, content };
@@ -97,7 +118,8 @@ export class IPCUtils {
     const result: {
       className: string;
       methods: string[];
-    } = { className: '', methods: [] };
+      single: boolean;
+    } = { className: '', methods: [], single: true };
 
     const ast = parser.parse(content, {
       sourceType: 'module',
@@ -107,6 +129,20 @@ export class IPCUtils {
     traverse(ast, {
       ClassDeclaration: (path) => {
         result.className = path.node.id.name;
+
+        // 查找静态属性 single
+        path.traverse({
+          ClassProperty(innerPath) {
+            if (
+              innerPath.node.static &&
+              innerPath.node.key.type === 'Identifier' &&
+              innerPath.node.key.name === 'single' &&
+              innerPath.node.value
+            ) {
+              result.single = !!(innerPath.node.value as any).value;
+            }
+          },
+        });
       },
       ClassMethod(path) {
         const methodName = (path.node.key as types.Identifier).name;
