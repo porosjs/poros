@@ -11,8 +11,9 @@ export default (api: IApi) => {
   });
 
   api.onGenerateFiles(async () => {
-    const ipcMethods = await getAllWindowIPCHandles(api);
+    const util = new IPCUtils(api);
 
+    const windows = util.getAllWindows();
     const mainExportsTpl = readFileSync(
       path.join(__dirname, '../libs/ipc/main/ipcExports.tpl'),
       'utf-8',
@@ -23,17 +24,19 @@ export default (api: IApi) => {
         electronLogPath: winPath(
           path.dirname(require.resolve('electron-log/package.json')),
         ),
+        windows,
       }),
     });
 
-    const renderExportsTpl = readFileSync(
-      path.join(__dirname, '../libs/ipc/renderer/ipcExports.tpl'),
-      'utf-8',
-    );
+    const invokers = util.getAllInvokers();
 
     api.writeTmpFile({
       path: 'renderer/ipcExports.ts',
-      content: Mustache.render(renderExportsTpl, {}),
+      content: `
+${invokers.import}
+
+${invokers.content}
+      `,
     });
 
     api.writeTmpFile({
@@ -50,6 +53,10 @@ export { ipcInvoker } from './renderer/ipcExports';
   api.onBuildComplete(() => {
     genIPCPreload(api);
   });
+
+  api.addTmpGenerateWatcherPaths(() => {
+    return [path.join(process.cwd(), 'src/main/windows')];
+  });
 };
 
 function genIPCPreload(api: IApi) {
@@ -65,8 +72,4 @@ function genIPCPreload(api: IApi) {
     ),
     { overwrite: true },
   );
-}
-
-async function getAllWindowIPCHandles(api: IApi) {
-  return new IPCUtils(api).getAllHandles();
 }

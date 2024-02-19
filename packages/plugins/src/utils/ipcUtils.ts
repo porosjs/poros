@@ -8,14 +8,18 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 
 export class IPCUtils {
-  api: IApi;
-  count: number = 1;
+  private api: IApi;
+  private windows: {
+    file: string;
+    importPath: string;
+    className: string;
+    methods: string[];
+    single: boolean;
+  }[];
+
   constructor(api: IApi | null) {
     this.api = api as IApi;
-  }
-
-  getAllHandles() {
-    return glob
+    this.windows = glob
       .sync('**/*.{ts,js}', {
         cwd: join(process.cwd(), 'src/main/windows'),
         absolute: true,
@@ -23,14 +27,58 @@ export class IPCUtils {
       .map(winPath)
       .map((file) => {
         const content = readFileSync(file, 'utf-8');
-        return [file, content];
+        return { file, content };
       })
-      .filter(([file, content]) => {
+      .filter(({ file, content }) => {
         if (/\.d.ts$/.test(file)) return false;
         if (/\.(test|e2e|spec).([jt])sx?$/.test(file)) return false;
         return this.isWindowValid({ content, file });
       })
-      .map(([file, content]) => this.parseWindow({ content, file }));
+      .map((item) => ({
+        ...this.parseWindow(item),
+        file: item.file,
+        importPath: item.file.substring(0, item.file.lastIndexOf('.')),
+      }));
+  }
+
+  getAllWindows() {
+    return this.windows;
+  }
+
+  getAllInvokers() {
+    let importStr = '';
+    let content = 'export const ipcInvoker = {';
+    this.windows.forEach(({ className, methods, importPath, single }) => {
+      importStr += `import type ${className} from '${importPath}';
+`;
+
+      content += `
+  ${className}: {
+    open(...args: ConstructorParameters<typeof ${className}>): Promise<number> {
+      return __invokeIPC('__IPC_OPEN_WINDOW', '${className}', ...args);
+    },
+`;
+
+      methods.forEach((methodName) => {
+        const returnType = `${className}['${methodName}'] extends (...args: any[]) => Promise<infer R> ? R : ReturnType<${className}['${methodName}']>`;
+        content += `    ${methodName}(...args: Parameters<${className}['${methodName}']>): Promise<${
+          single ? returnType : `${returnType}[]`
+        }> {
+      return __invokeIPC('__IPC_RENDER_MAIN_EXEC', '${className}.${methodName}', ...args);
+    },
+`;
+      });
+
+      content += `  },`;
+    });
+
+    content += `
+  invoke(windowId: number, method: string, ...args: any[]): Promise<any> {
+    return __invokeIPC('__IPC_RENDER_MAIN_EXEC', \`\${windowId}.\${method}\`, ...args);
+  }
+} as const;`;
+
+    return { import: importStr, content };
   }
 
   private isWindowValid(opts: { content: string; file: string }) {
@@ -69,12 +117,9 @@ export class IPCUtils {
 
     const result: {
       className: string;
-      ipcHandles: {
-        methodName: string;
-        parameters: { name: string; type: string }[];
-        returnType: string;
-      }[];
-    } = { className: '', ipcHandles: [] };
+      methods: string[];
+      single: boolean;
+    } = { className: '', methods: [], single: true };
 
     const ast = parser.parse(content, {
       sourceType: 'module',
@@ -84,50 +129,30 @@ export class IPCUtils {
     traverse(ast, {
       ClassDeclaration: (path) => {
         result.className = path.node.id.name;
+
+        // 查找静态属性 single
+        path.traverse({
+          ClassProperty(innerPath) {
+            if (
+              innerPath.node.static &&
+              innerPath.node.key.type === 'Identifier' &&
+              innerPath.node.key.name === 'single' &&
+              innerPath.node.value
+            ) {
+              result.single = !!(innerPath.node.value as any).value;
+            }
+          },
+        });
       },
       ClassMethod(path) {
         const methodName = (path.node.key as types.Identifier).name;
-        const returnTypeAnnotation = path.node.returnType;
         const methodDecorators = _self.getDecorators(path.node.decorators);
-        const methodParameters = _self.getParameters(path.node.params);
-        const returnType = returnTypeAnnotation
-          ? generator(returnTypeAnnotation).code
-          : 'void';
 
         if (methodDecorators.includes('IPCHandle')) {
-          result.ipcHandles.push({
-            methodName,
-            parameters: methodParameters,
-            returnType,
-          });
+          result.methods.push(methodName);
         }
       },
-      ImportDeclaration(path) {
-        const importPath = path.node.source.value;
-        const importTypes: {
-          importPath: string;
-          typeName: string;
-          mode: string;
-        }[] = [];
-
-        path.node.specifiers.forEach((specifier) => {
-          if (types.isImportSpecifier(specifier)) {
-            const typeName = specifier.imported.name;
-            importTypes.push({ importPath, typeName, mode: 'specifier' });
-          } else if (types.isImportDefaultSpecifier(specifier)) {
-            const typeName = specifier.local.name;
-            importTypes.push({ importPath, typeName, mode: 'default' });
-          } else if (types.isImportNamespaceSpecifier(specifier)) {
-            const typeName = specifier.local.name;
-            importTypes.push({ importPath, typeName, mode: 'namespace' });
-          }
-        });
-
-        console.log(importTypes);
-      },
     });
-
-    console.log(JSON.stringify(result));
 
     return result;
   }
@@ -152,45 +177,5 @@ export class IPCUtils {
         return generator(decorator).code;
       }
     });
-  }
-
-  private getParameters(
-    params: types.LVal[],
-  ): { name: string; type: string }[] {
-    return params.map((param) => {
-      if (types.isIdentifier(param)) {
-        // 简单情况，参数为标识符
-        return { name: param.name, type: this.getTypeAnnotation(param) }; // 这里假设类型为 any，实际应根据需求获取类型信息
-      } else if (
-        types.isAssignmentPattern(param) &&
-        types.isIdentifier(param.left)
-      ) {
-        // 处理默认参数
-        return { name: param.left.name, type: this.getTypeAnnotation(param) }; // 这里假设类型为 any，实际应根据需求获取类型信息
-      } else {
-        // 处理其他情况，可能需要更复杂的逻辑
-        return { name: 'unknown', type: 'unknown' };
-      }
-    });
-  }
-
-  private getTypeAnnotation(param: types.LVal): string {
-    let type: string = 'any';
-    if (types.isIdentifier(param)) {
-      // 参数是标识符，查看是否有类型注解
-      if (param.typeAnnotation) {
-        type = generator(param.typeAnnotation).code;
-      }
-    } else if (
-      types.isAssignmentPattern(param) &&
-      types.isIdentifier(param.left)
-    ) {
-      // 处理默认参数，同样查看是否有类型注解
-      if (param.left.typeAnnotation) {
-        type = generator(param.left.typeAnnotation).code;
-      }
-    }
-
-    return type.replaceAll(':', '').trim();
   }
 }
