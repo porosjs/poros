@@ -36,13 +36,20 @@ export default (api: IApi) => {
 ${invokers.import}
 
 ${invokers.content}
+
+export const useIPCHandle = (channel: string, handle: (...args: any[]) => any): void => {
+  useEffect(() => {
+    const removeHandle = __handleIPC(\`__IPC_MAIN_RENDER_EXEC_\${channel}\`, (...args: any[]) => handle(...args));
+    return () => removeHandle();
+  }, []);
+};
       `,
     });
 
     api.writeTmpFile({
       path: 'index.ts',
       content: `
-export { ipcInvoker } from './renderer/ipcExports';
+export { mainInvoker } from './renderer/ipcExports';
 `,
     });
   });

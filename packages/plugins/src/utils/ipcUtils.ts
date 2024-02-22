@@ -47,7 +47,7 @@ export class IPCUtils {
 
   getAllInvokers() {
     let importStr = '';
-    let content = 'export const ipcInvoker = {';
+    let content = 'export const mainInvoker = {';
     this.windows.forEach(({ className, methods, importPath, single }) => {
       importStr += `import type ${className} from '${importPath}';
 `;
