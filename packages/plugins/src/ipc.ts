@@ -1,8 +1,9 @@
 import { IApi } from '@porosjs/umi';
 import { Mustache, fsExtra, winPath } from '@umijs/utils';
 import { readFileSync } from '@umijs/utils/compiled/fs-extra';
+import fs from 'fs';
 import path from 'path';
-import { IPCUtils } from './utils/ipcUtils';
+import { IpcUtils } from './utils/ipcUtils';
 
 export default (api: IApi) => {
   api.describe({
@@ -11,8 +12,13 @@ export default (api: IApi) => {
   });
 
   api.onGenerateFiles(async () => {
-    const util = new IPCUtils(api);
+    const hasIpcFile = ['ts', 'tsx'].some((ext) =>
+      fs.existsSync(path.join(api.paths.absSrcPath, `ipc.${ext}`)),
+    );
 
+    const util = new IpcUtils(api, hasIpcFile);
+
+    const rendererInvokers = util.getRendererInvokers();
     const windows = util.getAllWindows();
     const mainExportsTpl = readFileSync(
       path.join(__dirname, '../libs/ipc/main/ipcExports.tpl'),
@@ -25,41 +31,72 @@ export default (api: IApi) => {
           path.dirname(require.resolve('electron-log/package.json')),
         ),
         windows,
+        rendererInvokers,
       }),
     });
 
-    const invokers = util.getAllInvokers();
+    const mainInvokers = util.getMainInvokers();
 
     api.writeTmpFile({
       path: 'renderer/ipcExports.ts',
       content: `
-${invokers.import}
+import { useEffect, useState } from 'react';
+${hasIpcFile ? `import type IpcChannelToHandlerMap from '@/renderer/ipc';` : ''}
+${mainInvokers.import}
 
-${invokers.content}
+${mainInvokers.content}
+
+${
+  hasIpcFile
+    ? `
+type IpcChannel = keyof IpcChannelToHandlerMap;
+type IpcHandler<N extends IpcChannel> = IpcChannelToHandlerMap[N];
+
+export function useIpc<N extends IpcChannel>(channel: N, handler?: (...args: Parameters<IpcHandler<N>>) => Promise<IpcHandler<N> extends (...args: any[]) => Promise<infer R> ? R : ReturnType<IpcHandler<N>>>): Parameters<IpcHandler<N>> | undefined {
+  const [state, setState] = useState<Parameters<IpcHandler<N>>>();
+
+  useEffect(() => {
+    const removeHandle = __handleIpc(\`__Ipc_MAIN_RENDER_EXEC_\${channel}\`, (...args: Parameters<IpcHandler<N>>) => {
+      setState(args);
+      handler?.(...args);
+    });
+    return () => removeHandle();
+  }, [channel]);
+
+  return state;
+};`
+    : ''
+}
       `,
     });
 
     api.writeTmpFile({
       path: 'index.ts',
       content: `
-export { ipcInvoker } from './renderer/ipcExports';
+export { mainInvoker${
+        hasIpcFile ? `, useIpc` : ''
+      } } from './renderer/ipcExports';
 `,
     });
   });
 
   api.onBeforeCompiler(() => {
-    genIPCPreload(api);
+    genIpcPreload(api);
   });
   api.onBuildComplete(() => {
-    genIPCPreload(api);
+    genIpcPreload(api);
   });
 
   api.addTmpGenerateWatcherPaths(() => {
-    return [path.join(process.cwd(), 'src/main/windows')];
+    return [
+      path.join(process.cwd(), 'src/main/windows'),
+      path.join(process.cwd(), 'src/renderer/ipc.ts'),
+      path.join(process.cwd(), 'src/renderer/ipc.tsx'),
+    ];
   });
 };
 
-function genIPCPreload(api: IApi) {
+function genIpcPreload(api: IApi) {
   fsExtra.copySync(
     path.join(__dirname, '../libs/ipc/main/ipc-preload.js'),
     path.join(

@@ -7,8 +7,7 @@ import * as types from '@umijs/bundler-utils/compiled/babel/types';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-export class IPCUtils {
-  private api: IApi;
+export class IpcUtils {
   private windows: {
     file: string;
     importPath: string;
@@ -17,8 +16,7 @@ export class IPCUtils {
     single: boolean;
   }[];
 
-  constructor(api: IApi | null) {
-    this.api = api as IApi;
+  constructor(private api: IApi | null, private hasHandle: boolean) {
     this.windows = glob
       .sync('**/*.{ts,js}', {
         cwd: join(process.cwd(), 'src/main/windows'),
@@ -45,9 +43,33 @@ export class IPCUtils {
     return this.windows;
   }
 
-  getAllInvokers() {
+  getRendererInvokers() {
+    if (!this.hasHandle) return [];
+
+    const opts = glob
+      .sync('ipc.{ts,tsx}', {
+        cwd: join(process.cwd(), 'src/renderer'),
+        absolute: true,
+      })
+      .map(winPath)
+      .map((file) => {
+        const content = readFileSync(file, 'utf-8');
+        return { file, content };
+      })[0];
+
+    const channels = this.parseHandleChannels(opts);
+
+    console.log('================', channels);
+
+    let importStr = `import type IpcChannelToHandlerMap from '@/renderer/ipc'`;
+    let content = 'export const rendererInvoker = {';
+
+    return '';
+  }
+
+  getMainInvokers() {
     let importStr = '';
-    let content = 'export const ipcInvoker = {';
+    let content = 'export const mainInvoker = {';
     this.windows.forEach(({ className, methods, importPath, single }) => {
       importStr += `import type ${className} from '${importPath}';
 `;
@@ -55,7 +77,7 @@ export class IPCUtils {
       content += `
   ${className}: {
     open(...args: ConstructorParameters<typeof ${className}>): Promise<number> {
-      return __invokeIPC('__IPC_OPEN_WINDOW', '${className}', ...args);
+      return __invokeIpc('__Ipc_OPEN_WINDOW', '${className}', ...args);
     },
 `;
 
@@ -64,7 +86,7 @@ export class IPCUtils {
         content += `    ${methodName}(...args: Parameters<${className}['${methodName}']>): Promise<${
           single ? returnType : `${returnType}[]`
         }> {
-      return __invokeIPC('__IPC_RENDER_MAIN_EXEC', '${className}.${methodName}', ...args);
+      return __invokeIpc('__Ipc_RENDER_MAIN_EXEC', '${className}.${methodName}', ...args);
     },
 `;
       });
@@ -74,11 +96,39 @@ export class IPCUtils {
 
     content += `
   invoke(windowId: number, method: string, ...args: any[]): Promise<any> {
-    return __invokeIPC('__IPC_RENDER_MAIN_EXEC', \`\${windowId}.\${method}\`, ...args);
+    return __invokeIpc('__Ipc_RENDER_MAIN_EXEC', \`\${windowId}.\${method}\`, ...args);
   }
 } as const;`;
 
     return { import: importStr, content };
+  }
+
+  private parseHandleChannels(opts: { content: string; file: string }) {
+    const { file, content } = opts;
+
+    const ast = parser.parse(content, {
+      sourceType: 'module',
+      sourceFilename: file,
+      plugins: ['typescript'],
+    });
+
+    const keys: string[] = [];
+    ast.program.body.forEach((node) => {
+      if (
+        node.type === 'ExportDefaultDeclaration' &&
+        // @ts-expect-error
+        node.declaration.type === 'TSInterfaceDeclaration'
+      ) {
+        // @ts-expect-error
+        node.declaration.body.body.forEach((property) => {
+          if (property.type === 'TSPropertySignature') {
+            keys.push(property.key.value);
+          }
+        });
+      }
+    });
+
+    return keys;
   }
 
   private isWindowValid(opts: { content: string; file: string }) {
@@ -148,7 +198,7 @@ export class IPCUtils {
         const methodName = (path.node.key as types.Identifier).name;
         const methodDecorators = _self.getDecorators(path.node.decorators);
 
-        if (methodDecorators.includes('IPCHandle')) {
+        if (methodDecorators.includes('IpcHandle')) {
           result.methods.push(methodName);
         }
       },
