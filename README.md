@@ -167,7 +167,7 @@ import { localeInfo, getIntl, setIntl, getLocale, setLocale, getAllLocales, i18n
 
 
 ## Todo
-### IPC
+### Ipc
 - point-to-point communication between windows and pages
 - one-to-many broadcast communication between windows and pages
 - communication between different window or page contexts.

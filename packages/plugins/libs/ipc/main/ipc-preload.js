@@ -3,11 +3,11 @@
 try {
   const { contextBridge, ipcRenderer } = require('electron');
 
-  contextBridge.exposeInMainWorld('__invokeIPC', (channel, ...args) =>
+  contextBridge.exposeInMainWorld('__invokeIpc', (channel, ...args) =>
     ipcRenderer.invoke(channel, ...args),
   );
 
-  contextBridge.exposeInMainWorld('__handleIPC', (channel, handler) => {
+  contextBridge.exposeInMainWorld('__handleIpc', (channel, handler) => {
     const listener = async (_, id, ...args) => {
       try {
         const resolved = await handler(...args);
