@@ -1,8 +1,10 @@
-import { BrowserWindow, ipcMain } from 'electron';
+import { BrowserWindow, ipcMain, webContents } from 'electron';
 import path from 'path';
 import electronApi from '{{{electronLogPath}}}/src/main/electronApi';
+import lodash from '{{{lodashPath}}}';
 import PorosBrowserWindow from '../../plugin-electron/PorosBrowserWindow';
 import PorosWindowManager from '../../plugin-electron/PorosWindowManager';
+{{{rendererInvokers.import}}}
 
 export function IpcHandle(
   target: PorosBrowserWindow,
@@ -24,7 +26,7 @@ export function initialize() {
     filePath: path.join(__dirname, 'preload/ipc-preload.js'),
   });
 
-  ipcMain.handle('__Ipc_RENDER_MAIN_EXEC', (event, methodName: string, ...args: any[]) => {
+  ipcMain.handle('__IPC_RENDER_MAIN_EXEC', (event, methodName: string, ...args: any[]) => {
     const bw = BrowserWindow.fromWebContents(event.sender);
     if (!bw) {
       throw Error('PorosBrowserWindow instance not found');
@@ -75,7 +77,7 @@ export function initialize() {
     );
   });
 
-  ipcMain.handle('__Ipc_OPEN_WINDOW', (event, windowName: keyof typeof WINDOW_CLASS_MAP, ...args: any[]) => {
+  ipcMain.handle('__IPC_OPEN_WINDOW', (event, windowName: keyof typeof WINDOW_CLASS_MAP, ...args: any[]) => {
     const instance = PorosWindowManager.get(windowName);
     if(instance && instance instanceof PorosBrowserWindow){
       instance.show();
@@ -91,4 +93,54 @@ export function initialize() {
   });
 }
 
-{{{rendererInvokers}}}
+type Channel = keyof IpcChannelToHandlerMap;
+type Handler<N extends Channel> = IpcChannelToHandlerMap[N];
+type InvokerReturnType<T extends Channel> = Promise<
+  Handler<T> extends (...args: any[]) => Promise<infer R> ? R : ReturnType<Handler<T>>
+>;
+type InvokerParameters<T extends Channel> = Parameters<Handler<T>>;
+
+const electronInvoke = async <N extends Channel>(
+  channel: string,
+  broadcast = false,
+  window?: PorosBrowserWindow,
+  ...args: Parameters<Handler<N>>
+) => {
+  if (broadcast) {
+    webContents.getAllWebContents().forEach((item) => {
+      item.send(`__IPC_MAIN_RENDER_EXEC_${channel}`, undefined, ...args);
+    });
+    return;
+  }
+
+  if(!window) return;
+
+  return new Promise<ReturnType<Handler<N>>>((resolve, reject) => {
+    const id = lodash.uniqueId('ipc-');
+    const listener = (_: any, { resolved, rejected }: any) => {
+      if (rejected) {
+        const error = new Error(rejected.message);
+        error.name = rejected.name;
+        error.stack = rejected.stack;
+        reject(error);
+
+        return;
+      }
+
+      resolve(resolved);
+    };
+
+    ipcMain.once(`__IPC_MAIN_RENDER_EXEC_${channel}@${id}`, listener);
+
+    window.webContents.send(`__IPC_MAIN_RENDER_EXEC_${channel}`, id, ...args);
+  });
+};
+
+const checkBrowserWindow = (obj: any) => {
+  if (!(obj instanceof BrowserWindow)) {
+    throw new Error(
+      'When called outside of the PorosBrowserWindow, it is necessary to specify the window',
+    );
+  }
+};
+{{{rendererInvokers.content}}}

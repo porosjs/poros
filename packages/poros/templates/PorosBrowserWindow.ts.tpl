@@ -1,5 +1,5 @@
 import { BrowserWindow, BrowserWindowConstructorOptions } from 'electron';
-import { isDev, localShortcut, port } from 'poros';
+import { isDev, localShortcut, port{{#ipcFile}}, rendererInvoker{{/ipcFile}}} from 'poros';
 
 export interface PorosBrowserWindowOptions extends BrowserWindowConstructorOptions {}
 
@@ -8,6 +8,10 @@ abstract class PorosBrowserWindow extends BrowserWindow {
    * 是否单例
    */
   static readonly single: boolean = true;
+
+  {{#ipcFile}}
+  rendererInvoker = { ...rendererInvoker };
+  {{/ipcFile}}
 
   constructor(url: string, { show = true, ...windowOptions }: PorosBrowserWindowOptions = {}) {
     const options = {
@@ -35,6 +39,13 @@ abstract class PorosBrowserWindow extends BrowserWindow {
 
     this.registerWindowEvent();
     this.registerDevtoolsShortcut();
+    {{#ipcFile}}
+
+    Object.keys(rendererInvoker).forEach((key) => {
+      // @ts-ignore
+      this.rendererInvoker[key] = this.rendererInvoker[key].bind(this);
+    })
+    {{/ipcFile}}
   }
 
   show() {

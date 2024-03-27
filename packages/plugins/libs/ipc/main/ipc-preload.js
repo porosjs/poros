@@ -12,9 +12,9 @@ try {
       try {
         const resolved = await handler(...args);
 
-        ipcRenderer.send(`${channel}@${id}`, { resolved });
+        id && ipcRenderer.send(`${channel}@${id}`, { resolved });
       } catch (error) {
-        ipcRenderer.send(`${channel}@${id}`, {
+        id && ipcRenderer.send(`${channel}@${id}`, {
           rejected: {
             name: error.name,
             message: error.message,

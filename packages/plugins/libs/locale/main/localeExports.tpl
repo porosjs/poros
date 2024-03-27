@@ -33,7 +33,7 @@ export const localeInfo: {[key: string]: any} = {
 export const initialize = () => {
   electronApi.setPreloadFileForSessions({ filePath: path.join(__dirname, 'preload/locale-preload.js') });
 
-  ipcMain.on('__Ipc_LANG_CHANGE', async (event, lang) => {
+  ipcMain.on('__IPC_LANG_CHANGE', async (event, lang) => {
     setLocale(lang)
   });
 };

@@ -4,6 +4,7 @@ import generator from '@umijs/bundler-utils/compiled/babel/generator';
 import * as parser from '@umijs/bundler-utils/compiled/babel/parser';
 import traverse from '@umijs/bundler-utils/compiled/babel/traverse';
 import * as types from '@umijs/bundler-utils/compiled/babel/types';
+import { camelCase } from '@umijs/utils/compiled/lodash';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
@@ -44,7 +45,7 @@ export class IpcUtils {
   }
 
   getRendererInvokers() {
-    if (!this.hasHandle) return [];
+    if (!this.hasHandle) return { import: '', content: '' };
 
     const opts = glob
       .sync('ipc.{ts,tsx}', {
@@ -59,12 +60,34 @@ export class IpcUtils {
 
     const channels = this.parseHandleChannels(opts);
 
-    console.log('================', channels);
+    let importStr = `import type IpcChannelToHandlerMap from '@/renderer/ipc';`;
+    let content = '';
 
-    let importStr = `import type IpcChannelToHandlerMap from '@/renderer/ipc'`;
-    let content = 'export const rendererInvoker = {';
+    for (const channel of channels) {
+      const parameters = channel.parameters.reduce((prev, curr, index) => `${prev ? `${prev}, ` : ''}${curr}: InvokerParameters<'${channel.key}'>[${index}]`, '');
+      content += `
+function ${camelCase(channel.key)}(${parameters}, opts: { broadcast: true }): void;
+function ${camelCase(channel.key)}(${parameters}, opts?: { window?: PorosBrowserWindow }): InvokerReturnType<'${channel.key}'>;
+function ${camelCase(channel.key)}(this: PorosBrowserWindow, ${parameters}, opts: any = { broadcast: false, window: this }): InvokerReturnType<'${channel.key}'> | void {
+  if (!opts.broadcast) {
+    checkBrowserWindow(this);
+  }
 
-    return '';
+  return electronInvoke('${channel.key}', opts.broadcast, opts.window, ${channel.parameters.join(', ')}) as any;
+}
+`;
+    }
+
+    content += `
+export const rendererInvoker = {`;
+    for (const channel of channels) {
+      content += `
+  ${camelCase(channel.key)},`;
+    }
+    content += `
+} as const;`;
+
+    return { import: importStr, content };
   }
 
   getMainInvokers() {
@@ -77,16 +100,14 @@ export class IpcUtils {
       content += `
   ${className}: {
     open(...args: ConstructorParameters<typeof ${className}>): Promise<number> {
-      return __invokeIpc('__Ipc_OPEN_WINDOW', '${className}', ...args);
+      return __invokeIpc('__IPC_OPEN_WINDOW', '${className}', ...args);
     },
 `;
 
       methods.forEach((methodName) => {
         const returnType = `${className}['${methodName}'] extends (...args: any[]) => Promise<infer R> ? R : ReturnType<${className}['${methodName}']>`;
-        content += `    ${methodName}(...args: Parameters<${className}['${methodName}']>): Promise<${
-          single ? returnType : `${returnType}[]`
-        }> {
-      return __invokeIpc('__Ipc_RENDER_MAIN_EXEC', '${className}.${methodName}', ...args);
+        content += `    ${methodName}(...args: Parameters<${className}['${methodName}']>): Promise<${single ? returnType : `${returnType}[]`}> {
+      return __invokeIpc('__IPC_RENDER_MAIN_EXEC', '${className}.${methodName}', ...args);
     },
 `;
       });
@@ -96,7 +117,7 @@ export class IpcUtils {
 
     content += `
   invoke(windowId: number, method: string, ...args: any[]): Promise<any> {
-    return __invokeIpc('__Ipc_RENDER_MAIN_EXEC', \`\${windowId}.\${method}\`, ...args);
+    return __invokeIpc('__IPC_RENDER_MAIN_EXEC', \`\${windowId}.\${method}\`, ...args);
   }
 } as const;`;
 
@@ -112,7 +133,7 @@ export class IpcUtils {
       plugins: ['typescript'],
     });
 
-    const keys: string[] = [];
+    const channels: { key: string; parameters: string[] }[] = [];
     ast.program.body.forEach((node) => {
       if (
         node.type === 'ExportDefaultDeclaration' &&
@@ -122,13 +143,16 @@ export class IpcUtils {
         // @ts-expect-error
         node.declaration.body.body.forEach((property) => {
           if (property.type === 'TSPropertySignature') {
-            keys.push(property.key.value);
+            channels.push({
+              key: property.key.value,
+              parameters: property.typeAnnotation.typeAnnotation.parameters.map((item: any) => item.name),
+            });
           }
         });
       }
     });
 
-    return keys;
+    return channels;
   }
 
   private isWindowValid(opts: { content: string; file: string }) {
@@ -183,12 +207,7 @@ export class IpcUtils {
         // 查找静态属性 single
         path.traverse({
           ClassProperty(innerPath) {
-            if (
-              innerPath.node.static &&
-              innerPath.node.key.type === 'Identifier' &&
-              innerPath.node.key.name === 'single' &&
-              innerPath.node.value
-            ) {
+            if (innerPath.node.static && innerPath.node.key.type === 'Identifier' && innerPath.node.key.name === 'single' && innerPath.node.value) {
               result.single = !!(innerPath.node.value as any).value;
             }
           },
@@ -207,9 +226,7 @@ export class IpcUtils {
     return result;
   }
 
-  private getDecorators(
-    decorators: types.Decorator[] | null | undefined,
-  ): string[] {
+  private getDecorators(decorators: types.Decorator[] | null | undefined): string[] {
     if (!decorators) {
       return [];
     }
@@ -217,10 +234,7 @@ export class IpcUtils {
     return decorators.map((decorator) => {
       if (types.isIdentifier(decorator.expression)) {
         return decorator.expression.name;
-      } else if (
-        types.isCallExpression(decorator.expression) &&
-        types.isIdentifier(decorator.expression.callee)
-      ) {
+      } else if (types.isCallExpression(decorator.expression) && types.isIdentifier(decorator.expression.callee)) {
         return decorator.expression.callee.name;
       } else {
         // 处理其他情况
