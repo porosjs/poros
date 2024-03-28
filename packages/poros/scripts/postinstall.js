@@ -34,16 +34,3 @@ const viteServerAnnotates = [110, 111, 112, 113];
 annotate(viteServerPath, viteServerAnnotates);
 console.log('@umijs/bundler-vite already patched');
 
-const electronLogVer = require('electron-log/package.json').version;
-if(electronLogVer === '5.0.0-rc.1'){
-  const electronLogRootPath = dirname(require.resolve('electron-log/package.json'));
-  const electronLogApiPath = join(electronLogRootPath,'./src/main/electronApi.js');
-  const electronLogApiAnnotates = [167, 168, 169, 175];
-  annotate(electronLogApiPath, electronLogApiAnnotates);
-  insert(electronLogApiPath, 176, "   return electron.ipcMain;")
-  console.log('electron-log already patched');
-} else {
-  console.warn('electron-log patch version mismatch')
-}
-
-

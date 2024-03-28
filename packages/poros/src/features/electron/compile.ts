@@ -10,23 +10,10 @@ import path from 'path';
 import yargs from 'yargs';
 import { PATHS, PLUGIN_DIR_NAME } from '../../constants';
 import externalPackagesConfig from './external-packages.config';
-import {
-  filterText,
-  getDevBanner,
-  getDevBuildPath,
-  getMainBuildPath,
-  getRendererBuildPath,
-  getRootPkg,
-  isRendererLog,
-  lazyImportFromCurrentPkg,
-  pathIncludes,
-  printMemoryUsage,
-} from './utils';
+import { filterText, getDevBanner, getDevBuildPath, getMainBuildPath, getRendererBuildPath, getRootPkg, isRendererLog, lazyImportFromCurrentPkg, pathIncludes, printMemoryUsage, splitLog } from './utils';
 
-const bundlerWebpack: typeof import('@porosjs/bundler-webpack') =
-  lazyImportFromCurrentPkg('@porosjs/bundler-webpack');
-const bundlerVite: typeof import('@porosjs/bundler-vite') =
-  lazyImportFromCurrentPkg('@porosjs/bundler-vite');
+const bundlerWebpack: typeof import('@porosjs/bundler-webpack') = lazyImportFromCurrentPkg('@porosjs/bundler-webpack');
+const bundlerVite: typeof import('@porosjs/bundler-vite') = lazyImportFromCurrentPkg('@porosjs/bundler-vite');
 
 const TIMEOUT = 500;
 
@@ -42,21 +29,14 @@ async function buildElectron(api: IApi) {
 
   //删除不需要的依赖
   Object.keys(buildPkg.dependencies).forEach((dependency) => {
-    if (
-      !externals[dependency] ||
-      !externalPackagesConfig.includes(dependency)
-    ) {
+    if (!externals[dependency] || !externalPackagesConfig.includes(dependency)) {
       delete buildPkg.dependencies[dependency];
     }
   });
 
   Object.keys(externals).forEach((external: string) => {
     if (!buildPkg.dependencies[external]) {
-      buildPkg.dependencies[external] = require(path.join(
-        api.paths.absNodeModulesPath,
-        external,
-        'package.json',
-      ))?.version;
+      buildPkg.dependencies[external] = require(path.join(api.paths.absNodeModulesPath, external, 'package.json'))?.version;
     }
   });
 
@@ -68,10 +48,7 @@ async function buildElectron(api: IApi) {
   // Prevent electron-builder from installing app deps
   fsExtra.ensureDirSync(`${absOutputPath}/node_modules`);
 
-  fsExtra.writeFileSync(
-    `${absOutputPath}/package.json`,
-    JSON.stringify(buildPkg, null, 2),
-  );
+  fsExtra.writeFileSync(`${absOutputPath}/package.json`, JSON.stringify(buildPkg, null, 2));
 
   const defaultBuildConfig = {
     directories: {
@@ -85,9 +62,7 @@ async function buildElectron(api: IApi) {
   // 打包electron
   logger.wait('[Electron] building...');
   const { configureBuildCommand } = require('electron-builder/out/builder');
-  const builderArgs = yargs
-    .command(['build', '*'], 'Build', configureBuildCommand)
-    .parse(process.argv);
+  const builderArgs = yargs.command(['build', '*'], 'Build', configureBuildCommand).parse(process.argv);
 
   await build(
     lodash.merge({
@@ -103,8 +78,7 @@ async function buildElectron(api: IApi) {
 async function buildMain(api: IApi) {
   const enableVite = !!api.config.vite;
 
-  const outputPath =
-    api.env === Env.development ? getDevBuildPath(api) : getMainBuildPath(api);
+  const outputPath = api.env === Env.development ? getDevBuildPath(api) : getMainBuildPath(api);
 
   const external: any[] = [...externalPackagesConfig, api.config.externals];
 
@@ -153,9 +127,7 @@ async function buildMain(api: IApi) {
     cwd: process.cwd(),
     rootDir: PATHS.MAIN_SRC,
     entry: { main: PATHS.MAIN_INDEX },
-    ...(enableVite
-      ? { modifyViteConfig }
-      : { chainWebpack, modifyWebpackConfig }),
+    ...(enableVite ? { modifyViteConfig } : { chainWebpack, modifyWebpackConfig }),
     ...(api.env === Env.production && {
       onBuildComplete() {
         printMemoryUsage('Main');
@@ -176,10 +148,7 @@ async function buildMain(api: IApi) {
 async function buildPreload(api: IApi) {
   const enableVite = !!api.config.vite;
 
-  const outputPath = path.join(
-    api.env === Env.development ? getDevBuildPath(api) : getMainBuildPath(api),
-    'preload',
-  );
+  const outputPath = path.join(api.env === Env.development ? getDevBuildPath(api) : getMainBuildPath(api), 'preload');
 
   const external: any[] = [...externalPackagesConfig, api.config.externals];
 
@@ -234,9 +203,7 @@ async function buildPreload(api: IApi) {
       cwd: process.cwd(),
       rootDir: PATHS.PRELOAD_SRC,
       entry,
-      ...(enableVite
-        ? { modifyViteConfig }
-        : { chainWebpack, modifyWebpackConfig }),
+      ...(enableVite ? { modifyViteConfig } : { chainWebpack, modifyWebpackConfig }),
       ...(api.env === Env.production && {
         onBuildComplete() {
           printMemoryUsage('Preload');
@@ -257,10 +224,7 @@ async function buildPreload(api: IApi) {
 
 export const runDev = async (api: IApi) => {
   let spawnProcess: ChildProcessWithoutNullStreams | null = null;
-  const electronPath = require(path.join(
-    process.cwd(),
-    'node_modules/electron',
-  ));
+  const electronPath = require(path.join(process.cwd(), 'node_modules/electron'));
 
   await buildPreload(api);
   await buildMain(api);
@@ -272,19 +236,17 @@ export const runDev = async (api: IApi) => {
       spawnProcess = null;
     }
 
-    spawnProcess = spawn(electronPath, [
-      path.join(getDevBuildPath(api), 'main.js'),
-    ]);
+    spawnProcess = spawn(electronPath, [path.join(getDevBuildPath(api), 'main.js')]);
     spawnProcess.stdout.on('data', (data) => {
       const log = filterText(data.toString());
       if (log) {
-        logger.info(`[${isRendererLog(log) ? 'Renderer' : 'Main'}] ${log}`);
+        splitLog(log).forEach((item) => logger.info(`[${isRendererLog(item) ? 'Renderer' : 'Main'}] ${item}`));
       }
     });
     spawnProcess.stderr.on('data', (data) => {
       const log = filterText(data.toString());
       if (log) {
-        logger.error(`[${isRendererLog(log) ? 'Renderer' : 'Main'}] ${log}`);
+        splitLog(log).forEach((item) => logger.error(`[${isRendererLog(item) ? 'Renderer' : 'Main'}] ${item}`));
       }
     });
     spawnProcess.on('close', (_, signal) => {
@@ -306,22 +268,12 @@ export const runDev = async (api: IApi) => {
   const buildPreloadDebounced = debounce(() => buildPreload(api), TIMEOUT);
   const buildMainDebounced = debounce(() => buildMain(api), TIMEOUT);
 
-  const watcher = chokidar.watch(
-    [
-      path.join(PATHS.MAIN_SRC, '**'),
-      path.join(PATHS.PRELOAD_SRC, '**'),
-      path.join(getDevBuildPath(api), '**'),
-    ],
-    {
-      ignoreInitial: true,
-    },
-  );
+  const watcher = chokidar.watch([path.join(PATHS.MAIN_SRC, '**'), path.join(PATHS.PRELOAD_SRC, '**'), path.join(getDevBuildPath(api), '**')], {
+    ignoreInitial: true,
+  });
   watcher
     .on('unlink', (currentPath) => {
-      if (
-        spawnProcess !== null &&
-        pathIncludes(currentPath, getDevBuildPath(api))
-      ) {
+      if (spawnProcess !== null && pathIncludes(currentPath, getDevBuildPath(api))) {
         spawnProcess.kill('SIGINT');
         spawnProcess = null;
       }

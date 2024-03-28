@@ -4,8 +4,11 @@ import {
 } from '{{{IntlPkgPath}}}';
 import localStore from '../../plugin-electron/localStore';
 import { app, dialog, ipcMain } from 'electron';
-import electronApi from '{{{ElectronLogPath}}}/src/main/electronApi';
+import ElectronExternalApi from '{{{ElectronLogPath}}}/src/main/ElectronExternalApi';
 import path from 'path';
+
+const electron = require('electron');
+const externalApi = new ElectronExternalApi({ electron });
 
 export {
   createIntl,
@@ -31,7 +34,7 @@ export const localeInfo: {[key: string]: any} = {
 };
 
 export const initialize = () => {
-  electronApi.setPreloadFileForSessions({ filePath: path.join(__dirname, 'preload/locale-preload.js') });
+  externalApi.setPreloadFileForSessions({ filePath: path.join(__dirname, 'preload/locale-preload.js') });
 
   ipcMain.on('__IPC_LANG_CHANGE', async (event, lang) => {
     setLocale(lang)

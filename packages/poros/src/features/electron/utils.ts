@@ -1,12 +1,5 @@
 import { IApi } from '@porosjs/umi';
-import {
-  chalk,
-  fsExtra,
-  importLazy,
-  logger,
-  stripAnsi,
-  winPath,
-} from '@umijs/utils';
+import { chalk, fsExtra, importLazy, logger, stripAnsi, winPath } from '@umijs/utils';
 import path, { dirname } from 'path';
 import { PLUGIN_DIR_NAME } from '../../constants';
 
@@ -62,27 +55,16 @@ export function filterText(s: string) {
     .filter((it) => {
       // https://github.com/electron/electron/issues/4420
       // this warning can be safely ignored
-      if (
-        it.includes("Couldn't set selectedTextBackgroundColor from default ()")
-      ) {
+      if (it.includes("Couldn't set selectedTextBackgroundColor from default ()")) {
         return false;
       }
-      if (
-        it.includes("Use NSWindow's -titlebarAppearsTransparent=YES instead.")
-      ) {
+      if (it.includes("Use NSWindow's -titlebarAppearsTransparent=YES instead.")) {
         return false;
       }
       if (it.includes('Debugger listening on')) {
         return false;
       }
-      return (
-        !it.includes(
-          'Warning: This is an experimental feature and could change at any time.',
-        ) &&
-        !it.includes('No type errors found') &&
-        !it.includes('webpack: Compiled successfully.') &&
-        it !== 'undefined'
-      );
+      return !it.includes('Warning: This is an experimental feature and could change at any time.') && !it.includes('No type errors found') && !it.includes('webpack: Compiled successfully.') && it !== 'undefined';
     });
   if (!lines || lines.length === 0) {
     return null;
@@ -93,11 +75,7 @@ export function filterText(s: string) {
 export function printMemoryUsage(type: string) {
   const used = process.memoryUsage().heapUsed / 1024 / 1024;
   const rss = process.memoryUsage().rss / 1024 / 1024;
-  logger.info(
-    `[${type}] Memory Usage: ${Math.round(used * 100) / 100} MB (RSS: ${
-      Math.round(rss * 100) / 100
-    } MB)`,
-  );
+  logger.info(`[${type}] Memory Usage: ${Math.round(used * 100) / 100} MB (RSS: ${Math.round(rss * 100) / 100} MB)`);
 }
 
 const BORDERS = {
@@ -115,19 +93,9 @@ export function getDevBanner(offset = 8) {
   const maxLen = stripAnsi(content).length;
 
   // prepare all output lines
-  const beforeLines = [
-    `${BORDERS.TL}${chalk.gray.dim(''.padStart(maxLen, BORDERS.H_PURE))}${
-      BORDERS.TR
-    }`,
-  ];
-  const mainLine = `${BORDERS.V}${content}${''.padStart(
-    maxLen - stripAnsi(content).length,
-  )}${BORDERS.V}`;
-  const afterLines = [
-    `${BORDERS.BL}${chalk.gray.dim(''.padStart(maxLen, BORDERS.H_PURE))}${
-      BORDERS.BR
-    }`,
-  ];
+  const beforeLines = [`${BORDERS.TL}${chalk.gray.dim(''.padStart(maxLen, BORDERS.H_PURE))}${BORDERS.TR}`];
+  const mainLine = `${BORDERS.V}${content}${''.padStart(maxLen - stripAnsi(content).length)}${BORDERS.V}`;
+  const afterLines = [`${BORDERS.BL}${chalk.gray.dim(''.padStart(maxLen, BORDERS.H_PURE))}${BORDERS.BR}`];
 
   // join lines as 3 parts for vertical middle output with logger
   return {
@@ -144,6 +112,17 @@ export function getDevBanner(offset = 8) {
  */
 export function isRendererLog(content: string) {
   return /\(#\/.*\)/.test(content);
+}
+
+/**
+ * 多次连续的输出会让log合并，需要做出切分
+ * @param content
+ * @returns
+ */
+export function splitLog(content: string) {
+  const regex = /(\d{2}:\d{2}:\d{2}\.\d{3}\s+[\s\S]*?›[\s\S]*?)(?=\d{2}:\d{2}:\d{2}\.\d{3}|$)/g;
+  const matches = Array.from(content.matchAll(regex), (m) => m[0].trim().replace(/\s+›/, ' ›'));
+  return matches;
 }
 
 export function pathIncludes(path: string, targetPath: string) {

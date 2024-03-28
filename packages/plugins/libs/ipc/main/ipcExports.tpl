@@ -1,10 +1,13 @@
 import { BrowserWindow, ipcMain, webContents } from 'electron';
 import path from 'path';
-import electronApi from '{{{electronLogPath}}}/src/main/electronApi';
+import ElectronExternalApi from '{{{electronLogPath}}}/src/main/ElectronExternalApi';
 import lodash from '{{{lodashPath}}}';
 import PorosBrowserWindow from '../../plugin-electron/PorosBrowserWindow';
 import PorosWindowManager from '../../plugin-electron/PorosWindowManager';
 {{{rendererInvokers.import}}}
+
+const electron = require('electron');
+const externalApi = new ElectronExternalApi({ electron });
 
 export function IpcHandle(
   target: PorosBrowserWindow,
@@ -22,7 +25,7 @@ export function IpcHandle(
 }
 
 export function initialize() {
-  electronApi.setPreloadFileForSessions({
+  externalApi.setPreloadFileForSessions({
     filePath: path.join(__dirname, 'preload/ipc-preload.js'),
   });
 

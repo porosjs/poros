@@ -1,5 +1,5 @@
 // @ts-nocheck
-import logger from '{{{electronLogPath}}}';
+import logger from '{{{electronLogPath}}}/main';
 
 {{#electronLogOptions}}
 function setProps(obj: any, logObj: any) {
