@@ -15,7 +15,7 @@ import { filterText, getDevBanner, getDevBuildPath, getMainBuildPath, getRendere
 const bundlerWebpack: typeof import('@porosjs/bundler-webpack') = lazyImportFromCurrentPkg('@porosjs/bundler-webpack');
 const bundlerVite: typeof import('@porosjs/bundler-vite') = lazyImportFromCurrentPkg('@porosjs/bundler-vite');
 
-const TIMEOUT = 500;
+const WAIT_TIME = 1000;
 
 async function buildElectron(api: IApi) {
   const { builder, externals } = api.config;
@@ -98,7 +98,7 @@ async function buildMain(api: IApi) {
       ]);
     }
 
-    config.plugins.delete('fastRefresh');
+    config.plugins.delete('node-polyfill-provider');
     config.plugins.delete('mini-css-extract-plugin');
 
     return config;
@@ -230,7 +230,7 @@ export const runDev = async (api: IApi) => {
   await buildMain(api);
 
   let first = true;
-  const runMainDebounce = debounce(() => {
+  const runMain = () => {
     if (spawnProcess !== null) {
       spawnProcess.kill('SIGKILL');
       spawnProcess = null;
@@ -263,10 +263,10 @@ export const runDev = async (api: IApi) => {
       console.log(banner.after);
     }
     first = false;
-  }, TIMEOUT);
-
-  const buildPreloadDebounced = debounce(() => buildPreload(api), TIMEOUT);
-  const buildMainDebounced = debounce(() => buildMain(api), TIMEOUT);
+  };
+  const runMainDebounce = debounce(() => runMain(), WAIT_TIME);
+  const buildPreloadDebounced = debounce(() => buildPreload(api), WAIT_TIME);
+  const buildMainDebounced = debounce(() => buildMain(api), WAIT_TIME);
 
   const watcher = chokidar.watch([path.join(PATHS.MAIN_SRC, '**'), path.join(PATHS.PRELOAD_SRC, '**'), path.join(getDevBuildPath(api), '**')], {
     ignoreInitial: true,
@@ -297,7 +297,7 @@ export const runDev = async (api: IApi) => {
       }
     });
 
-  runMainDebounce();
+  runMain();
 };
 
 export const runBuild = async (api: IApi) => {
