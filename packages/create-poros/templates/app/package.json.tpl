@@ -16,18 +16,23 @@
     "start": "poros dev"
   },
   "dependencies": {
+    "@ant-design/icons": "^5.3.5",
+    "@ant-design/plots": "^2.1.15",
     "antd": "^5.10.0",
+    "lodash-es": "^4.17.21",
     "poros": "{{{ version }}}",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "systeminformation": "^5.22.6"
   },
   "devDependencies": {
     "@electron/notarize": "^2.1.0",
+    "@types/lodash-es": "^4.17.12",
     "@types/node": "^17.0.13",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
-    "electron": "^26.2.2",
-    "electron-builder": "^24.6.4",
+    "electron": "^29.1.6",
+    "electron-builder": "^24.13.3",
     "electron-devtools-installer": "^3.2.0",{{#withHusky}}
     "husky": "^8.0.1",{{/withHusky}}
     "lint-staged": "^13.0.3",

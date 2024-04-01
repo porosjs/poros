@@ -264,38 +264,29 @@ export const runDev = async (api: IApi) => {
     }
     first = false;
   };
-  const runMainDebounce = debounce(() => runMain(), WAIT_TIME);
-  const buildPreloadDebounced = debounce(() => buildPreload(api), WAIT_TIME);
-  const buildMainDebounced = debounce(() => buildMain(api), WAIT_TIME);
 
-  const watcher = chokidar.watch([path.join(PATHS.MAIN_SRC, '**'), path.join(PATHS.PRELOAD_SRC, '**'), path.join(getDevBuildPath(api), '**')], {
+  const rerunMain = debounce(async () => {
+    await buildMain(api);
+    await runMain();
+  }, WAIT_TIME);
+
+  const rerunPreload = debounce(async () => {
+    await buildPreload(api);
+    await runMain();
+  }, WAIT_TIME);
+
+  const watcher = chokidar.watch([path.join(PATHS.MAIN_SRC, '**'), path.join(PATHS.PRELOAD_SRC, '**')], {
     ignoreInitial: true,
   });
-  watcher
-    .on('unlink', (currentPath) => {
-      if (spawnProcess !== null && pathIncludes(currentPath, getDevBuildPath(api))) {
-        spawnProcess.kill('SIGINT');
-        spawnProcess = null;
-      }
-    })
-    .on('add', (currentPath) => {
-      if (pathIncludes(currentPath, getDevBuildPath(api))) {
-        return runMainDebounce();
-      }
-    })
-    .on('change', (currentPath) => {
-      if (pathIncludes(currentPath, PATHS.MAIN_SRC)) {
-        return buildMainDebounced();
-      }
+  watcher.on('change', (currentPath) => {
+    if (pathIncludes(currentPath, PATHS.MAIN_SRC)) {
+      return rerunMain();
+    }
 
-      if (pathIncludes(currentPath, PATHS.PRELOAD_SRC)) {
-        return buildPreloadDebounced();
-      }
-
-      if (pathIncludes(currentPath, getDevBuildPath(api))) {
-        return runMainDebounce();
-      }
-    });
+    if (pathIncludes(currentPath, PATHS.PRELOAD_SRC)) {
+      return rerunPreload();
+    }
+  });
 
   runMain();
 };

@@ -1,22 +1,32 @@
 import { defineConfig } from 'poros';
-import builder from './builder';
-import routes from './routes';
-import logger from './logger';
+import builder from './builder.ts.tpl';
+import routes from './routes.ts.tpl';
 
 export default defineConfig({
-  npmClient: '{{{npmClient}}}',
+  npmClient: 'pnpm',
   model: {},
   antd: {},
   locale: {},
   routes,
-  logger,
+  logger: {
+    transports: {
+      file: {
+        level: 'warn',
+        format: '[{y}-{m}-{d} {h}:{i}:{s}.{ms}] [{level}]{scope} {text}',
+        maxSize: 1048576,
+      },
+      console: {
+        level: 'debug',
+      },
+    },
+  },
   localStore: {
     schema: {
       unicorn: {
         type: 'string',
         default: '🦄',
       },
-    }
+    },
   },
   builder,
 });

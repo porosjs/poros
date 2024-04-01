@@ -8,4 +8,9 @@
     path: '/home',
     component: '@/renderer/pages/Home',
   },
+  {
+    name: '关于',
+    path: '/about',
+    component: '@/renderer/pages/About',
+  },
 ];

@@ -1,42 +1,50 @@
-import { BrowserWindow, app } from 'electron';
-import path from 'path';
-import { i18n, initialize, isDev, logger, port } from 'poros';
+import { app } from 'electron';
+import {
+  PorosWindowManager,
+  initialize,
+  isDev,
+  isMacOS,
+  isWindows,
+} from 'poros';
+import MainWindow from './windows/MainWindow.ts.tpl';
 
 export default class PorosApplication {
-  mainWindow?: BrowserWindow;
+  async initialize() {
+    initialize();
 
-  createWindow() {
-    this.mainWindow = new BrowserWindow({
-      width: 800,
-      height: 600,
-      webPreferences: {
-        contextIsolation: true,
-        preload: path.join(__dirname, 'preload/index.js'),
-      },
-    });
-    if (isDev) {
-      this.mainWindow.loadURL(`http://localhost:${port}/#/home`);
-    } else {
-      this.mainWindow.loadURL('app://./index.html/#/home');
-    }
-  }
-
-  async initElectronAppObject() {
     await app.whenReady();
 
-    this.createWindow();
+    PorosWindowManager.create(MainWindow);
 
     app.setAppUserModelId(app.name);
 
-    logger.info(i18n('hello.poros'));
+    this.registerEvent();
+  }
 
-    app.on('before-quit', () => {
-      app.exit(0);
+  registerEvent() {
+    if (isDev) {
+      if (isWindows) {
+        process.on('message', (data) => {
+          if (data === 'graceful-exit') {
+            app.quit();
+          }
+        });
+      } else {
+        process.on('SIGTERM', () => {
+          app.quit();
+        });
+      }
+    }
+
+    app.on('window-all-closed', () => {
+      if (!isMacOS) {
+        app.quit();
+      }
     });
 
-    app.on('second-instance', () => {});
-
-    app.addListener('activate', () => {});
+    app.on('activate', () => {
+      PorosWindowManager.get(MainWindow)?.show();
+    });
   }
 
   async start() {
@@ -46,9 +54,7 @@ export default class PorosApplication {
       app.exit();
     }
 
-    initialize();
-
-    await this.initElectronAppObject();
+    await this.initialize();
   }
 }
 
