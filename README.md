@@ -6,6 +6,8 @@
 
 基于 Umi 的 Electron React 框架
 
+> 您可以快速构建一个 Electron 项目，可以开发、打包、升级等，它具备 Umi 的所有功能。它还集成了常用的 electron 库，比如：electron-log、electron-store... 未来还将集成更多功能。
+
 ## 快速上手
 
 ### 创建项目
@@ -30,25 +32,16 @@ yarn create poros
 执行`pnpm start`命令
 
 ```bash
-pnpm start
+        ╔═══════════════════════════════╗
+ready - ║  Electron app launch success  ║
+        ╚═══════════════════════════════╝
+event - [Webpack] Compiled in 19830 ms (4955 modules)
+info  - [MFSU][eager] write cache
+info  - [MFSU] buildDepsAgain
+info  - [MFSU] skip buildDeps
 ```
 
-## Features
-
-You can quickly build an Electron project, and you can develop, package, upgrade, etc. it has all the features of Umi. It also integrates commonly used electron libraries, such as: electron-log, electron-store...
-More features will be integrated in the future.
-
-### preset plugins
-- initial-state
-- access
-- model
-- react-query
-- antd
-- locale
-
-> You can use umi plugins directly. If you have any problems, please contact me.
-
-## Folder Structure
+## 目录结构
 
 ```
 ├── config
@@ -72,17 +65,36 @@ More features will be integrated in the future.
 │   │   ├── assets
 │   │   ├── models
 │   │   ├── pages
-│   │   └── utils
-│   └── app.ts                          // global setting, same as umi
+│   │   ├── utils 
+│   │   └── app.ts                      // global setting, same as umi
 ├── package.json
 ├── pnpm-lock.yaml
 ├── tsconfig.json
 └── typings.d.ts
 ```
 
+## 插件
+
+### local
+
+### ipc
+
+### qiankun
+
+> 您也可以直接使用 Umi 插件。如果您遇到任何问题，请联系我。
+
+## 预设插件
+- initial-state
+- access
+- model
+- react-query
+- antd
+- locale
+- ipc           // 用于扩展主、渲进程通信
+
 ## API
 
-> import { something} from 'poros';
+> import { something } from 'poros';
 
 ### Main Process
 
