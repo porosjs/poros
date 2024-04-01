@@ -4,17 +4,30 @@
 
 <img src="./logo.png" width="120">
 
-An electron react framework based on Umi.
+基于 Umi 的 Electron React 框架
 
-## Getting Started
+## 快速上手
 
-### Create Poros App
+### 创建项目
+
+先找个地方建个空目录。
 
 ```bash
-pnpm create poros
+$ mkdir myapp && cd myapp
 ```
 
-### Launch Poros App
+```bash
+# pnpm 推荐
+pnpm create poros
+# npm
+npx create-poros@latest
+# yarn
+yarn create poros
+```
+
+### 启动项目
+
+执行`pnpm start`命令
 
 ```bash
 pnpm start
