@@ -1,7 +1,5 @@
 import { ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons';
-import TinyArea, {
-  TinyAreaConfig,
-} from '@ant-design/plots/es/components/tiny/area';
+import TinyArea, { TinyAreaConfig } from '@ant-design/plots/es/components/tiny/area';
 import { range } from 'lodash-es';
 import { useIpc } from 'poros';
 import { useState } from 'react';
@@ -58,9 +56,7 @@ let time = 59;
  * 演示主进程与渲染进程通信
  */
 const Chart = () => {
-  const [data, setData] = useState<
-    { time: number; received: number; transferred: number }[]
-  >(() => range(60).map((i) => ({ time: i, received: 0, transferred: 0 })));
+  const [data, setData] = useState<{ time: number; received: number; transferred: number }[]>(() => range(60).map((i) => ({ time: i, received: 0, transferred: 0 })));
 
   useIpc('network-monitor', (received, transferred) => {
     time++;
@@ -95,9 +91,7 @@ const Chart = () => {
             }}
           ></div>
           <ArrowUpOutlined style={{ color: 'rgba(0, 0, 0, 0.45)' }} />
-          <div style={{ fontSize: 12, marginLeft: 'auto' }}>
-            {data[data.length - 1].transferred.toFixed(2)} KB/s
-          </div>
+          <div style={{ fontSize: 12, marginLeft: 'auto' }}>{data[data.length - 1].transferred.toFixed(2)} KB/s</div>
         </div>
         <div style={{ display: 'flex', gap: 2, alignItems: 'center', flex: 1 }}>
           <div
@@ -110,9 +104,7 @@ const Chart = () => {
             }}
           ></div>
           <ArrowDownOutlined style={{ color: 'rgba(0, 0, 0, 0.45)' }} />
-          <div style={{ fontSize: 12, marginLeft: 'auto' }}>
-            {-data[data.length - 1].received.toFixed(2)} KB/s
-          </div>
+          <div style={{ fontSize: 12, marginLeft: 'auto' }}>{-data[data.length - 1].received.toFixed(2)} KB/s</div>
         </div>
       </div>
     </div>

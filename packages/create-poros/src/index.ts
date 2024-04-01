@@ -1,16 +1,4 @@
-import {
-  BaseGenerator,
-  chalk,
-  clackPrompts,
-  execa,
-  fsExtra,
-  getGitInfo,
-  installWithNpmClient,
-  logger,
-  pkgUp,
-  tryPaths,
-  yParser,
-} from '@umijs/utils';
+import { BaseGenerator, chalk, clackPrompts, execa, fsExtra, getGitInfo, installWithNpmClient, logger, pkgUp, tryPaths, yParser } from '@umijs/utils';
 import { existsSync } from 'fs';
 import { dirname, join } from 'path';
 
@@ -87,11 +75,7 @@ interface IGeneratorOpts {
   defaultData?: IDefaultData;
 }
 
-export default async ({
-  cwd,
-  args,
-  defaultData = DEFAULT_DATA,
-}: IGeneratorOpts) => {
+export default async ({ cwd, args, defaultData = DEFAULT_DATA }: IGeneratorOpts) => {
   let [name] = args._;
   let npmClient = ENpmClient.pnpm;
   let registry = ERegistry.npm;
@@ -128,8 +112,6 @@ export default async ({
       message: 'Pick Npm Client',
       options: [
         { label: ENpmClient.npm, value: ENpmClient.npm },
-        { label: ENpmClient.cnpm, value: ENpmClient.cnpm },
-        { label: ENpmClient.tnpm, value: ENpmClient.tnpm },
         { label: ENpmClient.yarn, value: ENpmClient.yarn },
         { label: ENpmClient.pnpm, value: ENpmClient.pnpm, hint: 'recommended' },
       ],
@@ -150,7 +132,7 @@ export default async ({
           hint: 'recommended for China',
         },
       ],
-      initialValue: ERegistry.npm,
+      initialValue: ERegistry.taobao,
     })) as ERegistry;
   };
   const isPlugin = appTemplate === ETemplate.plugin;
@@ -239,10 +221,7 @@ export default async ({
             extraNpmrc: isPnpm ? pnpmExtraNpmrc : '',
             pluginName,
             name: name ?? 'demo',
-            electronMirror:
-              !isPlugin && registry === ERegistry.taobao
-                ? TAOBAO_ELECTRON_MIRROR
-                : '',
+            electronMirror: !isPlugin && registry === ERegistry.taobao ? TAOBAO_ELECTRON_MIRROR : '',
           } satisfies ITemplateParams),
     });
     await generator.run();
@@ -280,21 +259,14 @@ export default async ({
   }
 };
 
-async function detectMonorepoRoot(opts: {
-  target: string;
-}): Promise<string | null> {
+async function detectMonorepoRoot(opts: { target: string }): Promise<string | null> {
   const { target } = opts;
   const rootPkg = await pkgUp.pkgUp({ cwd: dirname(target) });
   if (!rootPkg) {
     return null;
   }
   const rootDir = dirname(rootPkg);
-  if (
-    tryPaths([
-      join(rootDir, 'lerna.json'),
-      join(rootDir, 'pnpm-workspace.yaml'),
-    ])
-  ) {
+  if (tryPaths([join(rootDir, 'lerna.json'), join(rootDir, 'pnpm-workspace.yaml')])) {
     return rootDir;
   }
   return null;
