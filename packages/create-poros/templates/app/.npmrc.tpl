@@ -1,3 +1,3 @@
-registry=https://registry.npmmirror.com/
-electron_mirror=https://npmmirror.com/mirrors/electron/
-
+registry={{{ registry }}}
+{{#electronMirror}}electron_mirror={{{electronMirror}}}{{/electronMirror}}
+{{{ extraNpmrc }}}
