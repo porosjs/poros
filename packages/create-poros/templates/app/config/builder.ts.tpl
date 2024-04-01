@@ -32,7 +32,7 @@ export default {
   },
   win: {
     target: ['nsis'],
-    icon: 'resources/logo.png',
+    icon: 'resources/icon.png',
     publisherName: 'poros',
     verifyUpdateCodeSignature: false,
   },
@@ -53,11 +53,11 @@ export default {
   },
   linux: {
     target: ['AppImage'],
-    icon: 'resources/logo.png',
+    icon: 'resources/icon.png',
     category: 'GNOME;GTK;Network;InstantMessaging',
     desktop: {
       StartupWMClass: 'Poros',
-      MimeType: 'x-scheme-handler/metis',
+      MimeType: 'x-scheme-handler/poros',
     },
   },
 };
