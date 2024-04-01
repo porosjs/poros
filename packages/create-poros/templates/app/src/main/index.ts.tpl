@@ -6,7 +6,7 @@ import {
   isMacOS,
   isWindows,
 } from 'poros';
-import MainWindow from './windows/MainWindow.ts.tpl';
+import MainWindow from './windows/MainWindow';
 
 export default class PorosApplication {
   async initialize() {

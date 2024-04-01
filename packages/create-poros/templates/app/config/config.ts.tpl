@@ -1,6 +1,6 @@
 import { defineConfig } from 'poros';
-import builder from './builder.ts.tpl';
-import routes from './routes.ts.tpl';
+import builder from './builder';
+import routes from './routes';
 
 export default defineConfig({
   npmClient: 'pnpm',
