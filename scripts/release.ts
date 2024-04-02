@@ -1,5 +1,4 @@
 import { logger } from '@umijs/utils';
-import { existsSync } from 'fs';
 import getGitRepoInfo from 'git-repo-info';
 import { join } from 'path';
 import rimraf from 'rimraf';
@@ -27,10 +26,7 @@ import { assert, eachPkg, getPkgs } from './.internal/utils';
   // check npm registry
   logger.event('check npm registry');
   const registry = (await $`npm config get registry`).stdout.trim();
-  assert(
-    registry === 'https://registry.npmjs.org/',
-    'npm registry is not https://registry.npmjs.org/',
-  );
+  assert(registry === 'https://registry.npmjs.org/', 'npm registry is not https://registry.npmjs.org/');
 
   // clean
   logger.event('clean');
@@ -47,33 +43,29 @@ import { assert, eachPkg, getPkgs } from './.internal/utils';
   // logger.event('bump version');
   const version = require(PATHS.ROOT_CONFIG).version;
   let tag = 'latest';
-  if (
-    version.includes('-alpha.') ||
-    version.includes('-beta.') ||
-    version.includes('-rc.')
-  ) {
+  if (version.includes('-alpha.') || version.includes('-beta.') || version.includes('-rc.')) {
     tag = 'next';
   }
   if (version.includes('-canary.')) tag = 'canary';
 
   // update example versions
-  logger.event('update example versions');
-  const examplesDir = PATHS.EXAMPLES;
-  const examples = fs.readdirSync(examplesDir).filter((dir) => {
-    return (
-      !dir.startsWith('.') && existsSync(join(examplesDir, dir, 'package.json'))
-    );
-  });
-  examples.forEach((example) => {
-    const pkg = require(join(examplesDir, example, 'package.json'));
-    pkg.scripts ||= {};
-    pkg.scripts['start'] = 'npm run dev';
-    delete pkg.version;
-    fs.writeFileSync(
-      join(examplesDir, example, 'package.json'),
-      `${JSON.stringify(pkg, null, 2)}\n`,
-    );
-  });
+  // logger.event('update example versions');
+  // const examplesDir = PATHS.EXAMPLES;
+  // const examples = fs.readdirSync(examplesDir).filter((dir) => {
+  //   return (
+  //     !dir.startsWith('.') && existsSync(join(examplesDir, dir, 'package.json'))
+  //   );
+  // });
+  // examples.forEach((example) => {
+  //   const pkg = require(join(examplesDir, example, 'package.json'));
+  //   pkg.scripts ||= {};
+  //   pkg.scripts['start'] = 'npm run dev';
+  //   delete pkg.version;
+  //   fs.writeFileSync(
+  //     join(examplesDir, example, 'package.json'),
+  //     `${JSON.stringify(pkg, null, 2)}\n`,
+  //   );
+  // });
 
   // update pnpm lockfile
   // logger.event('update pnpm lockfile');
@@ -102,9 +94,7 @@ import { assert, eachPkg, getPkgs } from './.internal/utils';
 
   // check 2fa config
   let otpArg: string[] = [];
-  if (
-    (await $`npm profile get "two-factor auth"`).toString().includes('writes')
-  ) {
+  if ((await $`npm profile get "two-factor auth"`).toString().includes('writes')) {
     let code = '';
     do {
       // get otp from user
