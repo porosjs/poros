@@ -45,28 +45,28 @@ info  - [MFSU] skip buildDeps
 
 ```
 ├── config
-│   ├── builder.ts                      // electron-builder config
-│   ├── config.ts                       // umi config
-│   ├── logger.ts                       // electron-log config
-│   └── routes.ts                       // umi routes config
+│   ├── builder.ts                      // electron-builder 配置
+│   ├── config.ts                       // umi 配置
+│   └── routes.ts                       // umi routes 配置
 ├── mock                                
 │   └── demo.ts
 ├── src
 │   ├── constants
 │   │   └── index.ts
-│   ├── locales                         // locale dir
+│   ├── locales                         // 国际化目录,开启国际化插件有效
 │   │   ├── en-US.ts
 │   │   └── zh-CN.ts
-│   ├── main                            // main process dir
+│   ├── main                            // 主进程目录
 │   │   └── index.ts
-│   ├── preload                         // preload dir
+│   ├── preload                         // preload 目录
 │   │   └── index.ts
-│   ├── renderer                        // renderer process dir, same as umi
+│   ├── renderer                        // 渲染进程目录，同umi
 │   │   ├── assets
 │   │   ├── models
 │   │   ├── pages
 │   │   ├── utils 
-│   │   └── app.ts                      // global setting, same as umi
+│   │   ├── ipc.ts                      // 渲染进程与主进程ipc通信定义文件，开启ipc插件有效
+│   │   └── app.ts         
 ├── package.json
 ├── pnpm-lock.yaml
 ├── tsconfig.json
@@ -77,7 +77,21 @@ info  - [MFSU] skip buildDeps
 
 ### local
 
+与umi local插件功能基本相同，开启方法一致，主进程与渲染进程中使用方法相同。
+
+```typescript
+import { localeInfo, getIntl, setIntl, getLocale, setLocale, getAllLocales, i18n } from 'poros';
+
+i18n('button.ok');
+```
+
 ### ipc
+
+简化主进程与渲染进程之间的通信
+
+#### 渲染进程调用主进程
+
+#### 主进程调用渲染进程
 
 ### qiankun
 
@@ -90,13 +104,18 @@ info  - [MFSU] skip buildDeps
 - react-query
 - antd
 - locale
-- ipc           // 用于扩展主、渲进程通信
+- ipc
 
 ## API
 
 > import { something } from 'poros';
 
 ### Main Process
+
+| 参数   |  说明 |
+|--------|------|
+| initialize | 初始化方法，需要在electron初始化时调用 |
+
 
 ```typescript
 /**
@@ -182,12 +201,6 @@ import { localStore } from 'poros';
 localStore.set('unicorn', 'xxx');
 localStore.get('unicorn');
 
-/**
- * i18n
- * enable with locale plugin
- * The program will restart after switching languages
- */
-import { localeInfo, getIntl, setIntl, getLocale, setLocale, getAllLocales, i18n } from 'poros';
 ```
 
 
