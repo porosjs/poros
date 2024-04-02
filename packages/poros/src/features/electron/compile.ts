@@ -10,7 +10,7 @@ import path from 'path';
 import yargs from 'yargs';
 import { PATHS, PLUGIN_DIR_NAME } from '../../constants';
 import externalPackagesConfig from './external-packages.config';
-import { filterText, getDevBanner, getDevBuildPath, getMainBuildPath, getRendererBuildPath, getRootPkg, isRendererLog, lazyImportFromCurrentPkg, pathIncludes, printMemoryUsage, splitLog } from './utils';
+import { getDevBanner, getDevBuildPath, getMainBuildPath, getRendererBuildPath, getRootPkg, lazyImportFromCurrentPkg, pathIncludes, printLogs, printMemoryUsage } from './utils';
 
 const bundlerWebpack: typeof import('@porosjs/bundler-webpack') = lazyImportFromCurrentPkg('@porosjs/bundler-webpack');
 const bundlerVite: typeof import('@porosjs/bundler-vite') = lazyImportFromCurrentPkg('@porosjs/bundler-vite');
@@ -238,16 +238,10 @@ export const runDev = async (api: IApi) => {
 
     spawnProcess = spawn(electronPath, [path.join(getDevBuildPath(api), 'main.js')]);
     spawnProcess.stdout.on('data', (data) => {
-      const log = filterText(data.toString());
-      if (log) {
-        splitLog(log).forEach((item) => logger.info(`[${isRendererLog(item) ? 'Renderer' : 'Main'}] ${item}`));
-      }
+      printLogs(data.toString());
     });
     spawnProcess.stderr.on('data', (data) => {
-      const log = filterText(data.toString());
-      if (log) {
-        splitLog(log).forEach((item) => logger.error(`[${isRendererLog(item) ? 'Renderer' : 'Main'}] ${item}`));
-      }
+      printLogs(data.toString());
     });
     spawnProcess.on('close', (_, signal) => {
       if (signal !== 'SIGKILL') {
@@ -292,8 +286,8 @@ export const runDev = async (api: IApi) => {
 };
 
 export const runBuild = async (api: IApi) => {
-  await buildPreload(api);
   await buildMain(api);
+  await buildPreload(api);
 
   await buildElectron(api);
 };

@@ -22,7 +22,7 @@ class PorosWindowManager {
 
     if (!isMultiple && isExist) {
       logger.warn(`${constructor.name} is exist, duplication is not allowed`);
-      return;
+      return undefined;
     }
 
     let instance: PorosBrowserWindow = new constructor(...properties);
@@ -92,22 +92,26 @@ class PorosWindowManager {
     else deleteList.forEach((item) => this.instanceNameMap.delete(item));
   }
 
+  static getAll() {
+    const arr: PorosBrowserWindow[] = [];
+    this.instanceIdMap.forEach((item)=>{
+      arr.push(item);
+    });
+
+    return arr;
+  }
+
   static get<T extends Type<PorosBrowserWindow>>(
     constructor: T,
   ):
     | (T['single'] extends false ? Record<number, PorosBrowserWindow> : PorosBrowserWindow)
     | undefined;
   static get(id: number): PorosBrowserWindow | undefined;
-  static get(name: string): Record<number, PorosBrowserWindow> | PorosBrowserWindow;
   static get(
-    param: Type<PorosBrowserWindow> | number | string,
+    param: Type<PorosBrowserWindow> | number,
   ): Record<number, PorosBrowserWindow> | PorosBrowserWindow | undefined {
     if (typeof param === 'number') {
       return this.getById(param);
-    }
-
-    if (typeof param === 'string') {
-      return this.instanceNameMap.get(param);
     }
 
     return this.getByConstructor(param);

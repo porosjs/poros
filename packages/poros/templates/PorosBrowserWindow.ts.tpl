@@ -1,7 +1,9 @@
 import { BrowserWindow, BrowserWindowConstructorOptions } from 'electron';
-import { isDev, localShortcut, port{{#ipcFile}}, rendererInvoker{{/ipcFile}}} from 'poros';
+import { isDev, localShortcut, port, rendererInvoker} from 'poros';
 
-export interface PorosBrowserWindowOptions extends BrowserWindowConstructorOptions {}
+export interface PorosBrowserWindowOptions extends BrowserWindowConstructorOptions {
+  hideOnClose?: boolean
+}
 
 abstract class PorosBrowserWindow extends BrowserWindow {
   /**
@@ -9,11 +11,9 @@ abstract class PorosBrowserWindow extends BrowserWindow {
    */
   static readonly single: boolean = true;
 
-  {{#ipcFile}}
   rendererInvoker = { ...rendererInvoker };
-  {{/ipcFile}}
 
-  constructor(url: string, { show = true, ...windowOptions }: PorosBrowserWindowOptions = {}) {
+  constructor(url: string, { show = true, hideOnClose, ...windowOptions }: PorosBrowserWindowOptions = {}) {
     const options = {
       show: false,
       ...windowOptions,
@@ -37,15 +37,20 @@ abstract class PorosBrowserWindow extends BrowserWindow {
       }
     });
 
+    if(hideOnClose){
+      this.on('close', (e) => {
+        e.preventDefault();
+        this.hide();
+      });
+    }
+
     this.registerWindowEvent();
     this.registerDevtoolsShortcut();
-    {{#ipcFile}}
 
     Object.keys(rendererInvoker).forEach((key) => {
       // @ts-ignore
       this.rendererInvoker[key] = this.rendererInvoker[key].bind(this);
     })
-    {{/ipcFile}}
   }
 
   show() {
@@ -57,7 +62,7 @@ abstract class PorosBrowserWindow extends BrowserWindow {
     if (!this.isDestroyed()) {
       const wcs = this.webContents;
       if (isDev) {
-        localShortcut.register(this, ['Cmd+Option+I', 'F12'], () => {
+        localShortcut.register(this, ['CmdOrCtrl+Option+I', 'F12'], () => {
           if (wcs.isDevToolsOpened()) {
             wcs.devToolsWebContents?.focus();
           } else {

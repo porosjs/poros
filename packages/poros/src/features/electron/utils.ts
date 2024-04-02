@@ -115,6 +115,21 @@ export function isRendererLog(content: string) {
 }
 
 /**
+ * 区分日志类型[debug, warn, error]
+ * @param log
+ */
+export function typeLog(log: string) {
+  const matches = log.match(/(\d{2}:\d{2}:\d{2}\.\d{3}\s+[\s\S]*?›\s)---(warn|debug|error)---(.*)$/);
+  if (matches?.length) {
+    const [, prefix, type, content] = matches ?? [];
+
+    return [type, `${prefix}${content}`];
+  }
+
+  return ['info', log];
+}
+
+/**
  * 多次连续的输出会让log合并，需要做出切分
  * @param content
  * @returns
@@ -123,6 +138,22 @@ export function splitLog(content: string) {
   const regex = /(\d{2}:\d{2}:\d{2}\.\d{3}\s+[\s\S]*?›[\s\S]*?)(?=\d{2}:\d{2}:\d{2}\.\d{3}|$)/g;
   const matches = Array.from(content.matchAll(regex), (m) => m[0].trim().replace(/\s+›/, ' ›'));
   return matches;
+}
+
+export function printLogs(content: string) {
+  const log = filterText(content);
+  if (log) {
+    splitLog(content).forEach((item) => {
+      const [type, content] = typeLog(item);
+      const prefix = `[${isRendererLog(content) ? 'Renderer' : 'Main'}] `;
+      if (type === 'debug') {
+        console.log(chalk.gray('debug') + ' - ' + prefix + content);
+      } else {
+        // @ts-ignore
+        logger[type](`${prefix}${content}`);
+      }
+    });
+  }
 }
 
 export function pathIncludes(path: string, targetPath: string) {
