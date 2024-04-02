@@ -49,7 +49,12 @@ export function initialize() {
         // windowName实际为窗口id
         instance = PorosWindowManager.get(Number(windowName));
       } else {
-        instance = PorosWindowManager.get(windowName);
+        const WINDOW_CLASS_MAP = {
+{{#windows}}
+          '{{{className}}}': require('{{{importPath}}}').default,
+{{/windows}}
+        };
+        instance = PorosWindowManager.get(WINDOW_CLASS_MAP[windowName]);
       }
     }
 
@@ -81,18 +86,19 @@ export function initialize() {
   });
 
   ipcMain.handle('__IPC_OPEN_WINDOW', (event, windowName: keyof typeof WINDOW_CLASS_MAP, ...args: any[]) => {
-    const instance = PorosWindowManager.get(windowName);
-    if(instance && instance instanceof PorosBrowserWindow){
-      instance.show();
-      return instance.id;
-    }
-
     const WINDOW_CLASS_MAP = {
 {{#windows}}
       '{{{className}}}': require('{{{importPath}}}').default,
 {{/windows}}
+    };
+
+    let instance = PorosWindowManager.create(WINDOW_CLASS_MAP[windowName], ...args);
+    if(!instance){
+      instance = PorosWindowManager.get(WINDOW_CLASS_MAP[windowName]);
+      instance.show();
     }
-    return PorosWindowManager.create(WINDOW_CLASS_MAP[windowName], ...args).id;
+
+    return instance.id;
   });
 }
 
