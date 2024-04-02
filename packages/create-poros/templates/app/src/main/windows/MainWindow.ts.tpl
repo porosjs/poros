@@ -4,6 +4,7 @@ import {
   IpcHandle,
   PorosBrowserWindow,
   PorosBrowserWindowOptions,
+  logger,
 } from 'poros';
 import si from 'systeminformation';
 
@@ -27,6 +28,7 @@ class MainWindow extends PorosBrowserWindow {
     width: 542,
     minHeight: 628,
     minWidth: 542,
+    hideOnClose: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload/index.js'),
     },
@@ -36,6 +38,8 @@ class MainWindow extends PorosBrowserWindow {
 
   constructor() {
     super(MainWindow.URL, MainWindow.OPTIONS);
+
+    logger.warn('MainWindow Init');
 
     this.startNetworkMonitor();
   }

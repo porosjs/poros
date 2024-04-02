@@ -1,5 +1,9 @@
-import { PorosBrowserWindow, PorosBrowserWindowOptions, i18n } from 'poros';
-import MainWindow from './MainWindow';
+import {
+  PorosBrowserWindow,
+  PorosBrowserWindowOptions,
+  i18n,
+  logger,
+} from 'poros';
 
 class AboutWindow extends PorosBrowserWindow {
   /**
@@ -25,6 +29,8 @@ class AboutWindow extends PorosBrowserWindow {
 
   constructor() {
     super(AboutWindow.URL, AboutWindow.OPTIONS);
+
+    logger.warn('AboutWindow Init');
   }
 
   protected registerWindowEvent(): void {}

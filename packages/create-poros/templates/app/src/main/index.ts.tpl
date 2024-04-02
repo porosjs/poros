@@ -37,9 +37,7 @@ export default class PorosApplication {
     }
 
     app.on('window-all-closed', () => {
-      if (!isMacOS) {
-        app.quit();
-      }
+      app.quit();
     });
 
     app.on('activate', () => {

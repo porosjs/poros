@@ -12,6 +12,6 @@ export default {
   'versions.chrome': 'Chrome版本',
 
   'button.openNewWindow': '打开新窗口',
-  'button.openDevTools': '打开DevTools(F12)',
+  'button.openDevTools': '打开DevTools',
   'button.openLogDir': '打开打开日志目录',
 };

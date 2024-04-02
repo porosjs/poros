@@ -12,6 +12,6 @@ export default {
   'versions.chrome': 'Chrome Version',
 
   'button.openNewWindow': 'Open New Window',
-  'button.openDevTools': 'Open DevTools(F12)',
+  'button.openDevTools': 'Open DevTools',
   'button.openLogDir': 'Open Log Dir',
 };
