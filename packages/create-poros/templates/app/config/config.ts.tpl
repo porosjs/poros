@@ -3,7 +3,7 @@ import builder from './builder';
 import routes from './routes';
 
 export default defineConfig({
-  npmClient: {{{npmClient}}},
+  npmClient: '{{{npmClient}}}',
   model: {},
   antd: {},
   locale: {},
