@@ -1,6 +1,6 @@
 import logoImg from '@/renderer/assets/logo.png';
 import { GithubOutlined } from '@ant-design/icons';
-import { Avatar, Button, Descriptions, Divider, Space, Tooltip } from 'antd';
+import { Avatar, Button, Descriptions, Divider, Space } from 'antd';
 import { SelectLang, i18n, localStore, logger, mainInvoker, useModel } from 'poros';
 import { useEffect, useState } from 'react';
 import Chart from './Chart';
@@ -71,9 +71,7 @@ const HomePage: React.FC = () => {
       <Space>
         <Button onClick={() => mainInvoker.AboutWindow.open()}>{i18n('button.openNewWindow')}</Button>
         <Button onClick={() => mainInvoker.MainWindow.openDevTools()}>{i18n('button.openDevTools')}</Button>
-        <Tooltip title="开发环境下，日志会在控制台显示，不生成日志文件">
-          <Button onClick={() => mainInvoker.MainWindow.openLogDir()}>{i18n('button.openLogDir')}</Button>
-        </Tooltip>
+        <Button onClick={() => mainInvoker.MainWindow.openLogDir()}>{i18n('button.openLogDir')}</Button>
       </Space>
     </div>
   );
