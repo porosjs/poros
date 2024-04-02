@@ -16,6 +16,7 @@ function setProps(obj: any, logObj: any) {
 }
 
 const options = {{{electronLogOptions}}};
+if(options?.transports?.console?.format) options.transports.console.format = undefined;
 setProps(options, logger);
 {{/electronLogOptions}}
 
