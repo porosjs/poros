@@ -1,12 +1,7 @@
 import { app } from 'electron';
-import {
-  PorosWindowManager,
-  initialize,
-  isDev,
-  isMacOS,
-  isWindows,
-} from 'poros';
+import { PorosWindowManager, initialize } from 'poros';
 import MainWindow from './windows/MainWindow';
+
 
 export default class PorosApplication {
   async initialize() {
@@ -22,22 +17,8 @@ export default class PorosApplication {
   }
 
   registerEvent() {
-    if (isDev) {
-      if (isWindows) {
-        process.on('message', (data) => {
-          if (data === 'graceful-exit') {
-            app.quit();
-          }
-        });
-      } else {
-        process.on('SIGTERM', () => {
-          app.quit();
-        });
-      }
-    }
-
-    app.on('window-all-closed', () => {
-      app.quit();
+    app.on('before-quit', () => {
+      app.exit(0);
     });
 
     app.on('activate', () => {
