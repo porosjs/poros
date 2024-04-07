@@ -9,7 +9,7 @@
     "build:win": "poros build --win  --x64 --ia32",
     "dev": "poros dev",
     "format": "prettier --cache --write .",
-    "postinstall": "poros setup && node ./node_modules/poros/scripts/postinstall.js",{{#withHusky}}
+    "postinstall": "node ./node_modules/poros/scripts/postinstall.js && poros setup",{{#withHusky}}
     "prepare": "husky install",{{/withHusky}}
     "rebuild-deps": "poros rebuild-deps",
     "setup": "poros setup",

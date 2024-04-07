@@ -65,5 +65,23 @@
   "engines": {
     "node": ">=14",
     "pnpm": ">=8"
+  },
+  "//why-overrides-browserslist": "See scripts/bundleDeps.ts",
+  "pnpm": {
+    "peerDependencyRules": {
+      "ignoreMissing": [
+        "react",
+        "react-dom",
+        "antd",
+        "postcss",
+        "webpack",
+        "eslint",
+        "stylelint",
+        "redux"
+      ]
+    },
+    "overrides": {
+      "browserslist": "$browserslist"
+    }
   }
 }
