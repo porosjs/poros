@@ -5,6 +5,7 @@ import { DEV_COMMAND } from 'umi/dist/constants';
 import { Service } from 'umi/dist/service/service';
 // @ts-ignore
 import { installAppDeps } from 'electron-builder/out/cli/install-app-deps';
+import setup from './setup';
 
 interface IOpts {
   presets?: string[];
@@ -47,6 +48,11 @@ export async function run(opts: IOpts = {}) {
     });
   } else {
     logger.info(chalk.cyan.bold(`Poros v${version}`));
+
+    if (command === 'setup') {
+      setup();
+    }
+
     try {
       await new Service({
         defaultConfigFiles: opts.defaultConfigFiles || null,
