@@ -32,15 +32,19 @@ function replace(content, lines) {
 
 function copyWithPnpm(name) {
   if (isPnpm) {
-    const packagePath = require.resolve(name);
-    fsExtra.copySync(packagePath, join(__dirname, 'node_modules', name));
+    const sourcePath =  dirname(require.resolve(`${name}/package.json`));
+    const distPath = join(__dirname, '../node_modules', name);
+    if(sourcePath !== distPath) {
+      fsExtra.removeSync(distPath);
+      fsExtra.copySync(sourcePath, distPath);
+    }
   }
 }
 
 function patchPackage(name, opts) {
   copyWithPnpm(name);
   for (const opt of opts) {
-    const { file, annotates, replaces } = opt;
+    const { file, annotates = [], replaces = [] } = opt;
     const filePath = join(
       dirname(require.resolve(`${name}/package.json`)),
       file,
@@ -58,6 +62,8 @@ function patchPackage(name, opts) {
     }
   }
 }
+
+console.log('exec patch...');
 
 patchPackage('@umijs/bundler-webpack', [
   {
@@ -85,8 +91,7 @@ patchPackage('@umijs/bundler-vite', [
       [
         12,
         `    modifyViteConfig?: Function;
-  env?: Env;
-}`,
+    env?: Env;`,
       ],
       [1, `import { Env, IBabelPlugin, IConfig } from './types';`],
     ],
