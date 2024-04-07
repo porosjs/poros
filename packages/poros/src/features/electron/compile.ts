@@ -1,6 +1,6 @@
-import WebpackBar from '@porosjs/bundler-webpack/compiled/webpackbar';
-import ProgressPlugin from '@porosjs/bundler-webpack/dist/plugins/ProgressPlugin';
-import { Env } from '@porosjs/bundler-webpack/dist/types';
+import WebpackBar from '@umijs/bundler-webpack/compiled/webpackbar';
+import ProgressPlugin from '@umijs/bundler-webpack/dist/plugins/ProgressPlugin';
+import { Env } from '@umijs/bundler-webpack/dist/types';
 import { chokidar, fsExtra, glob, lodash, logger } from '@umijs/utils';
 import { debounce, isEmpty } from '@umijs/utils/compiled/lodash';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
@@ -12,8 +12,8 @@ import { PATHS, PLUGIN_DIR_NAME } from '../../constants';
 import externalPackagesConfig from './external-packages.config';
 import { getDevBanner, getDevBuildPath, getMainBuildPath, getRendererBuildPath, getRootPkg, lazyImportFromCurrentPkg, pathIncludes, printLogs, printMemoryUsage } from './utils';
 
-const bundlerWebpack: typeof import('@porosjs/bundler-webpack') = lazyImportFromCurrentPkg('@porosjs/bundler-webpack');
-const bundlerVite: typeof import('@porosjs/bundler-vite') = lazyImportFromCurrentPkg('@porosjs/bundler-vite');
+const bundlerWebpack: typeof import('@umijs/bundler-webpack') = lazyImportFromCurrentPkg('@umijs/bundler-webpack');
+const bundlerVite: typeof import('@umijs/bundler-vite') = lazyImportFromCurrentPkg('@umijs/bundler-vite');
 
 const WAIT_TIME = 1000;
 

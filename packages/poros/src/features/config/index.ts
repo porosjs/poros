@@ -1,4 +1,4 @@
-import { Env } from '@porosjs/bundler-webpack/dist/types';
+import { Env } from '@umijs/bundler-webpack/dist/types';
 import { BaseGenerator, fsExtra, lodash, winPath } from '@umijs/utils';
 import { existsSync } from '@umijs/utils/compiled/fs-extra';
 import path from 'path';

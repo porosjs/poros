@@ -1,6 +1,6 @@
-import WebpackBar from '@porosjs/bundler-webpack/compiled/webpackbar';
-import ProgressPlugin from '@porosjs/bundler-webpack/dist/plugins/ProgressPlugin';
-import { Env } from '@porosjs/bundler-webpack/dist/types';
+import WebpackBar from '@umijs/bundler-webpack/compiled/webpackbar';
+import ProgressPlugin from '@umijs/bundler-webpack/dist/plugins/ProgressPlugin';
+import { Env } from '@umijs/bundler-webpack/dist/types';
 import assert from 'assert';
 import * as path from 'path';
 import type { IApi } from 'umi';
