@@ -1,1 +1,1 @@
-module.exports = require('@porosjs/umi/eslint');
+module.exports = require('umi/eslint');

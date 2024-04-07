@@ -1,5 +1,3 @@
-import { IApi } from '@porosjs/umi';
-import { glob, winPath } from '@porosjs/umi/plugin-utils';
 import generator from '@umijs/bundler-utils/compiled/babel/generator';
 import * as parser from '@umijs/bundler-utils/compiled/babel/parser';
 import traverse from '@umijs/bundler-utils/compiled/babel/traverse';
@@ -7,6 +5,8 @@ import * as types from '@umijs/bundler-utils/compiled/babel/types';
 import { camelCase } from '@umijs/utils/compiled/lodash';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { IApi } from 'umi';
+import { glob, winPath } from 'umi/plugin-utils';
 
 export class IpcUtils {
   private windows: {

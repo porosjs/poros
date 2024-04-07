@@ -1,10 +1,4 @@
-import { IApi, RUNTIME_TYPE_FILE_NAME } from '@porosjs/umi';
-import { winPath } from '@porosjs/umi/plugin-utils';
-import {
-  NextFunction,
-  Request,
-  Response,
-} from '@umijs/bundler-utils/compiled/express';
+import { NextFunction, Request, Response } from '@umijs/bundler-utils/compiled/express';
 import {
   createProxyMiddleware,
   // @ts-ignore 现在打包好的 http-proxy-middleware 有导出 responseInterceptor，但没有导出声明
@@ -14,11 +8,10 @@ import { cheerio } from '@umijs/utils';
 import assert from 'assert';
 import { readFileSync } from 'fs';
 import { dirname, join } from 'path';
+import { IApi, RUNTIME_TYPE_FILE_NAME } from 'umi';
+import { winPath } from 'umi/plugin-utils';
 import { withTmpPath } from '../utils/withTmpPath';
-import {
-  defaultHistoryType,
-  qiankunStateFromMasterModelNamespace,
-} from './constants';
+import { defaultHistoryType, qiankunStateFromMasterModelNamespace } from './constants';
 
 type SlaveOptions = any;
 
@@ -30,16 +23,9 @@ function getCurrentLocalDevServerEntry(api: IApi, req: Request): string {
 }
 
 // 用于处理本地研发时拿到的 entry html，只会在本地 dev 时消费
-function handleOriginalHtml(
-  api: IApi,
-  microAppEntry: string,
-  originalHtml: string,
-) {
+function handleOriginalHtml(api: IApi, microAppEntry: string, originalHtml: string) {
   const appName = api.config.qiankun?.slave?.appName || api.pkg.name;
-  assert(
-    appName,
-    '[@porosjs/plugin-qiankun]: You should have name in package.json',
-  );
+  assert(appName, '[@porosjs/plugin-qiankun]: You should have name in package.json');
   const $ = cheerio.load(originalHtml);
 
   // 插入 extra-qiankun-config
@@ -145,9 +131,7 @@ export interface IRuntimeConfig {
       },
     } as any;
 
-    const shouldNotModifyDefaultBase =
-      api.userConfig.qiankun?.slave?.shouldNotModifyDefaultBase ??
-      initialSlaveOptions.shouldNotModifyDefaultBase;
+    const shouldNotModifyDefaultBase = api.userConfig.qiankun?.slave?.shouldNotModifyDefaultBase ?? initialSlaveOptions.shouldNotModifyDefaultBase;
     const historyType = memo.history?.type || defaultHistoryType;
     if (!shouldNotModifyDefaultBase && historyType !== 'hash') {
       // @ts-ignore
@@ -171,25 +155,14 @@ export interface IRuntimeConfig {
   });
 
   api.addHTMLHeadScripts(() => {
-    const dontModify =
-      api.config.qiankun?.slave?.shouldNotModifyRuntimePublicPath;
-    return dontModify
-      ? []
-      : [
-          `window.publicPath = window.__INJECTED_PUBLIC_PATH_BY_QIANKUN__ || "${
-            api.config.publicPath || '/'
-          }";`,
-        ];
+    const dontModify = api.config.qiankun?.slave?.shouldNotModifyRuntimePublicPath;
+    return dontModify ? [] : [`window.publicPath = window.__INJECTED_PUBLIC_PATH_BY_QIANKUN__ || "${api.config.publicPath || '/'}";`];
   });
 
   api.chainWebpack((config) => {
     assert(api.pkg.name, 'You should have name in package.json.');
     const { shouldNotAddLibraryChunkName } = (api.config.qiankun || {}).slave!;
-    config.output
-      .libraryTarget('umd')
-      .library(
-        shouldNotAddLibraryChunkName ? api.pkg.name : `${api.pkg.name}-[name]`,
-      );
+    config.output.libraryTarget('umd').library(shouldNotAddLibraryChunkName ? api.pkg.name : `${api.pkg.name}-[name]`);
     // TODO: SOCKET_SERVER
     // TODO: devSourceMap
     return config;
@@ -211,8 +184,7 @@ export interface IRuntimeConfig {
     return [
       {
         source: '@@/plugin-qiankun-slave/lifecycles',
-        specifier:
-          '{ genMount as qiankun_genMount, genBootstrap as qiankun_genBootstrap, genUnmount as qiankun_genUnmount, genUpdate as qiankun_genUpdate }',
+        specifier: '{ genMount as qiankun_genMount, genBootstrap as qiankun_genBootstrap, genUnmount as qiankun_genUnmount, genUpdate as qiankun_genUpdate }',
       },
     ];
   });
@@ -230,10 +202,7 @@ if (!window.__POWERED_BY_QIANKUN__) {
   ]);
 
   function getFileContent(file: string) {
-    return readFileSync(
-      join(__dirname, '../../libs/qiankun/renderer/slave', file),
-      'utf-8',
-    );
+    return readFileSync(join(__dirname, '../../libs/qiankun/renderer/slave', file), 'utf-8');
   }
 
   api.onGenerateFiles({
@@ -247,31 +216,13 @@ if (!window.__POWERED_BY_QIANKUN__) {
       //       `,
       //     });
 
-      [
-        'constants.ts',
-        'qiankunModel.ts',
-        'connectMaster.tsx',
-        'MicroAppLink.tsx',
-        'slaveRuntimePlugin.ts',
-        'lifecycles.ts',
-      ].forEach((file) => {
+      ['constants.ts', 'qiankunModel.ts', 'connectMaster.tsx', 'MicroAppLink.tsx', 'slaveRuntimePlugin.ts', 'lifecycles.ts'].forEach((file) => {
         api.writeTmpFile({
           path: join('renderer', file.replace(/\.tpl$/, '')),
           content: getFileContent(file)
-            .replace(
-              '__USE_MODEL__',
-              api.isPluginEnable('model')
-                ? `import { useModel } from '@@/plugin-model'`
-                : `const useModel = null;`,
-            )
-            .replace(
-              /from 'qiankun'/g,
-              `from '${winPath(dirname(require.resolve('qiankun/package')))}'`,
-            )
-            .replace(
-              /from 'lodash\//g,
-              `from '${winPath(dirname(require.resolve('lodash/package')))}/`,
-            ),
+            .replace('__USE_MODEL__', api.isPluginEnable('model') ? `import { useModel } from '@@/plugin-model'` : `const useModel = null;`)
+            .replace(/from 'qiankun'/g, `from '${winPath(dirname(require.resolve('qiankun/package')))}'`)
+            .replace(/from 'lodash\//g, `from '${winPath(dirname(require.resolve('lodash/package')))}/`),
         });
       });
 
@@ -305,68 +256,50 @@ export { MicroAppLink } from './renderer/MicroAppLink';
           key: 'onLocalProxyStart',
           type: api.ApplyPluginsType.event,
         });
-        return createProxyMiddleware(
-          (pathname) => pathname !== '/local-dev-server',
-          {
-            target: masterEntry,
-            secure: false,
-            ignorePath: false,
-            followRedirects: false,
-            changeOrigin: true,
-            selfHandleResponse: true,
-            onProxyReq(proxyReq) {
-              api.applyPlugins({
-                key: 'onLocalProxyReq',
-                type: api.ApplyPluginsType.event,
-                sync: true,
-                args: proxyReq,
-              });
-            },
-            onProxyRes: responseInterceptor(
-              async (
-                responseBuffer: any,
-                proxyRes: any,
-                req: any,
-                res: any,
-              ) => {
-                if (proxyRes.statusCode === 302) {
-                  const hostname = (req as Request).hostname;
-                  const port = process.env.PORT || api.appData?.port;
-                  const goto = `${hostname}:${port}`;
-                  const redirectUrl =
-                    proxyRes.headers.location!.replace(
-                      encodeURIComponent(new URL(masterEntry).hostname),
-                      encodeURIComponent(goto),
-                    ) || masterEntry;
-
-                  const redirectMessage = `[@porosjs/plugin-qiankun]: redirect to ${redirectUrl}`;
-
-                  api.logger.info(redirectMessage);
-                  res.statusCode = 302;
-                  res.setHeader('location', redirectUrl);
-                  return redirectMessage;
-                }
-
-                const microAppEntry = getCurrentLocalDevServerEntry(api, req);
-                const originalHtml = responseBuffer.toString('utf8');
-                const html = handleOriginalHtml(
-                  api,
-                  microAppEntry,
-                  originalHtml,
-                );
-
-                return html;
-              },
-            ),
-            onError(err, _, res) {
-              api.logger.error(err);
-              res.set('content-type', 'text/plain; charset=UTF-8');
-              res.end(
-                `[@porosjs/plugin-qiankun] 代理到 ${masterEntry} 时出错了，请尝试 ${masterEntry} 是否是可以正常访问的，然后重新启动项目试试。(注意如果出现跨域问题，请修改本地 host ，通过一个和主应用相同的一级域名的域名来访问 127.0.0.1)`,
-              );
-            },
+        return createProxyMiddleware((pathname) => pathname !== '/local-dev-server', {
+          target: masterEntry,
+          secure: false,
+          ignorePath: false,
+          followRedirects: false,
+          changeOrigin: true,
+          selfHandleResponse: true,
+          onProxyReq(proxyReq) {
+            api.applyPlugins({
+              key: 'onLocalProxyReq',
+              type: api.ApplyPluginsType.event,
+              sync: true,
+              args: proxyReq,
+            });
           },
-        )(req, res, next);
+          onProxyRes: responseInterceptor(async (responseBuffer: any, proxyRes: any, req: any, res: any) => {
+            if (proxyRes.statusCode === 302) {
+              const hostname = (req as Request).hostname;
+              const port = process.env.PORT || api.appData?.port;
+              const goto = `${hostname}:${port}`;
+              const redirectUrl = proxyRes.headers.location!.replace(encodeURIComponent(new URL(masterEntry).hostname), encodeURIComponent(goto)) || masterEntry;
+
+              const redirectMessage = `[@porosjs/plugin-qiankun]: redirect to ${redirectUrl}`;
+
+              api.logger.info(redirectMessage);
+              res.statusCode = 302;
+              res.setHeader('location', redirectUrl);
+              return redirectMessage;
+            }
+
+            const microAppEntry = getCurrentLocalDevServerEntry(api, req);
+            const originalHtml = responseBuffer.toString('utf8');
+            const html = handleOriginalHtml(api, microAppEntry, originalHtml);
+
+            return html;
+          }),
+          onError(err, _, res) {
+            api.logger.error(err);
+            res.set('content-type', 'text/plain; charset=UTF-8');
+            res.end(
+              `[@porosjs/plugin-qiankun] 代理到 ${masterEntry} 时出错了，请尝试 ${masterEntry} 是否是可以正常访问的，然后重新启动项目试试。(注意如果出现跨域问题，请修改本地 host ，通过一个和主应用相同的一级域名的域名来访问 127.0.0.1)`,
+            );
+          },
+        })(req, res, next);
       }
 
       return next();

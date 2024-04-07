@@ -39,18 +39,18 @@
     "poros": "bin/poros.js"
   },
   "dependencies": {
-    "@porosjs/bundler-vite": "4.0.65-fork.6",
-    "@porosjs/bundler-webpack": "4.0.65-fork.6",
     "@porosjs/plugins": "workspace:*",
-    "@porosjs/umi": "4.0.65-fork.6",
     "@umijs/bundler-vite": "4.0.65",
     "@umijs/bundler-webpack": "4.0.65",
     "@umijs/plugins": "4.0.65",
+    "@umijs/preset-umi": "4.0.65",
     "@umijs/utils": "4.0.65",
     "electron-builder": "^24.6.4",
     "electron-localshortcut": "^3.2.1",
     "electron-log": "5.1.2",
     "electron-store": "^8.1.0",
+    "patch-package": "^8.0.0",
+    "umi": "4.0.65",
     "yargs": "^17.7.1"
   },
   "devDependencies": {

@@ -1,6 +1,6 @@
-import { IApi } from '@porosjs/umi';
 import fs from 'fs';
 import { join } from 'path';
+import { IApi } from 'umi';
 import { withTmpPath } from './utils/withTmpPath';
 
 export default (api: IApi) => {
@@ -15,9 +15,7 @@ export default (api: IApi) => {
 
   api.onGenerateFiles(async () => {
     // allow enable access without access file
-    const hasAccessFile = ['js', 'jsx', 'ts', 'tsx'].some((ext) =>
-      fs.existsSync(join(api.paths.absSrcPath, `access.${ext}`)),
-    );
+    const hasAccessFile = ['js', 'jsx', 'ts', 'tsx'].some((ext) => fs.existsSync(join(api.paths.absSrcPath, `access.${ext}`)));
 
     // runtime.tsx
     api.writeTmpFile({
@@ -182,8 +180,5 @@ export type AccessInstance = ReturnType<typeof accessFactory>;
     return [withTmpPath({ api, path: 'runtime.tsx' })];
   });
 
-  api.addTmpGenerateWatcherPaths(() => [
-    join(api.paths.absSrcPath, 'access.ts'),
-    join(api.paths.absSrcPath, 'access.js'),
-  ]);
+  api.addTmpGenerateWatcherPaths(() => [join(api.paths.absSrcPath, 'access.ts'), join(api.paths.absSrcPath, 'access.js')]);
 };

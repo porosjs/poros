@@ -1,4 +1,4 @@
-import { IApi } from '@porosjs/umi';
+import { IApi } from 'umi';
 
 export default (api: IApi) => {
   api.describe({

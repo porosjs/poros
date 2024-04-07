@@ -18,7 +18,7 @@ abstract class PorosBrowserWindow extends BrowserWindow {
       show: false,
       ...windowOptions,
       webPreferences: {
-        webSecurity: false,
+        webSecurity: true,
         spellcheck: false,
         contextIsolation: true,
         ...(windowOptions.webPreferences ?? {}),

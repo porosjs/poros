@@ -1,3 +1,3 @@
 // @ts-nocheck
-export * from '@porosjs/umi';
+export * from 'umi';
 export * from '@@/plugin-electron/exports';

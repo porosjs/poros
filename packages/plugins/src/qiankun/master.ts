@@ -1,14 +1,9 @@
-import { IApi, RUNTIME_TYPE_FILE_NAME } from '@porosjs/umi';
-import { Mustache, winPath } from '@porosjs/umi/plugin-utils';
 import { readFileSync } from 'fs';
 import { dirname, join } from 'path';
+import { IApi, RUNTIME_TYPE_FILE_NAME } from 'umi';
+import { Mustache, winPath } from 'umi/plugin-utils';
 import { withTmpPath } from '../utils/withTmpPath';
-import {
-  MODEL_EXPORT_NAME,
-  defaultHistoryType,
-  defaultMasterRootId,
-  qiankunStateForSlaveModelNamespace,
-} from './constants';
+import { MODEL_EXPORT_NAME, defaultHistoryType, defaultMasterRootId, qiankunStateForSlaveModelNamespace } from './constants';
 
 export function isMasterEnable(opts: { userConfig: any }) {
   const masterCfg = opts.userConfig.qiankun?.master;
@@ -48,10 +43,7 @@ export default (api: IApi) => {
         const base = api.config.base || '/';
         const masterHistoryType = api.config.history?.type || 'browser';
         const routeProps = route.microAppProps || {};
-        const normalizedRouteProps = JSON.stringify(routeProps).replace(
-          /"/g,
-          "'",
-        );
+        const normalizedRouteProps = JSON.stringify(routeProps).replace(/"/g, "'");
         route.file = `(async () => {
           const { getMicroAppRouteComponent } = await import('@@/plugin-qiankun-master/getMicroAppRouteComponent');
           return getMicroAppRouteComponent({ appName: '${appName}', base: '${base}', routePath: '${route.path}', masterHistoryType: '${masterHistoryType}', routeProps: ${normalizedRouteProps} })
@@ -67,19 +59,12 @@ export default (api: IApi) => {
     key: 'addExtraModels',
     fn() {
       const { path, exports } = api.appData.appJS || {};
-      return path && exports.includes(MODEL_EXPORT_NAME)
-        ? [
-            `${path}#{"namespace":"${qiankunStateForSlaveModelNamespace}","exportName":"${MODEL_EXPORT_NAME}"}`,
-          ]
-        : [];
+      return path && exports.includes(MODEL_EXPORT_NAME) ? [`${path}#{"namespace":"${qiankunStateForSlaveModelNamespace}","exportName":"${MODEL_EXPORT_NAME}"}`] : [];
     },
   });
 
   function getFileContent(file: string) {
-    return readFileSync(
-      join(__dirname, '../../libs/qiankun/renderer/master', file),
-      'utf-8',
-    );
+    return readFileSync(join(__dirname, '../../libs/qiankun/renderer/master', file), 'utf-8');
   }
 
   api.onGenerateFiles(() => {
@@ -122,17 +107,7 @@ export const setMasterOptions = (newOpts) => options = ({ ...options, ...newOpts
         : `export default function Loader() { console.warn(\`[plugins/qiankun]: Seems like you'r not using @umijs/plugin-antd, you need to provide a custom loader or set autoSetLoading false to shut down this warning!\`); return null; }`,
     });
 
-    [
-      'common.ts',
-      'constants.ts',
-      'types.ts',
-      'routeUtils.ts',
-      'masterRuntimePlugin.tsx',
-      'getMicroAppRouteComponent.tsx.tpl',
-      'ErrorBoundary.tsx',
-      'MicroApp.tsx',
-      'MicroAppWithMemoHistory.tsx',
-    ].forEach((file) => {
+    ['common.ts', 'constants.ts', 'types.ts', 'routeUtils.ts', 'masterRuntimePlugin.tsx', 'getMicroAppRouteComponent.tsx.tpl', 'ErrorBoundary.tsx', 'MicroApp.tsx', 'MicroAppWithMemoHistory.tsx'].forEach((file) => {
       if (file.endsWith('.tpl')) {
         api.writeTmpFile({
           path: join('renderer', file.replace(/\.tpl$/, '')),
@@ -148,25 +123,14 @@ export const setMasterOptions = (newOpts) => options = ({ ...options, ...newOpts
         let content = getFileContent(file);
 
         if (!api.config.qiankun.externalQiankun) {
-          content = content.replace(
-            /from 'qiankun'/g,
-            `from '${winPath(dirname(require.resolve('qiankun/package')))}'`,
-          );
+          content = content.replace(/from 'qiankun'/g, `from '${winPath(dirname(require.resolve('qiankun/package')))}'`);
         }
 
         api.writeTmpFile({
           path: join('renderer', file.replace(/\.tpl$/, '')),
           content: content
-            .replace(
-              '__USE_MODEL__',
-              api.isPluginEnable('model')
-                ? `import { useModel } from '@@/plugin-model'`
-                : `const useModel = null;`,
-            )
-            .replace(
-              /from 'lodash\//g,
-              `from '${winPath(dirname(require.resolve('lodash/package')))}/`,
-            ),
+            .replace('__USE_MODEL__', api.isPluginEnable('model') ? `import { useModel } from '@@/plugin-model'` : `const useModel = null;`)
+            .replace(/from 'lodash\//g, `from '${winPath(dirname(require.resolve('lodash/package')))}/`),
         });
       }
     });
@@ -179,10 +143,7 @@ export { MicroAppWithMemoHistory } from './renderer/MicroAppWithMemoHistory';
       `,
     });
 
-    const mainMasterOptionsTpl = readFileSync(
-      join(__dirname, '../../libs/qiankun/main/master/masterOptions.tpl'),
-      'utf-8',
-    );
+    const mainMasterOptionsTpl = readFileSync(join(__dirname, '../../libs/qiankun/main/master/masterOptions.tpl'), 'utf-8');
     api.writeTmpFile({
       path: 'main/masterOptions.ts',
       content: Mustache.render(mainMasterOptionsTpl, {

@@ -1,6 +1,6 @@
-import { IApi } from '@porosjs/umi';
 import { chalk, fsExtra, importLazy, logger, stripAnsi, winPath } from '@umijs/utils';
 import path, { dirname } from 'path';
+import { IApi } from 'umi';
 import { PLUGIN_DIR_NAME } from '../../constants';
 
 /**
@@ -119,7 +119,7 @@ export function isRendererLog(content: string) {
  * @param log
  */
 export function typeLog(log: string) {
-  const matches = log.match(/(\d{2}:\d{2}:\d{2}\.\d{3}\s+[\s\S]*?›\s)---(warn|debug|error)---(.*)$/);
+  const matches = log.match(/(\d{2}:\d{2}:\d{2}\.\d{3}\s+[\s\S]*?›\s)---(.*)---(.*)$/);
   if (matches?.length) {
     const [, prefix, type, content] = matches ?? [];
 

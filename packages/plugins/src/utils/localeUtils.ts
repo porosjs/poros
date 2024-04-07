@@ -1,11 +1,8 @@
-import { glob, lodash, winPath } from '@porosjs/umi/plugin-utils';
 import { existsSync } from 'fs';
 import { basename, join } from 'path';
+import { glob, lodash, winPath } from 'umi/plugin-utils';
 
-export type IAddAntdLocales = (args: {
-  lang: string;
-  country: string;
-}) => Promise<string[]>;
+export type IAddAntdLocales = (args: { lang: string; country: string }) => Promise<string[]>;
 
 export interface IGetLocaleFileListOpts {
   localeFolder: string;
@@ -21,20 +18,10 @@ export interface IGetLocaleFileListOpts {
  * @param country 国家
  * @param resolveKey 用来resolve的key，dayjs 或者 dayjs，为了使 dayjs 可以替换 dayjs
  */
-export const getDayjsLocale = (
-  lang: string,
-  country: string,
-  resolveKey: string,
-): { dayjsLocale: string } => {
-  const dayjsLocation = require
-    .resolve(`${resolveKey}/locale/zh-cn`)
-    .replace(/zh\-cn\.js$/, '');
+export const getDayjsLocale = (lang: string, country: string, resolveKey: string): { dayjsLocale: string } => {
+  const dayjsLocation = require.resolve(`${resolveKey}/locale/zh-cn`).replace(/zh\-cn\.js$/, '');
 
-  if (
-    existsSync(
-      join(dayjsLocation, `${lang}-${country?.toLocaleLowerCase?.()}.js`),
-    )
-  ) {
+  if (existsSync(join(dayjsLocation, `${lang}-${country?.toLocaleLowerCase?.()}.js`))) {
     const dayjsLocale = `${lang}-${country?.toLocaleLowerCase?.()}`;
     return {
       dayjsLocale,
@@ -48,8 +35,7 @@ export const getDayjsLocale = (
   return { dayjsLocale: '' };
 };
 
-export const getAntdLocale = (lang: string, country: string): string =>
-  `${lang}_${(country || lang).toLocaleUpperCase()}`;
+export const getAntdLocale = (lang: string, country: string): string => `${lang}_${(country || lang).toLocaleUpperCase()}`;
 
 export interface IGetLocaleFileListResult {
   lang: string;
@@ -75,19 +61,9 @@ const modulesHasLocale = (localePath: string) => {
   }
 };
 
-export const getLocaleList = async (
-  opts: IGetLocaleFileListOpts,
-): Promise<IGetLocaleFileListResult[]> => {
-  const {
-    localeFolder,
-    separator = '-',
-    absSrcPath = '',
-    addAntdLocales,
-    resolveKey = 'dayjs',
-  } = opts;
-  const localeFileMath = new RegExp(
-    `^([a-z]{2})${separator}?([A-Z]{2})?\.(js|json|ts)$`,
-  );
+export const getLocaleList = async (opts: IGetLocaleFileListOpts): Promise<IGetLocaleFileListResult[]> => {
+  const { localeFolder, separator = '-', absSrcPath = '', addAntdLocales, resolveKey = 'dayjs' } = opts;
+  const localeFileMath = new RegExp(`^([a-z]{2})${separator}?([A-Z]{2})?\.(js|json|ts)$`);
 
   const localeFiles = glob
     .sync('*.{ts,js,json}', {
@@ -97,10 +73,7 @@ export const getLocaleList = async (
     .filter((p) => localeFileMath.test(basename(p)) && existsSync(p))
     .map((fullName) => {
       const fileName = basename(fullName);
-      const fileInfo = localeFileMath
-        .exec(fileName)
-        ?.slice(1, 3)
-        ?.filter(Boolean);
+      const fileInfo = localeFileMath.exec(fileName)?.slice(1, 3)?.filter(Boolean);
       return {
         name: (fileInfo || []).join(separator),
         path: fullName,
@@ -112,9 +85,7 @@ export const getLocaleList = async (
   const promises = Object.keys(groups).map(async (name) => {
     const [lang, country = ''] = name.split(separator);
     const { dayjsLocale } = getDayjsLocale(lang, country, resolveKey);
-    const antdLocale = lodash
-      .uniq(await addAntdLocales({ lang, country }))
-      .filter((localePath) => modulesHasLocale(localePath));
+    const antdLocale = lodash.uniq(await addAntdLocales({ lang, country })).filter((localePath) => modulesHasLocale(localePath));
 
     return {
       lang,
@@ -131,9 +102,7 @@ export const getLocaleList = async (
   return Promise.all(promises);
 };
 
-export const exactLocalePaths = (
-  data: IGetLocaleFileListResult[],
-): string[] => {
+export const exactLocalePaths = (data: IGetLocaleFileListResult[]): string[] => {
   return lodash.flatten(data.map((item) => item.paths));
 };
 

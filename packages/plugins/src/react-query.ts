@@ -1,6 +1,6 @@
-import { IApi } from '@porosjs/umi';
 import { winPath } from '@umijs/utils';
 import { dirname } from 'path';
+import { IApi } from 'umi';
 import { resolveProjectDep } from './utils/resolveProjectDep';
 import { withTmpPath } from './utils/withTmpPath';
 
@@ -21,12 +21,8 @@ export default (api: IApi) => {
   });
 
   let pkgPath: string;
-  const defaultPkgPath = winPath(
-    dirname(require.resolve('@tanstack/react-query/package.json')),
-  );
-  const devtoolPkgPath = winPath(
-    dirname(require.resolve('@tanstack/react-query-devtools/package.json')),
-  );
+  const defaultPkgPath = winPath(dirname(require.resolve('@tanstack/react-query/package.json')));
+  const devtoolPkgPath = winPath(dirname(require.resolve('@tanstack/react-query-devtools/package.json')));
   try {
     const localQueryPath = resolveProjectDep({
       pkg: api.pkg,
@@ -55,11 +51,7 @@ export default (api: IApi) => {
   api.onGenerateFiles(() => {
     const enableDevTools = api.config.reactQuery.devtool !== false;
     const enableQueryClient = api.config.reactQuery.queryClient !== false;
-    const reactQueryRuntimeCode = api.appData.appJS?.exports.includes(
-      'reactQuery',
-    )
-      ? `import { reactQuery as reactQueryConfig } from '@/renderer/app';`
-      : `const reactQueryConfig = {};`;
+    const reactQueryRuntimeCode = api.appData.appJS?.exports.includes('reactQuery') ? `import { reactQuery as reactQueryConfig } from '@/renderer/app';` : `const reactQueryConfig = {};`;
     api.writeTmpFile({
       path: 'runtime.tsx',
       content: enableQueryClient
@@ -72,11 +64,7 @@ export function rootContainer(container) {
   return (
     <QueryClientProvider client={client} context={defaultContext}>
       {container}
-      ${
-        enableDevTools
-          ? '<ReactQueryDevtools context={defaultContext} initialIsOpen={false} {...(reactQueryConfig.devtool || {})} />'
-          : ''
-      }
+      ${enableDevTools ? '<ReactQueryDevtools context={defaultContext} initialIsOpen={false} {...(reactQueryConfig.devtool || {})} />' : ''}
     </QueryClientProvider>
   );
 }

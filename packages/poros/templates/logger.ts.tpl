@@ -2,6 +2,8 @@
 import logger from '{{{electronLogPath}}}/main';
 import { isDev } from './utils';
 
+console.log = logger.log;
+
 {{#electronLogOptions}}
 function setProps(obj: any, logObj: any) {
   for (const key in obj) {

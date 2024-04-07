@@ -1,1 +1,1 @@
-module.exports = require('@porosjs/umi/plugin-utils');
+module.exports = require('umi/plugin-utils');

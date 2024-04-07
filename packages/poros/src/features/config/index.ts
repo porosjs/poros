@@ -1,8 +1,8 @@
 import { Env } from '@porosjs/bundler-webpack/dist/types';
-import { IApi } from '@porosjs/umi';
 import { BaseGenerator, fsExtra, lodash, winPath } from '@umijs/utils';
 import { existsSync } from '@umijs/utils/compiled/fs-extra';
 import path from 'path';
+import { IApi } from 'umi';
 import { PATHS } from '../../constants';
 import { getDevBuildPath, getMainBuildPath } from '../electron/utils';
 import { getSchemas } from './schema';
@@ -55,7 +55,7 @@ export default (api: IApi) => {
   });
 
   api.onCheckPkgJSON(({ current }) => {
-    const hasUmi = current.dependencies?.['@porosjs/umi'] || current.devDependencies?.['@porosjs/umi'];
+    const hasUmi = current.dependencies?.['umi'] || current.devDependencies?.['umi'];
     if (hasUmi) {
       throw new Error(`You are using ${api.appData.umi.importSource}, please remove umi from your dependencies in package.json.`);
     }

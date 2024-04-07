@@ -1,4 +1,4 @@
-import { IApi, RUNTIME_TYPE_FILE_NAME } from '@porosjs/umi';
+import { IApi, RUNTIME_TYPE_FILE_NAME } from 'umi';
 import { withTmpPath } from './utils/withTmpPath';
 
 export default (api: IApi) => {
@@ -39,11 +39,7 @@ export default (api: IApi) => {
       content: `
 import React from 'react';
 import { useModel } from '@@/plugin-model';
-${
-  loading
-    ? `import Loading from '${loading}'`
-    : `function Loading() { return <div />; }`
-}
+${loading ? `import Loading from '${loading}'` : `function Loading() { return <div />; }`}
 export default function InitialStateProvider(props: any) {
   const appLoaded = React.useRef(false);
   const { loading = false } = useModel("@@initialState") || {};

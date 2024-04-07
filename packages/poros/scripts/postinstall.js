@@ -1,36 +1,111 @@
-const { readFileSync,writeFileSync } = require("@umijs/utils/compiled/fs-extra");
-const { join, dirname } = require("path");
+const { fsExtra } = require('@umijs/utils');
+const {
+  readFileSync,
+  writeFileSync,
+} = require('@umijs/utils/compiled/fs-extra');
+const { join, dirname } = require('path');
 
-function annotate(filePath, lines){
-  const contents = readFileSync(filePath, 'utf-8').split('\n');
+const isPnpm = fsExtra.existsSync(join(process.cwd(), 'node_modules/.pnpm'));
+
+function annotate(content, lines) {
+  const contents = content.split('\n');
 
   for (const line of lines) {
-    const lineContent = contents[line - 1]
-    if(!lineContent.startsWith('//')){
-      contents.splice(line - 1, 1 ,'//' + lineContent);
+    const lineContent = contents[line - 1];
+    if (!lineContent.startsWith('//')) {
+      contents.splice(line - 1, 1, '//' + lineContent);
     }
   }
 
-  writeFileSync(filePath, contents.join('\n'), 'utf8');
+  return contents.join('\n');
 }
 
-function insert(filePath, line, lineContent){
-  const contents = readFileSync(filePath, 'utf-8').split('\n');
+function replace(content, lines) {
+  const contents = content.split('\n');
 
-  contents.splice(line-1, 0, lineContent)
+  for (const [line, lineContent] of lines) {
+    contents.splice(line - 1, 1, lineContent);
+  }
 
-  writeFileSync(filePath, contents.join('\n'), 'utf8');
+  return contents.join('\n');
 }
 
-const webpackIndexPath = require.resolve('@umijs/bundler-webpack');
-const webpackServerPath = join(webpackIndexPath,'../server/server.js');
-const webpackServerAnnotates = [211, 212, 213, 214];
-annotate(webpackServerPath, webpackServerAnnotates);
-console.log('@umijs/bundler-webpack already patched');
+function copyWithPnpm(name) {
+  if (isPnpm) {
+    const packagePath = require.resolve(name);
+    fsExtra.copySync(packagePath, join(__dirname, 'node_modules', name));
+  }
+}
 
-const viteIndexPath = require.resolve('@umijs/bundler-vite');
-const viteServerPath = join(viteIndexPath,'../server/server.js');
-const viteServerAnnotates = [110, 111, 112, 113];
-annotate(viteServerPath, viteServerAnnotates);
-console.log('@umijs/bundler-vite already patched');
+function patchPackage(name, opts) {
+  copyWithPnpm(name);
+  for (const opt of opts) {
+    const { file, annotates, replaces } = opt;
+    const filePath = join(
+      dirname(require.resolve(`${name}/package.json`)),
+      file,
+    );
 
+    let content = readFileSync(filePath, 'utf-8');
+
+    if (!content.startsWith('/*PATCHED*/')) {
+      content = annotate(content, annotates);
+      content = replace(content, replaces);
+
+      writeFileSync(filePath, '/*PATCHED*/' + content, 'utf8');
+
+      console.log(`${name} already patched`);
+    }
+  }
+}
+
+patchPackage('@umijs/bundler-webpack', [
+  {
+    file: 'dist/server/server.js',
+    annotates: [211, 212, 213, 214],
+  },
+  {
+    file: 'dist/build.d.ts',
+    replaces: [[19, "} & Pick<IConfigOpts, 'cache' | 'pkg' | 'env'>;"]],
+  },
+  {
+    file: 'dist/build.js',
+    replaces: [[50, '    env: opts.env ?? import_types.Env.production,']],
+  },
+]);
+
+patchPackage('@umijs/bundler-vite', [
+  {
+    file: 'dist/server/server.js',
+    annotates: [110, 111, 112, 113],
+  },
+  {
+    file: 'dist/build.d.ts',
+    replaces: [
+      [
+        12,
+        `    modifyViteConfig?: Function;
+  env?: Env;
+}`,
+      ],
+      [1, `import { Env, IBabelPlugin, IConfig } from './types';`],
+    ],
+  },
+  {
+    file: 'dist/build.js',
+    replaces: [[82, '    env: opts.env ?? import_types.Env.production,']],
+  },
+]);
+
+patchPackage('@umijs/preset-umi', [
+  {
+    file: 'dist/features/appData/appData.js',
+    replaces: [
+      [57, `    memo.hasSrcDir = api.paths.absSrcPath.includes("/src");`],
+    ],
+  },
+  {
+    file: 'dist/build.js',
+    replaces: [[82, '    env: opts.env ?? import_types.Env.production,']],
+  },
+]);

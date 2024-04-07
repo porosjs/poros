@@ -1,16 +1,8 @@
-import { IApi, RUNTIME_TYPE_FILE_NAME } from '@porosjs/umi';
-import { Mustache, fsExtra, lodash, winPath } from '@porosjs/umi/plugin-utils';
 import { existsSync, readFileSync } from 'fs';
 import { dirname, join } from 'path';
-import {
-  IAddAntdLocales,
-  IGetLocaleFileListResult,
-  exactLocalePaths,
-  getAntdLocale,
-  getDayjsLocale,
-  getLocaleList,
-  isNeedPolyfill,
-} from './utils/localeUtils';
+import { IApi, RUNTIME_TYPE_FILE_NAME } from 'umi';
+import { Mustache, fsExtra, lodash, winPath } from 'umi/plugin-utils';
+import { IAddAntdLocales, IGetLocaleFileListResult, exactLocalePaths, getAntdLocale, getDayjsLocale, getLocaleList, isNeedPolyfill } from './utils/localeUtils';
 import { withTmpPath } from './utils/withTmpPath';
 
 interface ILocaleConfig {
@@ -21,8 +13,7 @@ interface ILocaleConfig {
   baseSeparator?: string;
 }
 
-export const packageNormalize = (packageName: string) =>
-  packageName.replace(/[@\/\-.]/g, '_');
+export const packageNormalize = (packageName: string) => packageName.replace(/[@\/\-.]/g, '_');
 
 export default (api: IApi) => {
   api.describe({
@@ -42,9 +33,7 @@ export default (api: IApi) => {
     enableBy: api.EnableBy.config,
   });
 
-  const reactIntlPkgPath = winPath(
-    dirname(require.resolve('react-intl/package')),
-  );
+  const reactIntlPkgPath = winPath(dirname(require.resolve('react-intl/package')));
 
   // polyfill
   api.addEntryImportsAhead(() =>
@@ -61,18 +50,11 @@ export default (api: IApi) => {
     await api.applyPlugins({
       key: 'addAntdLocales',
       type: api.ApplyPluginsType.add,
-      initialValue: [
-        `antd/${api.config?.ssr ? 'lib' : 'es'}/locale/${getAntdLocale(
-          args.lang,
-          args.country,
-        )}`,
-      ],
+      initialValue: [`antd/${api.config?.ssr ? 'lib' : 'es'}/locale/${getAntdLocale(args.lang, args.country)}`],
       args,
     });
 
-  const getList = async (
-    resolveKey: string,
-  ): Promise<IGetLocaleFileListResult[]> => {
+  const getList = async (resolveKey: string): Promise<IGetLocaleFileListResult[]> => {
     const { paths } = api;
     return getLocaleList({
       localeFolder: 'locales',
@@ -84,14 +66,9 @@ export default (api: IApi) => {
   };
 
   api.onGenerateFiles(async () => {
-    const localeTpl = readFileSync(
-      join(__dirname, '../libs/locale/renderer/locale.tpl'),
-      'utf-8',
-    );
+    const localeTpl = readFileSync(join(__dirname, '../libs/locale/renderer/locale.tpl'), 'utf-8');
     const resolveKey = 'dayjs';
-    const dayjsPkgPath = winPath(
-      dirname(require.resolve(`${resolveKey}/package.json`)),
-    );
+    const dayjsPkgPath = winPath(dirname(require.resolve(`${resolveKey}/package.json`)));
 
     const { baseSeparator, antd, title } = {
       baseSeparator: '-',
@@ -100,12 +77,8 @@ export default (api: IApi) => {
     };
     const defaultLocale = api.config.locale?.default || `zh${baseSeparator}CN`;
     const localeList = await getList(resolveKey);
-    const dayjsLocales = localeList
-      .map(({ dayjsLocale }) => dayjsLocale)
-      .filter((locale) => locale);
-    const antdLocales = localeList
-      .map(({ antdLocale }) => antdLocale)
-      .filter((locale) => locale);
+    const dayjsLocales = localeList.map(({ dayjsLocale }) => dayjsLocale).filter((locale) => locale);
+    const antdLocales = localeList.map(({ antdLocale }) => antdLocale).filter((locale) => locale);
 
     let DayjsLocales = dayjsLocales;
     let DefaultDayjsLocale = '';
@@ -148,10 +121,7 @@ export default (api: IApi) => {
       path: 'renderer/locale.tsx',
     });
 
-    const localeExportsTpl = readFileSync(
-      join(__dirname, '../libs/locale/renderer/localeExports.tpl'),
-      'utf-8',
-    );
+    const localeExportsTpl = readFileSync(join(__dirname, '../libs/locale/renderer/localeExports.tpl'), 'utf-8');
     const localeDirName = 'locales';
     const localeDirPath = join(api.paths!.absSrcPath!, '..', localeDirName);
     api.writeTmpFile({
@@ -177,10 +147,7 @@ export default (api: IApi) => {
       }),
     });
     // runtime.tsx
-    const runtimeTpl = readFileSync(
-      join(__dirname, '../libs/locale/renderer/runtime.tpl'),
-      'utf-8',
-    );
+    const runtimeTpl = readFileSync(join(__dirname, '../libs/locale/renderer/runtime.tpl'), 'utf-8');
     api.writeTmpFile({
       path: 'renderer/runtime.tsx',
       content: Mustache.render(runtimeTpl, {
@@ -189,10 +156,7 @@ export default (api: IApi) => {
     });
 
     // SelectLang.tsx
-    const selectLang = readFileSync(
-      join(__dirname, '../libs/locale/renderer/SelectLang.tpl'),
-      'utf-8',
-    );
+    const selectLang = readFileSync(join(__dirname, '../libs/locale/renderer/SelectLang.tpl'), 'utf-8');
 
     api.writeTmpFile({
       path: 'renderer/SelectLang.tsx',
@@ -229,10 +193,7 @@ export interface IRuntimeConfig {
     });
 
     // main localeExports
-    const mainLocaleExportsTpl = readFileSync(
-      join(__dirname, '../libs/locale/main/localeExports.tpl'),
-      'utf-8',
-    );
+    const mainLocaleExportsTpl = readFileSync(join(__dirname, '../libs/locale/main/localeExports.tpl'), 'utf-8');
     api.writeTmpFile({
       path: 'main/localeExports.ts',
       content: Mustache.render(mainLocaleExportsTpl, {
@@ -249,9 +210,7 @@ export interface IRuntimeConfig {
         })),
         DefaultLocale: JSON.stringify(defaultLocale),
         IntlPkgPath: winPath(dirname(require.resolve('@formatjs/intl'))),
-        ElectronLogPath: winPath(
-          dirname(require.resolve('electron-log/package.json')),
-        ),
+        ElectronLogPath: winPath(dirname(require.resolve('electron-log/package.json'))),
       }),
     });
   });
@@ -264,9 +223,7 @@ export interface IRuntimeConfig {
   });
 
   // Runtime Plugin
-  api.addRuntimePlugin(() => [
-    withTmpPath({ api, path: 'renderer/runtime.tsx' }),
-  ]);
+  api.addRuntimePlugin(() => [withTmpPath({ api, path: 'renderer/runtime.tsx' })]);
   api.addRuntimePluginKey(() => ['locale']);
 
   // watch locale files
@@ -279,12 +236,7 @@ export interface IRuntimeConfig {
 function genLocalePreload(api: IApi) {
   fsExtra.copySync(
     join(__dirname, '../libs/locale/main/locale-preload.js'),
-    api.env === 'development'
-      ? join(
-          api.paths.absTmpPath,
-          './plugin-electron/build/preload/locale-preload.js',
-        )
-      : join(api.paths.absOutputPath, './preload/locale-preload.js'),
+    api.env === 'development' ? join(api.paths.absTmpPath, './plugin-electron/build/preload/locale-preload.js') : join(api.paths.absOutputPath, './preload/locale-preload.js'),
     { overwrite: true },
   );
 }

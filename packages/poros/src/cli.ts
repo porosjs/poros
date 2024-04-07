@@ -1,11 +1,8 @@
-import { dev } from '@porosjs/umi/dist/cli/dev';
-import {
-  checkLocal,
-  checkVersion as checkNodeVersion,
-} from '@porosjs/umi/dist/cli/node';
-import { DEV_COMMAND } from '@porosjs/umi/dist/constants';
-import { Service } from '@porosjs/umi/dist/service/service';
 import { chalk, logger, yParser } from '@umijs/utils';
+import { dev } from 'umi/dist/cli/dev';
+import { checkLocal, checkVersion as checkNodeVersion } from 'umi/dist/cli/node';
+import { DEV_COMMAND } from 'umi/dist/constants';
+import { Service } from 'umi/dist/service/service';
 // @ts-ignore
 import { installAppDeps } from 'electron-builder/out/cli/install-app-deps';
 
@@ -31,9 +28,7 @@ export async function run(opts: IOpts = {}) {
   } else if (command === 'build') {
     process.env.NODE_ENV = 'production';
   }
-  opts.presets = opts?.presets
-    ? opts?.presets.concat([require.resolve('./preset')])
-    : [require.resolve('./preset')];
+  opts.presets = opts?.presets ? opts?.presets.concat([require.resolve('./preset')]) : [require.resolve('./preset')];
 
   if (opts?.presets) {
     process.env.UMI_PRESETS = opts.presets.join(',');

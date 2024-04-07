@@ -1,1 +1,1 @@
-module.exports = require('@porosjs/umi/prettier');
+module.exports = require('umi/prettier');

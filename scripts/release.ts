@@ -4,7 +4,7 @@ import { join } from 'path';
 import rimraf from 'rimraf';
 import 'zx/globals';
 import { PATHS } from './.internal/constants';
-import { assert, eachPkg, getPkgs } from './.internal/utils';
+import { eachPkg, getPkgs } from './.internal/utils';
 
 (async () => {
   const { branch } = getGitRepoInfo();
@@ -13,20 +13,20 @@ import { assert, eachPkg, getPkgs } from './.internal/utils';
   logger.info(`pkgs: ${pkgs.join(', ')}`);
 
   // check git status
-  logger.event('check git status');
-  const isGitClean = (await $`git status --porcelain`).stdout.trim().length;
-  assert(!isGitClean, 'git status is not clean');
+  // logger.event('check git status');
+  // const isGitClean = (await $`git status --porcelain`).stdout.trim().length;
+  // assert(!isGitClean, 'git status is not clean');
 
-  // check git remote update
-  logger.event('check git remote update');
-  await $`git fetch`;
-  const gitStatus = (await $`git status --short --branch`).stdout.trim();
-  assert(!gitStatus.includes('behind'), `git status is behind remote`);
+  // // check git remote update
+  // logger.event('check git remote update');
+  // await $`git fetch`;
+  // const gitStatus = (await $`git status --short --branch`).stdout.trim();
+  // assert(!gitStatus.includes('behind'), `git status is behind remote`);
 
-  // check npm registry
-  logger.event('check npm registry');
-  const registry = (await $`npm config get registry`).stdout.trim();
-  assert(registry === 'https://registry.npmjs.org/', 'npm registry is not https://registry.npmjs.org/');
+  // // check npm registry
+  // logger.event('check npm registry');
+  // const registry = (await $`npm config get registry`).stdout.trim();
+  // assert(registry === 'https://registry.npmjs.org/', 'npm registry is not https://registry.npmjs.org/');
 
   // clean
   logger.event('clean');

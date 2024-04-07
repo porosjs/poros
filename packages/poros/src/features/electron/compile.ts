@@ -1,12 +1,12 @@
 import WebpackBar from '@porosjs/bundler-webpack/compiled/webpackbar';
 import ProgressPlugin from '@porosjs/bundler-webpack/dist/plugins/ProgressPlugin';
 import { Env } from '@porosjs/bundler-webpack/dist/types';
-import { IApi } from '@porosjs/umi';
 import { chokidar, fsExtra, glob, lodash, logger } from '@umijs/utils';
 import { debounce, isEmpty } from '@umijs/utils/compiled/lodash';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import { build } from 'electron-builder';
 import path from 'path';
+import { IApi } from 'umi';
 import yargs from 'yargs';
 import { PATHS, PLUGIN_DIR_NAME } from '../../constants';
 import externalPackagesConfig from './external-packages.config';

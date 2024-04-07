@@ -1,8 +1,8 @@
-import { IApi } from '@porosjs/umi';
 import { Mustache, fsExtra, winPath } from '@umijs/utils';
 import { readFileSync } from '@umijs/utils/compiled/fs-extra';
 import fs from 'fs';
 import path from 'path';
+import { IApi } from 'umi';
 import { IpcUtils } from './utils/ipcUtils';
 
 export default (api: IApi) => {

@@ -4,6 +4,7 @@ import {
   IpcHandle,
   PorosBrowserWindow,
   PorosBrowserWindowOptions,
+  isWindows,
   logger,
 } from 'poros';
 import si from 'systeminformation';
@@ -24,9 +25,9 @@ class MainWindow extends PorosBrowserWindow {
    */
   protected static readonly OPTIONS: PorosBrowserWindowOptions = {
     title: 'Poros',
-    height: 628,
+    height: 630,
     width: 542,
-    minHeight: 628,
+    minHeight: 630,
     minWidth: 542,
     hideOnClose: true,
     webPreferences: {
@@ -71,13 +72,13 @@ class MainWindow extends PorosBrowserWindow {
 
   @IpcHandle
   async getVersions() {
-    const { codename } = await si.osInfo();
+    const { codename, distro } = await si.osInfo();
 
     return {
       electron: process.versions.electron,
       node: process.versions.node,
       chrome: process.versions.chrome,
-      os: codename,
+      os: isWindows ? distro : codename,
     };
   }
 
