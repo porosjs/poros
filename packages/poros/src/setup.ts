@@ -4,54 +4,57 @@ import { dirname, join } from 'path';
 
 const isPnpm = existsSync(join(process.cwd(), 'node_modules/.pnpm'));
 
-function annotate(content: string, lines: number[]) {
-  const contents = content.split('\n');
-
+function annotate(contents: string[], lines: number[]) {
   for (const line of lines) {
     const lineContent = contents[line - 1];
     if (!lineContent.startsWith('//')) {
       contents.splice(line - 1, 1, '//' + lineContent);
     }
   }
-
-  return contents.join('\n');
 }
 
-function replace(content: string, lines: [number, string][]) {
-  const contents = content.split('\n');
-
+function replace(contents: string[], lines: [number, string][]) {
   for (const [line, lineContent] of lines) {
     contents.splice(line - 1, 1, lineContent);
   }
-
-  return contents.join('\n');
 }
 
 function copyWithPnpm(name: string) {
+  const sourcePath = dirname(require.resolve(`${name}/package.json`));
   if (isPnpm) {
-    const sourcePath = dirname(require.resolve(`${name}/package.json`));
     const distPath = join(__dirname, '../node_modules', name);
     if (sourcePath !== distPath) {
       removeSync(distPath);
       copySync(sourcePath, distPath);
+
+      console.log(require.cache[require.resolve(name)]);
     }
+    return distPath;
   }
+
+  return sourcePath;
 }
 
 function patchPackage(name: string, opts: { file: string; annotates?: number[]; replaces?: [number, string][] }[]) {
-  copyWithPnpm(name);
+  const dirPath = copyWithPnpm(name);
+
   let patched = false;
   for (const opt of opts) {
     const { file, annotates = [], replaces = [] } = opt;
-    const filePath = join(dirname(require.resolve(`${name}/package.json`)), file);
+    const filePath = join(dirPath, file);
 
-    let content = readFileSync(filePath, 'utf-8');
+    let contents = readFileSync(filePath, 'utf-8').split('\n');
 
-    if (!content.startsWith('/*PATCHED*/')) {
-      content = annotate(content, annotates);
-      content = replace(content, replaces);
+    if (contents[0] !== '/*PATCHED*/') {
+      annotate(contents, annotates);
+      replace(contents, replaces);
 
-      writeFileSync(filePath, '/*PATCHED*/' + content, 'utf8');
+      writeFileSync(
+        filePath,
+        `/*PATCHED*/
+${contents.join('\n')}`,
+        'utf8',
+      );
 
       patched = true;
     }
@@ -60,6 +63,8 @@ function patchPackage(name: string, opts: { file: string; annotates?: number[]; 
 }
 
 export default () => {
+  patchPackage('umi', []);
+
   patchPackage('@umijs/bundler-webpack', [
     {
       file: 'dist/server/server.js',
@@ -129,10 +134,10 @@ export default () => {
           68,
           `          component = component.replace(
             "@/",
-            \`\${(0, import_path.relative)(
+            \`\${(0, import_utils.winPath)((0, import_path.relative)(
               opts.api.paths.absPagesPath,
               opts.api.config.alias["@"]
-            )}/\`
+            ))}/\`
           );`,
         ],
         [77, `          (0, import_utils.winPath)(\`\${opts.api.config.alias["@"]}/\`),`],
@@ -150,6 +155,7 @@ export default () => {
     },
     {
       file: 'dist/features/tmpFiles/tmpFiles.js',
+      annotates: [113],
       replaces: [
         [72, '    const umiTempDir = (0, import_utils.winPath)((0, import_path.relative)(api.cwd, api.paths.absTmpPath));'],
         [86, `            target: "ES5",`],
@@ -158,8 +164,8 @@ export default () => {
         [
           100,
           `            allowSyntheticDefaultImports: true,
-          emitDecoratorMetadata: true,
-          experimentalDecorators: true,`,
+            emitDecoratorMetadata: true,
+            experimentalDecorators: true,`,
         ],
         [
           352,
