@@ -5,7 +5,7 @@ import { DEV_COMMAND } from 'umi/dist/constants';
 import { Service } from 'umi/dist/service/service';
 // @ts-ignore
 import { installAppDeps } from 'electron-builder/out/cli/install-app-deps';
-import setup from './setup';
+import patch from './patch';
 
 interface IOpts {
   presets?: string[];
@@ -46,12 +46,10 @@ export async function run(opts: IOpts = {}) {
       platform: process.platform,
       arch: process.arch === 'arm' ? 'armv7l' : process.arch,
     });
+  } else if (command === 'patch') {
+    patch();
   } else {
     logger.info(chalk.cyan.bold(`Poros v${version}`));
-
-    if (command === 'setup') {
-      setup();
-    }
 
     try {
       await new Service({

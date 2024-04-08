@@ -1,4 +1,3 @@
-import { logger } from '@umijs/utils';
 import { copySync, existsSync, readFileSync, removeSync, writeFileSync } from '@umijs/utils/compiled/fs-extra';
 import { dirname, join } from 'path';
 
@@ -26,8 +25,6 @@ function copyWithPnpm(name: string) {
     if (sourcePath !== distPath) {
       removeSync(distPath);
       copySync(sourcePath, distPath);
-
-      console.log(require.cache[require.resolve(name)]);
     }
     return distPath;
   }
@@ -59,7 +56,7 @@ ${contents.join('\n')}`,
       patched = true;
     }
   }
-  if (patched) logger.info(`${name} already patched`);
+  if (patched) console.log(`> ${name} already patched`);
 }
 
 export default () => {
