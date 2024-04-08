@@ -1,7 +1,6 @@
-import { copySync, existsSync, readFileSync, removeSync, writeFileSync } from '@umijs/utils/compiled/fs-extra';
+import { logger } from '@umijs/utils';
+import { readFileSync, writeFileSync } from '@umijs/utils/compiled/fs-extra';
 import { dirname, join } from 'path';
-
-const isPnpm = existsSync(join(process.cwd(), 'node_modules/.pnpm'));
 
 function annotate(contents: string[], lines: number[]) {
   for (const line of lines) {
@@ -18,22 +17,8 @@ function replace(contents: string[], lines: [number, string][]) {
   }
 }
 
-function copyWithPnpm(name: string) {
-  const sourcePath = dirname(require.resolve(`${name}/package.json`));
-  if (isPnpm) {
-    const distPath = join(__dirname, '../node_modules', name);
-    if (sourcePath !== distPath) {
-      removeSync(distPath);
-      copySync(sourcePath, distPath);
-    }
-    return distPath;
-  }
-
-  return sourcePath;
-}
-
 function patchPackage(name: string, opts: { file: string; annotates?: number[]; replaces?: [number, string][] }[]) {
-  const dirPath = copyWithPnpm(name);
+  const dirPath = dirname(require.resolve(`${name}/package.json`));
 
   let patched = false;
   for (const opt of opts) {
@@ -56,12 +41,10 @@ ${contents.join('\n')}`,
       patched = true;
     }
   }
-  if (patched) console.log(`> ${name} already patched`);
+  if (patched) logger.info(`${name} already patched`);
 }
 
 export default () => {
-  patchPackage('umi', []);
-
   patchPackage('@umijs/bundler-webpack', [
     {
       file: 'dist/server/server.js',

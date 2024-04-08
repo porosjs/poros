@@ -46,10 +46,12 @@ export async function run(opts: IOpts = {}) {
       platform: process.platform,
       arch: process.arch === 'arm' ? 'armv7l' : process.arch,
     });
-  } else if (command === 'patch') {
-    patch();
   } else {
     logger.info(chalk.cyan.bold(`Poros v${version}`));
+
+    if (command === 'setup') {
+      patch();
+    }
 
     try {
       await new Service({
