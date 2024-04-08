@@ -21,6 +21,10 @@ export default class PorosApplication {
       app.exit(0);
     });
 
+    app.on('window-all-closed', () => {
+      app.exit(0);
+    });
+
     app.on('activate', () => {
       PorosWindowManager.get(MainWindow)?.show();
     });
