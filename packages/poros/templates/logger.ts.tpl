@@ -25,8 +25,8 @@ logger.transports.console.format = ({
   message: { level, data, date, scope, variables },
 }) =>
   data.map(
-    (content) =>
-      `---${level}---[${variables.processType === 'renderer' ? 'Renderer' : 'Main'}] ${date.getHours().toString(10).padStart(2, '0')}:${date.getMinutes().toString(10).padStart(2, '0')}:${date.getSeconds().toString(10).padStart(2, '0')}.${date.getMilliseconds().toString(10)}${scope?` (${scope})`:''} ${separator} ${content}`,
+    (content, index) =>
+      index === 0 ? `---${level}---[${variables.processType === 'renderer' ? 'Renderer' : 'Main'}] ${date.getHours().toString(10).padStart(2, '0')}:${date.getMinutes().toString(10).padStart(2, '0')}:${date.getSeconds().toString(10).padStart(2, '0')}.${date.getMilliseconds().toString(10)}${scope?` (${scope})`:''} ${separator} ${content}` : content,
   );
 
 export default logger;
