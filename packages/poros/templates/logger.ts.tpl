@@ -1,6 +1,6 @@
 // @ts-nocheck
 import logger from '{{{electronLogPath}}}/main';
-import { isDev } from './utils';
+import { isWindows } from './utils';
 
 console.log = logger.log;
 
@@ -18,20 +18,15 @@ function setProps(obj: any, logObj: any) {
 }
 
 const options = {{{electronLogOptions}}};
-if(options?.transports?.console?.format) options.transports.console.format = undefined;
 setProps(options, logger);
 {{/electronLogOptions}}
+const separator = isWindows ? '>' : '›';
+logger.transports.console.format = ({
+  message: { level, data, date, scope, variables },
+}) =>
+  data.map(
+    (content) =>
+      `---${level}---[${variables.processType === 'renderer' ? 'Renderer' : 'Main'}] ${date.getHours().toString(10).padStart(2, '0')}:${date.getMinutes().toString(10).padStart(2, '0')}:${date.getSeconds().toString(10).padStart(2, '0')}.${date.getMilliseconds().toString(10)}${scope?` (${scope})`:''} ${separator} ${content}`,
+  );
 
-const _logger = new Proxy(logger, {
-  get: function(target, property) {
-     if (isDev && ['warn', 'debug', 'error'].includes(property)) {
-      return function(...params: any[]) {
-        const [first, ...rest] = params;
-        target[property](`---${property}---${first}`, ...rest);
-      };
-    }
-    return target[property];
-  }
-});
-
-export default _logger;
+export default logger;

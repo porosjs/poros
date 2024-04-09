@@ -238,10 +238,10 @@ export const runDev = async (api: IApi) => {
 
     spawnProcess = spawn(electronPath, [path.join(getDevBuildPath(api), 'main.js')]);
     spawnProcess.stdout.on('data', (data) => {
-      printLogs(data.toString());
+      printLogs(data.toString(), 'info');
     });
     spawnProcess.stderr.on('data', (data) => {
-      printLogs(data.toString());
+      printLogs(data.toString(), 'error');
     });
     spawnProcess.on('close', (_, signal) => {
       if (signal !== 'SIGKILL') {

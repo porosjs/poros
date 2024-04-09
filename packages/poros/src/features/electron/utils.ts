@@ -106,27 +106,18 @@ export function getDevBanner(offset = 8) {
 }
 
 /**
- * 判断是否是否为渲染进程日志打印，渲染进程日志包涵（path）scope
- * @param content
- * @returns
- */
-export function isRendererLog(content: string) {
-  return /\(#\/.*\)/.test(content);
-}
-
-/**
- * 区分日志类型[debug, warn, error]
+ * 区分日志类型
  * @param log
  */
-export function typeLog(log: string) {
-  const matches = log.match(/(\d{2}:\d{2}:\d{2}\.\d{3}\s+[\s\S]*?›\s)---(.*)---(.*)$/);
+export function typeLog(log: string, defaultType: 'info' | 'error') {
+  const matches = log.match(/^---(.*)---(.*)$/);
   if (matches?.length) {
-    const [, prefix, type, content] = matches ?? [];
+    const [, type, content] = matches ?? [];
 
-    return [type, `${prefix}${content}`];
+    return [type, content];
   }
 
-  return ['info', log];
+  return [defaultType, log];
 }
 
 /**
@@ -135,22 +126,23 @@ export function typeLog(log: string) {
  * @returns
  */
 export function splitLog(content: string) {
-  const regex = /(\d{2}:\d{2}:\d{2}\.\d{3}\s+[\s\S]*?›[\s\S]*?)(?=\d{2}:\d{2}:\d{2}\.\d{3}|$)/g;
-  const matches = Array.from(content.matchAll(regex), (m) => m[0].trim().replace(/\s+›/, ' ›'));
-  return matches;
+  const regex = /(---(.*)---\[(Main|Renderer)\] \d{2}:\d{2}:\d{2}\.\d{3}\s+[\s\S]*?[›>][\s\S]*?)(?=---.*---|$)/g;
+  const matches = Array.from(content.matchAll(regex), (m) => m[0].trim());
+  if (matches.length) return matches;
+  return [content];
 }
 
-export function printLogs(content: string) {
+export function printLogs(content: string, defaultType: 'info' | 'error') {
   const log = filterText(content);
   if (log) {
-    splitLog(content).forEach((item) => {
-      const [type, content] = typeLog(item);
-      const prefix = `[${isRendererLog(content) ? 'Renderer' : 'Main'}] `;
+    splitLog(log).forEach((item) => {
+      const [type, content] = typeLog(item, defaultType);
       if (type === 'debug') {
-        console.log(chalk.gray('debug') + ' - ' + prefix + content);
+        console.log(chalk.gray('debug') + ' - ' + content);
       } else {
         // @ts-ignore
-        logger[type](`${prefix}${content}`);
+        if (logger[type]) logger[type](content);
+        else logger[defaultType](content);
       }
     });
   }

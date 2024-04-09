@@ -8,13 +8,6 @@ const _logger = new Proxy(logger, {
   get: function(target, property) {
     const _target = target.scope('#' + history.location.pathname);
 
-    if (process.env.NODE_ENV==='development' && ['warn', 'debug', 'error'].includes(property)) {
-      return function(...params: any[]) {
-        const [first, ...rest] = params;
-        _target[property](`---${property}---${first}`, ...rest);
-      };
-    }
-
     return _target[property];
   }
 });
