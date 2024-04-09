@@ -12,7 +12,8 @@ export default defineConfig({
     transports: {
       file: {
         level: 'warn',
-        format: '[{y}-{m}-{d} {h}:{i}:{s}.{ms}] [{level}]{scope} {text}',
+        format:
+          '[{y}-{m}-{d} {h}:{i}:{s}.{ms}] [{processType}] [{level}]{scope} {text}',
         maxSize: 1048576,
       },
       console: {
