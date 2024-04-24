@@ -126,7 +126,7 @@ export function typeLog(log: string, defaultType: 'info' | 'error') {
  * @returns
  */
 export function splitLog(content: string) {
-  const regex = /(---(.*)---\[(Main|Renderer)\] \d{2}:\d{2}:\d{2}\.\d{3}\s+[\s\S]*?[›>][\s\S]*?)(?=---.*---|$)/g;
+  const regex = /(---(.*)---\[(Main|Renderer)\] \d{2}:\d{2}:\d{2}\.\d{1,3}\s+[\s\S]*?[›>][\s\S]*?)(?=---.*---|$)/g;
   const matches = Array.from(content.matchAll(regex), (m) => m[0].trim());
   if (matches.length) return matches;
   return [content];

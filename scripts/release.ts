@@ -48,44 +48,25 @@ import { assert, eachPkg, getPkgs } from './.internal/utils';
   }
   if (version.includes('-canary.')) tag = 'canary';
 
-  // update example versions
-  // logger.event('update example versions');
-  // const examplesDir = PATHS.EXAMPLES;
-  // const examples = fs.readdirSync(examplesDir).filter((dir) => {
-  //   return (
-  //     !dir.startsWith('.') && existsSync(join(examplesDir, dir, 'package.json'))
-  //   );
-  // });
-  // examples.forEach((example) => {
-  //   const pkg = require(join(examplesDir, example, 'package.json'));
-  //   pkg.scripts ||= {};
-  //   pkg.scripts['start'] = 'npm run dev';
-  //   delete pkg.version;
-  //   fs.writeFileSync(
-  //     join(examplesDir, example, 'package.json'),
-  //     `${JSON.stringify(pkg, null, 2)}\n`,
-  //   );
-  // });
-
   // update pnpm lockfile
-  // logger.event('update pnpm lockfile');
-  // $.verbose = false;
-  // await $`pnpm i`;
-  // $.verbose = true;
+  logger.event('update pnpm lockfile');
+  $.verbose = false;
+  await $`pnpm i`;
+  $.verbose = true;
 
   // // commit
-  // logger.event('commit');
-  // await $`git commit --all --message "release: ${version}"`;
+  logger.event('commit');
+  await $`git commit --all --message "release: ${version}"`;
 
   // git tag
-  // if (tag !== 'canary') {
-  //   logger.event('git tag');
-  //   await $`git tag v${version}`;
-  // }
+  if (tag !== 'canary') {
+    logger.event('git tag');
+    await $`git tag ${version}`;
+  }
 
   // // git push
-  // logger.event('git push');
-  // await $`git push origin ${branch} --tags`;
+  logger.event('git push');
+  await $`git push origin ${branch} --tags`;
 
   // pnpm publish
   logger.event('pnpm publish');
