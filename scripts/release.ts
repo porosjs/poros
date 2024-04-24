@@ -49,14 +49,14 @@ import { assert, eachPkg, getPkgs } from './.internal/utils';
   if (version.includes('-canary.')) tag = 'canary';
 
   // update pnpm lockfile
-  logger.event('update pnpm lockfile');
-  $.verbose = false;
-  await $`pnpm i`;
-  $.verbose = true;
+  // logger.event('update pnpm lockfile');
+  // $.verbose = false;
+  // await $`pnpm i`;
+  // $.verbose = true;
 
   // // commit
-  logger.event('commit');
-  await $`git commit --all --message "release: ${version}"`;
+  // logger.event('commit');
+  // await $`git commit --all --message "release: ${version}"`;
 
   // git tag
   if (tag !== 'canary') {
