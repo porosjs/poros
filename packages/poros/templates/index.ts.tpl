@@ -6,9 +6,12 @@ console.log = logger.log;
 
 const _logger = new Proxy(logger, {
   get: function(target, property) {
-    const _target = target.scope('#' + history.location.pathname);
+    if(history?.location?.pathname) {
+      const _target = target.scope('#' + history.location.pathname);
+      return _target[property];
+    }
 
-    return _target[property];
+    return target[property];
   }
 });
 
