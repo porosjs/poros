@@ -31,13 +31,13 @@
     "@formatjs/intl": "^2.9.3",
     "@tanstack/react-query": "^4.29.3",
     "@tanstack/react-query-devtools": "^4.29.3",
-    "@umijs/bundler-utils": "4.0.65",
-    "@umijs/utils": "4.0.65",
+    "@umijs/bundler-utils": "4.1.10",
+    "@umijs/utils": "4.1.10",
     "intl": "1.2.5",
     "lodash": "^4.17.21",
     "qiankun": "^2.10.15",
     "react-intl": "3.12.1",
-    "umi": "4.0.65",
+    "umi": "4.1.10",
     "warning": "^4.0.3"
   }
 }

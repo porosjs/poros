@@ -1,10 +1,10 @@
-import { chalk, logger, yParser } from '@umijs/utils';
+import { chalk, checkLocal, logger, printHelp, setNoDeprecation, setNodeTitle, yParser } from '@umijs/utils';
 import { dev } from 'umi/dist/cli/dev';
-import { checkLocal, checkVersion as checkNodeVersion } from 'umi/dist/cli/node';
-import { DEV_COMMAND } from 'umi/dist/constants';
+import { DEV_COMMAND, MIN_NODE_VERSION } from 'umi/dist/constants';
 import { Service } from 'umi/dist/service/service';
 // @ts-ignore
 import { installAppDeps } from 'electron-builder/out/cli/install-app-deps';
+import { FRAMEWORK_NAME } from './constants';
 import patch from './patch';
 
 interface IOpts {
@@ -12,9 +12,19 @@ interface IOpts {
   defaultConfigFiles?: string[];
 }
 
+const ver = parseInt(process.version.slice(1));
+export function checkNodeVersion(minVersion: number, message?: string) {
+  if (ver < minVersion) {
+    logger.error(message || `Your node version ${ver} is not supported, please upgrade to ${minVersion} or above except 15 or 17.`);
+    process.exit(1);
+  }
+}
+
 export async function run(opts: IOpts = {}) {
-  checkNodeVersion();
+  checkNodeVersion(MIN_NODE_VERSION);
   checkLocal();
+  setNodeTitle(FRAMEWORK_NAME);
+  setNoDeprecation();
 
   const args = yParser(process.argv.slice(2), {
     alias: {
@@ -62,6 +72,7 @@ export async function run(opts: IOpts = {}) {
       });
     } catch (e: any) {
       logger.error(e);
+      printHelp.exit();
       process.exit(1);
     }
   }

@@ -14,3 +14,5 @@ export const PATHS = {
   PLUGIN_PATH: winPath(join(process.cwd(), 'src/.poros', PLUGIN_DIR_NAME)),
   PROD_PLUGIN_PATH: winPath(join(process.cwd(), 'src/.poros-production', PLUGIN_DIR_NAME)),
 } as const;
+
+export const FRAMEWORK_NAME = 'poros';

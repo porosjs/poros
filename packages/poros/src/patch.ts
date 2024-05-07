@@ -48,11 +48,11 @@ export default () => {
   patchPackage('@umijs/bundler-webpack', [
     {
       file: 'dist/server/server.js',
-      annotates: [211, 212, 213, 214],
+      annotates: [213, 214, 215, 216],
     },
     {
       file: 'dist/build.d.ts',
-      replaces: [[19, "} & Pick<IConfigOpts, 'cache' | 'pkg' | 'env'>;"]],
+      replaces: [[20, "} & Pick<IConfigOpts, 'cache' | 'pkg' | 'env'>;"]],
     },
     {
       file: 'dist/build.js',
@@ -122,7 +122,7 @@ export default () => {
         ],
         [77, `          (0, import_utils.winPath)(\`\${opts.api.config.alias["@"]}/\`),`],
         [
-          103,
+          136,
           `          file = file.replace(
             "@/",
             \`\${(0, import_path.relative)(
@@ -135,24 +135,22 @@ export default () => {
     },
     {
       file: 'dist/features/tmpFiles/tmpFiles.js',
-      annotates: [113],
+      annotates: [113, 114],
       replaces: [
-        [72, '    const umiTempDir = (0, import_utils.winPath)((0, import_path.relative)(api.cwd, api.paths.absTmpPath));'],
-        [86, `            target: "ES5",`],
-        [87, `            module: "commonjs",`],
-        [88, ``],
+        [73, '    const umiTempDir = (0, import_utils.winPath)((0, import_path.relative)(api.cwd, api.paths.absTmpPath));'],
         [
-          100,
+          93,
           `            allowSyntheticDefaultImports: true,
             emitDecoratorMetadata: true,
             experimentalDecorators: true,`,
         ],
+        [103, ''],
         [
-          352,
+          345,
           `    const pages = (0, import_path.relative)(
             api.cwd,`,
         ],
-        [355, '    const prefix = hasSrc ? `../../../${pages}/` : `../../${pages}/`;'],
+        [348, '    const prefix = hasSrc ? `../../../${pages}/` : `../../${pages}/`;'],
       ],
     },
   ]);

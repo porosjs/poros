@@ -30,7 +30,7 @@
     "create-poros": "bin/create-poros.js"
   },
   "dependencies": {
-    "@umijs/utils": "4.0.65",
-    "umi": "4.0.65"
+    "@umijs/utils": "4.1.10",
+    "umi": "4.1.10"
   }
 }
