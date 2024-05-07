@@ -1,9 +1,9 @@
 import { chalk, checkLocal, logger, printHelp, setNoDeprecation, setNodeTitle, yParser } from '@umijs/utils';
-import { sync } from '@umijs/utils/compiled/cross-spawn';
 import { dev } from 'umi/dist/cli/dev';
 import { DEV_COMMAND, MIN_NODE_VERSION } from 'umi/dist/constants';
 import { Service } from 'umi/dist/service/service';
 // @ts-ignore
+import { sync } from '@umijs/utils/compiled/cross-spawn';
 import { installAppDeps } from 'electron-builder/out/cli/install-app-deps';
 import { FRAMEWORK_NAME } from './constants';
 import patch from './patch';
@@ -57,6 +57,11 @@ export async function run(opts: IOpts = {}) {
       platform: process.platform,
       arch: process.arch === 'arm' ? 'armv7l' : process.arch,
     });
+  } else if (command === 'setup') {
+    logger.info(chalk.cyan.bold(`Poros v${version}`));
+
+    patch();
+    sync('poros __setup');
   } else if (command === '__setup') {
     try {
       await new Service({
@@ -72,12 +77,6 @@ export async function run(opts: IOpts = {}) {
     }
   } else {
     logger.info(chalk.cyan.bold(`Poros v${version}`));
-
-    if (command === 'setup') {
-      patch();
-      sync('poros __setup');
-      return;
-    }
 
     try {
       await new Service({
