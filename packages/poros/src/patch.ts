@@ -1,6 +1,9 @@
 import { logger } from '@umijs/utils';
-import { readFileSync, writeFileSync } from '@umijs/utils/compiled/fs-extra';
+import { copySync, existsSync, readFileSync, removeSync, writeFileSync } from '@umijs/utils/compiled/fs-extra';
 import { dirname, join } from 'path';
+
+const isPnpm = existsSync(join(process.cwd(), 'node_modules/.pnpm'));
+const isWindows = process.platform === 'win32';
 
 function annotate(contents: string[], lines: number[]) {
   for (const line of lines) {
@@ -17,8 +20,22 @@ function replace(contents: string[], lines: [number, string][]) {
   }
 }
 
+function copyForPnpm(name: string) {
+  const sourcePath = dirname(require.resolve(`${name}/package.json`));
+  if (isPnpm && isWindows) {
+    const distPath = join(__dirname, '../node_modules', name);
+    if (sourcePath !== distPath) {
+      removeSync(distPath);
+      copySync(sourcePath, distPath);
+    }
+    return distPath;
+  }
+
+  return sourcePath;
+}
+
 function patchPackage(name: string, opts: { file: string; annotates?: number[]; replaces?: [number, string][] }[]) {
-  const dirPath = dirname(require.resolve(`${name}/package.json`));
+  const dirPath = copyForPnpm(name);
 
   let patched = false;
   for (const opt of opts) {
@@ -154,4 +171,5 @@ export default () => {
       ],
     },
   ]);
+  patchPackage('umi', []);
 };
