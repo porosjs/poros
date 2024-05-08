@@ -3,10 +3,8 @@ import { dev } from 'umi/dist/cli/dev';
 import { DEV_COMMAND, MIN_NODE_VERSION } from 'umi/dist/constants';
 import { Service } from 'umi/dist/service/service';
 // @ts-ignore
-import { sync } from '@umijs/utils/compiled/cross-spawn';
 import { installAppDeps } from 'electron-builder/out/cli/install-app-deps';
 import { FRAMEWORK_NAME } from './constants';
-import patch from './patch';
 
 interface IOpts {
   presets?: string[];
@@ -57,24 +55,6 @@ export async function run(opts: IOpts = {}) {
       platform: process.platform,
       arch: process.arch === 'arm' ? 'armv7l' : process.arch,
     });
-  } else if (command === 'setup') {
-    logger.info(chalk.cyan.bold(`Poros v${version}`));
-
-    patch();
-    sync('poros __setup');
-  } else if (command === '__setup') {
-    try {
-      await new Service({
-        defaultConfigFiles: opts.defaultConfigFiles || null,
-      }).run2({
-        name: 'setup',
-        args,
-      });
-    } catch (e: any) {
-      logger.error(e);
-      printHelp.exit();
-      process.exit(1);
-    }
   } else {
     logger.info(chalk.cyan.bold(`Poros v${version}`));
 

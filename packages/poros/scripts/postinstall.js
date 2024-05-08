@@ -1,11 +1,12 @@
-import { logger } from '@umijs/utils';
-import { copySync, existsSync, readFileSync, removeSync, writeFileSync } from '@umijs/utils/compiled/fs-extra';
-import { dirname, join } from 'path';
+const { logger, winPath } = require('@umijs/utils');
+const { copySync, readFileSync, removeSync, writeFileSync }=require('@umijs/utils/compiled/fs-extra')
+const { dirname, join } = require('path');
 
-const isPnpm = existsSync(join(process.cwd(), 'node_modules/.pnpm'));
+
+const isPnpm = winPath(process.cwd()).includes('/.pnpm/')
 const isWindows = process.platform === 'win32';
 
-function annotate(contents: string[], lines: number[]) {
+function annotate(contents, lines) {
   for (const line of lines) {
     const lineContent = contents[line - 1];
     if (!lineContent.startsWith('//')) {
@@ -14,13 +15,13 @@ function annotate(contents: string[], lines: number[]) {
   }
 }
 
-function replace(contents: string[], lines: [number, string][]) {
+function replace(contents, lines) {
   for (const [line, lineContent] of lines) {
     contents.splice(line - 1, 1, lineContent);
   }
 }
 
-function copyForPnpm(name: string) {
+function copyForPnpm(name) {
   const sourcePath = dirname(require.resolve(`${name}/package.json`));
   if (isPnpm && isWindows) {
     const distPath = join(__dirname, '../node_modules', name);
@@ -34,7 +35,7 @@ function copyForPnpm(name: string) {
   return sourcePath;
 }
 
-function patchPackage(name: string, opts: { file: string; annotates?: number[]; replaces?: [number, string][] }[]) {
+function patchPackage(name, opts) {
   const dirPath = copyForPnpm(name);
 
   let patched = false;
@@ -61,7 +62,6 @@ ${contents.join('\n')}`,
   if (patched) logger.info(`${name} already patched`);
 }
 
-export default () => {
   patchPackage('@umijs/bundler-webpack', [
     {
       file: 'dist/server/server.js',
@@ -172,4 +172,3 @@ export default () => {
     },
   ]);
   patchPackage('umi', []);
-};
