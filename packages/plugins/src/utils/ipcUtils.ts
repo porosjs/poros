@@ -45,7 +45,7 @@ export class IpcUtils {
   }
 
   getRendererInvokers() {
-    if (!this.hasHandle) return { import: '', content: '' };
+    if (!this.hasHandle) return { import: '', content: 'export const rendererInvoker = {} as const' };
 
     const opts = glob
       .sync('ipc.{ts,tsx}', {

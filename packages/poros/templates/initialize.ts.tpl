@@ -4,6 +4,8 @@ import path from 'path';
 import { URL, pathToFileURL } from 'url';
 import localStore from './localStore';
 import logger from './logger';
+import { matchPathFilter } from '{{{httpProxyMiddlewarePath}}}/dist/path-filter';
+import { createPathRewriter } from '{{{httpProxyMiddlewarePath}}}/dist/path-rewriter';
 {{#localeEnable}}
 import { initialize as localeInitialize } from '../plugin-locale/main/localeExports';
 {{/localeEnable}}
@@ -16,6 +18,7 @@ import { initialize as ipcInitialize } from '../plugin-ipc/main/ipcExports';
 
 const PROTOCOL_SCHEME = 'app';
 
+
 protocol.registerSchemesAsPrivileged([
   { scheme: 'http', privileges: { standard: true, bypassCSP: true, allowServiceWorkers: true, supportFetchAPI: true, corsEnabled: true, stream: true } },
   { scheme: 'https', privileges: { standard: true, bypassCSP: true, allowServiceWorkers: true, supportFetchAPI: true, corsEnabled: true, stream: true } },
@@ -24,6 +27,49 @@ protocol.registerSchemesAsPrivileged([
   { scheme: 'qiankun', privileges: { secure: true, standard: true, supportFetchAPI: true } },
   {{/qiankunMasterEnable}}
 ]);
+{{#proxyOptions}}
+
+const proxyOptions = {{{proxyOptions}}};
+
+async function proxy(req: Request) {
+  for (const proxyOption of proxyOptions) {
+    const shouldProxy = matchPathFilter(proxyOption.context, req.url);
+    logger.error(`should proxy ${req.url} to ${proxyOption.target} ${shouldProxy}`)
+    if (shouldProxy) {
+      const { protocol, host, pathname } = new URL(proxyOption.target);
+      const requestInit = {
+        ...req,
+        bypassCustomProtocolHandlers: true,
+      };
+      if (proxyOption.changeOrigin) {
+        requestInit.headers = {
+          ...req.headers,
+          host,
+        };
+      }
+
+      const url = new URL(req.url.replace(new RegExp(`^${PROTOCOL_SCHEME}:`), protocol));
+      url.host = host;
+      url.pathname = `${pathname}${url.pathname}`.replace(/\/+/g, '/');
+logger.error(url.toString())
+
+      const pathRewriter = createPathRewriter(proxyOption.pathRewrite);
+      if (pathRewriter) {
+        const path = await pathRewriter(url.toString());
+
+        logger.error(`proxy ${req.url} rewriter to ${path}`)
+
+        return [path, requestInit];
+      }
+
+      logger.error(`proxy ${req.url} to ${url.toString()}`)
+
+      return [url.toString(), requestInit];
+    }
+  }
+  return null;
+}
+{{/proxyOptions}}
 
 function initialize() {
   app.whenReady().then(()=>{
@@ -36,7 +82,14 @@ function initialize() {
     localeInitialize();
     {{/localeEnable}}
 
-    protocol.handle(PROTOCOL_SCHEME, (req) => {
+    protocol.handle(PROTOCOL_SCHEME, async (req) => {
+      {{#proxyOptions}}
+      const proxyResult = await proxy(req);
+      if (proxyResult) {
+        return net.fetch(pathToFileURL(proxyResult[0], proxyResult[1]));
+      }
+
+      {{/proxyOptions}}
       const { pathname } = new URL(req.url);
       return net.fetch(
         pathToFileURL(path.join(__dirname, decodeURI(pathname))).toString(),

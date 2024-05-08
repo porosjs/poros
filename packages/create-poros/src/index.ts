@@ -37,8 +37,6 @@ interface ITemplateParams extends ITemplatePluginParams {
 
 enum ENpmClient {
   npm = 'npm',
-  cnpm = 'cnpm',
-  tnpm = 'tnpm',
   yarn = 'yarn',
   pnpm = 'pnpm',
 }

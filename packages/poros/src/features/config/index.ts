@@ -67,6 +67,17 @@ export default (api: IApi) => {
   });
 
   api.onGenerateFiles(async () => {
+    const proxyOptions = Array.isArray(api.config.proxy)
+      ? api.config.proxy
+      : api.config.proxy.target
+      ? [api.config.proxy]
+      : Object.keys(api.config.proxy).map((key) => {
+          return {
+            ...api.config.proxy[key],
+            context: key,
+          };
+        });
+
     const generator = new BaseGenerator({
       path: path.join(__dirname, '../../..', 'templates'),
       target: api.env === Env.development ? PATHS.PLUGIN_PATH : PATHS.PROD_PLUGIN_PATH,
@@ -100,6 +111,8 @@ export default (api: IApi) => {
         qiankunMasterEnable: api.isPluginEnable('qiankun-master'),
         ipcEnable: api.isPluginEnable('ipc'),
         ipcFile: api.isPluginEnable('ipc') && ['ts', 'tsx'].some((ext) => existsSync(path.join(api.paths.absSrcPath, `ipc.${ext}`))),
+        httpProxyMiddlewarePath: winPath(path.dirname(require.resolve('http-proxy-middleware/package.json'))),
+        proxyOptions: JSON.stringify(proxyOptions),
       },
       slient: true,
     });
