@@ -55,10 +55,12 @@ async function proxy(req: Request) {
       if (pathRewriter) {
         const pathname = await pathRewriter(url.pathname);
         url.pathname = pathname;
-        logger.error(`proxy ${req.url} rewriter to ${url.toString()}`)
+        logger.info(`proxy ${req.url} to ${url.toString()}`)
 
         return [path, requestInit];
       }
+
+      logger.info(`proxy ${req.url} to ${url.toString()}`)
 
       return [url.toString(), requestInit];
     }
