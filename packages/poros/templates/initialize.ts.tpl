@@ -34,7 +34,6 @@ const proxyOptions = {{{proxyOptions}}};
 async function proxy(req: Request) {
   for (const proxyOption of proxyOptions) {
     const shouldProxy = matchPathFilter(proxyOption.context, req.url);
-    logger.error(`should proxy ${req.url} to ${proxyOption.target} ${shouldProxy}`)
     if (shouldProxy) {
       const { protocol, host, pathname } = new URL(proxyOption.target);
       const requestInit = {
@@ -51,18 +50,15 @@ async function proxy(req: Request) {
       const url = new URL(req.url.replace(new RegExp(`^${PROTOCOL_SCHEME}:`), protocol));
       url.host = host;
       url.pathname = `${pathname}${url.pathname}`.replace(/\/+/g, '/');
-logger.error(url.toString())
 
       const pathRewriter = createPathRewriter(proxyOption.pathRewrite);
       if (pathRewriter) {
-        const path = await pathRewriter(url.toString());
-
-        logger.error(`proxy ${req.url} rewriter to ${path}`)
+        const pathname = await pathRewriter(url.pathname);
+        url.pathname = pathname;
+        logger.error(`proxy ${req.url} rewriter to ${url.toString()}`)
 
         return [path, requestInit];
       }
-
-      logger.error(`proxy ${req.url} to ${url.toString()}`)
 
       return [url.toString(), requestInit];
     }
