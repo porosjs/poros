@@ -159,7 +159,7 @@ importers:
         specifier: ^8.1.0
         version: 8.1.0
       http-proxy-middleware:
-        specifier: ^3.0.0
+        specifier: 3.0.0
         version: 3.0.0
       umi:
         specifier: 4.1.10

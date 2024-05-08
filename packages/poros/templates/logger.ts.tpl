@@ -1,5 +1,6 @@
 // @ts-nocheck
 import logger from '{{{electronLogPath}}}/main';
+import  { toString } from '{{{electronLogPath}}}/src/node/transforms/object';
 import { isWindows } from './utils';
 
 console.log = logger.log;
@@ -24,9 +25,14 @@ const separator = isWindows ? '>' : '›';
 logger.transports.console.format = ({
   message: { level, data, date, scope, variables },
 }) =>
-  data.map(
-    (content, index) =>
-      index === 0 ? `---${level}---[${variables.processType === 'renderer' ? 'Renderer' : 'Main'}] ${date.getHours().toString(10).padStart(2, '0')}:${date.getMinutes().toString(10).padStart(2, '0')}:${date.getSeconds().toString(10).padStart(2, '0')}.${date.getMilliseconds().toString(10)}${scope?` (${scope})`:''} ${separator} ${content}` : content,
-  );
+  data.map((content, index) => {
+    const message = toString({
+      data: [content],
+      transport: { inspectOptions: { depth: 5 } },
+    });
+    return index === 0
+      ? `---${level}---[${variables.processType === 'renderer' ? 'Renderer' : 'Main'}] ${date.getHours().toString(10).padStart(2, '0')}:${date.getMinutes().toString(10).padStart(2, '0')}:${date.getSeconds().toString(10).padStart(2, '0')}.${date.getMilliseconds().toString(10)}${scope ? ` (${scope})` : ''} ${separator} ${message}`
+      : message;
+  });
 
 export default logger;
