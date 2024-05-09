@@ -104,6 +104,13 @@ function initialize() {
 
     protocol.handle('qiankun', (req) => {
       try {
+      {{#proxyOptions}}
+        const args = await proxy(req);
+        if (args) {
+            return await net.fetch(...args);
+        }
+
+      {{/proxyOptions}}
         const { hostname, pathname } = new URL(req.url);
         return net.fetch(
           pathToFileURL(path.join(getMasterAppDir(hostname), `${hostname}.asar`, decodeURI(pathname))).toString(),
