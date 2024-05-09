@@ -34,27 +34,20 @@ async function proxy(req: Request) {
   for (const proxyOption of proxyOptions) {
     const shouldProxy = matchPathFilter(proxyOption.context, req.url);
     if (shouldProxy) {
-      const headerRecord = {};
-      req.headers.forEach((value, key) => {
-        headerRecord[key] = value;
-      });
       const requestInit = {
-        body: JSON.stringify({ userName: 'admin', password: '123456' }),
-        headers: headerRecord,
+        body: req.body,
+        headers: new Headers(req.headers),
         method: req.method,
+        referrer: req.referrer,
+        window: null,
         bypassCustomProtocolHandlers: true,
       };
 
       const { protocol, host, pathname } = new URL(proxyOption.target);
 
-      if (proxyOption.changeOrigin) {
-        requestInit.headers.host = host;
-        if (requestInit.headers.origin) {
-          requestInit.headers.origin = new URL(proxyOption.target!)?.origin || '';
-        }
+      if (!proxyOption.changeOrigin && requestInit.headers.get('origin')) {
+        requestInit.headers.set('origin', new URL(requestInit.headers.get('origin'))?.origin || '');
       }
-
-      logger.info(requestInit)
 
       const url = new URL(
         req.url.replace(new RegExp(`^${PROTOCOL_SCHEME}:`), protocol),

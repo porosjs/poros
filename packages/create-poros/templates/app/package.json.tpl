@@ -31,7 +31,7 @@
     "@types/node": "^17.0.13",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
-    "electron": "^29.1.6",
+    "electron": "^29.0.0",
     "electron-builder": "^24.13.3",
     "electron-devtools-installer": "^3.2.0",{{#withHusky}}
     "husky": "^8.0.1",{{/withHusky}}

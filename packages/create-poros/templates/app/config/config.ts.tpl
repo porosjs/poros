@@ -29,5 +29,11 @@ export default defineConfig({
       },
     },
   },
+  proxy: {
+    '/api': {
+      target: 'https://randomuser.me',
+      changeOrigin: true,
+    },
+  },
   builder,
 });
