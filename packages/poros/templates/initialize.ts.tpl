@@ -7,6 +7,7 @@ import logger from './logger';
 {{#proxyOptions}}
 import { matchPathFilter } from '{{{httpProxyMiddlewarePath}}}/dist/path-filter';
 import { createPathRewriter } from '{{{httpProxyMiddlewarePath}}}/dist/path-rewriter';
+import { ReadableStream } from 'stream/web';
 {{/proxyOptions}}
 {{#localeEnable}}
 import { initialize as localeInitialize } from '../plugin-locale/main/localeExports';
@@ -39,6 +40,7 @@ async function proxy(req: Request) {
         headers: new Headers(req.headers),
         method: req.method,
         referrer: req.referrer,
+        duplex: req.body instanceof ReadableStream ? 'half' : undefined,
         window: null,
         bypassCustomProtocolHandlers: true,
       };
@@ -81,25 +83,35 @@ function initialize() {
     {{/localeEnable}}
 
     protocol.handle(PROTOCOL_SCHEME, async (req) => {
+      try {
       {{#proxyOptions}}
-      const args = await proxy(req);
-      if (args) {
-        return await net.fetch(...args);
-      }
+        const args = await proxy(req);
+        if (args) {
+            return await net.fetch(...args);
+        }
 
       {{/proxyOptions}}
-      const { pathname } = new URL(req.url);
-      return await net.fetch(
-        pathToFileURL(path.join(__dirname, decodeURI(pathname))).toString(),
-      );
+        const { pathname } = new URL(req.url);
+        return await net.fetch(
+          pathToFileURL(path.join(__dirname, decodeURI(pathname))).toString(),
+        );
+      } catch (error) {
+        logger.error(error);
+        throw error;
+      }
     });
     {{#qiankunMasterEnable}}
 
     protocol.handle('qiankun', (req) => {
-      const { hostname, pathname } = new URL(req.url);
-      return net.fetch(
-        pathToFileURL(path.join(getMasterAppDir(hostname), `${hostname}.asar`, decodeURI(pathname))).toString(),
-      );
+      try {
+        const { hostname, pathname } = new URL(req.url);
+        return net.fetch(
+          pathToFileURL(path.join(getMasterAppDir(hostname), `${hostname}.asar`, decodeURI(pathname))).toString(),
+        );
+      } catch (error) {
+        logger.error(error);
+        throw error;
+      }
     });
     {{/qiankunMasterEnable}}
   })
