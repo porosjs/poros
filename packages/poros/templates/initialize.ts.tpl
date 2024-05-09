@@ -4,8 +4,10 @@ import path from 'path';
 import { URL, pathToFileURL } from 'url';
 import localStore from './localStore';
 import logger from './logger';
+{{#proxyOptions}}
 import { matchPathFilter } from '{{{httpProxyMiddlewarePath}}}/dist/path-filter';
 import { createPathRewriter } from '{{{httpProxyMiddlewarePath}}}/dist/path-rewriter';
+{{/proxyOptions}}
 {{#localeEnable}}
 import { initialize as localeInitialize } from '../plugin-locale/main/localeExports';
 {{/localeEnable}}
@@ -18,13 +20,10 @@ import { initialize as ipcInitialize } from '../plugin-ipc/main/ipcExports';
 
 const PROTOCOL_SCHEME = 'app';
 
-
 protocol.registerSchemesAsPrivileged([
-  { scheme: 'http', privileges: { standard: true, bypassCSP: true, allowServiceWorkers: true, supportFetchAPI: true, corsEnabled: true, stream: true } },
-  { scheme: 'https', privileges: { standard: true, bypassCSP: true, allowServiceWorkers: true, supportFetchAPI: true, corsEnabled: true, stream: true } },
-  { scheme: PROTOCOL_SCHEME, privileges: { secure: true, standard: true, supportFetchAPI: true } },
+  { scheme: PROTOCOL_SCHEME, privileges: { standard: true, bypassCSP: true, allowServiceWorkers: true, supportFetchAPI: true, corsEnabled: true, stream: true, codeCache: true} },
   {{#qiankunMasterEnable}}
-  { scheme: 'qiankun', privileges: { secure: true, standard: true, supportFetchAPI: true } },
+  { scheme: 'qiankun', privileges: { standard: true, bypassCSP: true, allowServiceWorkers: true, supportFetchAPI: true, corsEnabled: true, stream: true, codeCache: true } },
   {{/qiankunMasterEnable}}
 ]);
 {{#proxyOptions}}
@@ -35,37 +34,45 @@ async function proxy(req: Request) {
   for (const proxyOption of proxyOptions) {
     const shouldProxy = matchPathFilter(proxyOption.context, req.url);
     if (shouldProxy) {
-      const { protocol, host, pathname } = new URL(proxyOption.target);
+      const headerRecord = {};
+      req.headers.forEach((value, key) => {
+        headerRecord[key] = value;
+      });
       const requestInit = {
-        ...req,
+        body: JSON.stringify({ userName: 'admin', password: '123456' }),
+        headers: headerRecord,
+        method: req.method,
         bypassCustomProtocolHandlers: true,
       };
+
+      const { protocol, host, pathname } = new URL(proxyOption.target);
+
       if (proxyOption.changeOrigin) {
-        requestInit.headers = {
-          ...req.headers,
-          host,
-        };
+        requestInit.headers.host = host;
+        if (requestInit.headers.origin) {
+          requestInit.headers.origin = new URL(proxyOption.target!)?.origin || '';
+        }
       }
 
-      const url = new URL(req.url.replace(new RegExp(`^${PROTOCOL_SCHEME}:`), protocol));
+      logger.info(requestInit)
+
+      const url = new URL(
+        req.url.replace(new RegExp(`^${PROTOCOL_SCHEME}:`), protocol),
+      );
       url.host = host;
       url.pathname = `${pathname}${url.pathname}`.replace(/\/+/g, '/');
-
       const pathRewriter = createPathRewriter(proxyOption.pathRewrite);
       if (pathRewriter) {
         const pathname = await pathRewriter(url.pathname);
         url.pathname = pathname;
-        logger.info(`proxy ${req.url} to ${url.toString()}`)
-
-        return [path, requestInit];
       }
 
-      logger.info(`proxy ${req.url} to ${url.toString()}`)
+      logger.info(`proxy ${req.url} to ${url.toString()}`);
 
       return [url.toString(), requestInit];
     }
   }
-  return null;
+  return false;
 }
 {{/proxyOptions}}
 
@@ -82,14 +89,14 @@ function initialize() {
 
     protocol.handle(PROTOCOL_SCHEME, async (req) => {
       {{#proxyOptions}}
-      const proxyResult = await proxy(req);
-      if (proxyResult) {
-        return net.fetch(pathToFileURL(proxyResult[0], proxyResult[1]));
+      const args = await proxy(req);
+      if (args) {
+        return await net.fetch(...args);
       }
 
       {{/proxyOptions}}
       const { pathname } = new URL(req.url);
-      return net.fetch(
+      return await net.fetch(
         pathToFileURL(path.join(__dirname, decodeURI(pathname))).toString(),
       );
     });

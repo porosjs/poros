@@ -112,7 +112,7 @@ export default (api: IApi) => {
         ipcEnable: api.isPluginEnable('ipc'),
         ipcFile: api.isPluginEnable('ipc') && ['ts', 'tsx'].some((ext) => existsSync(path.join(api.paths.absSrcPath, `ipc.${ext}`))),
         httpProxyMiddlewarePath: winPath(path.dirname(require.resolve('http-proxy-middleware/package.json'))),
-        proxyOptions: JSON.stringify(proxyOptions),
+        proxyOptions: api.env === 'production' && JSON.stringify(proxyOptions),
       },
       slient: true,
     });
