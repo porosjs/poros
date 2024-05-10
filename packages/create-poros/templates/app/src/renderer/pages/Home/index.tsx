@@ -1,6 +1,7 @@
+import { fetchFoo } from '@/renderer/apis/foo';
 import logoImg from '@/renderer/assets/logo.png';
 import { GithubOutlined } from '@ant-design/icons';
-import { Avatar, Button, Descriptions, Divider, Space } from 'antd';
+import { Avatar, Button, Descriptions, Divider, Space, notification } from 'antd';
 import { SelectLang, i18n, localStore, logger, mainInvoker, useModel } from 'poros';
 import { useEffect, useState } from 'react';
 import Chart from './Chart';
@@ -30,6 +31,30 @@ const HomePage: React.FC = () => {
 
   const gotoGithub = () => {
     mainInvoker.MainWindow.openExternal('https://github.com/porosjs/poros');
+  };
+
+  const handleFetch = async () => {
+    try {
+      const { results } = await fetchFoo();
+      const [result] = results;
+      notification.success({
+        message: 'Fetch Success',
+        description: (
+          <>
+            <div>
+              Name:{result.name.last} {result.name.first}
+            </div>
+            <div>Email:{result.email}</div>
+          </>
+        ),
+      });
+      logger.info(results);
+    } catch (error) {
+      notification.error({
+        message: 'Fetch Error',
+      });
+      logger.error(error);
+    }
   };
 
   const items = [
@@ -69,6 +94,7 @@ const HomePage: React.FC = () => {
       <Chart />
       <Divider />
       <Space>
+        <Button onClick={handleFetch}>Fetch API</Button>
         <Button onClick={() => mainInvoker.AboutWindow.open()}>{i18n('button.openNewWindow')}</Button>
         <Button onClick={() => mainInvoker.MainWindow.openDevTools()}>{i18n('button.openDevTools')}</Button>
         <Button onClick={() => mainInvoker.MainWindow.openLogDir()}>{i18n('button.openLogDir')}</Button>

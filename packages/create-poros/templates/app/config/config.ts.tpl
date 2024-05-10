@@ -7,6 +7,7 @@ export default defineConfig({
   model: {},
   antd: {},
   locale: {},
+  request: {},
   routes,
   logger: {
     transports: {
@@ -29,6 +30,7 @@ export default defineConfig({
       },
     },
   },
+  /** 代理在打包后同样有效，可用于解决跨域问题 */
   proxy: {
     '/api': {
       target: 'https://randomuser.me',
