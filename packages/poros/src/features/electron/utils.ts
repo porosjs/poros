@@ -110,7 +110,7 @@ export function getDevBanner(offset = 8) {
  * @param log
  */
 export function typeLog(log: string, defaultType: 'info' | 'error') {
-  const matches = log.match(/^---(.*)---(.*)$/);
+  const matches = log.match(/^---(.*)---(.*)$/s);
   if (matches?.length) {
     const [, type, content] = matches ?? [];
 
