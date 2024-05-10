@@ -6,6 +6,6 @@ import { type RequestConfig } from 'poros';
  */
 export const request: RequestConfig = {
   baseURL: '/api',
-  timeout: 1000,
+  timeout: 5000,
   headers: { 'X-Requested-With': 'XMLHttpRequest' },
 };

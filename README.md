@@ -33,6 +33,8 @@ $ yarn create poros
 
 执行 `pnpm start` 命令
 
+> 第一次启动可能速度稍慢，请耐心等待...
+
 ```bash
         ╔═══════════════════════════════╗
 ready - ║  Electron app launch success  ║
@@ -122,6 +124,23 @@ class MainWindow extends PorosBrowserWindow {
 
 export default MainWindow;
 ```
+
+## 代理
+
+支持打包后的跨域请求，配置同 `umi`，解决网络请求跨域问题，当然你也可以选择其他方式解决，比如：设置窗口属性 `webSecurity: false` (警告：不建议使用)
+
+```ts
+// config/config.ts
+export default defineConfig({
+  proxy: {
+    '/api': {
+      target: 'https://randomuser.me',
+      changeOrigin: true,
+    },
+  },
+}
+```
+打包后，可以通过 `app://./api/...` 访问到 `https://randomuser.me/api/...`
 
 ## API
 
