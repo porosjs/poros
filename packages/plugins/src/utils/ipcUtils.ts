@@ -64,11 +64,11 @@ export class IpcUtils {
     let content = '';
 
     for (const channel of channels) {
-      const parameters = channel.parameters.reduce((prev, curr, index) => `${prev ? `${prev}, ` : ''}${curr}: InvokerParameters<'${channel.key}'>[${index}]`, '');
+      const parameters = channel.parameters.reduce((prev, curr, index) => `${prev}${curr}: InvokerParameters<'${channel.key}'>[${index}],`, '');
       content += `
-function ${camelCase(channel.key)}(${parameters}, opts: { broadcast: true }): void;
-function ${camelCase(channel.key)}(${parameters}, opts?: { window?: PorosBrowserWindow }): InvokerReturnType<'${channel.key}'>;
-function ${camelCase(channel.key)}(this: PorosBrowserWindow, ${parameters}, opts: any = { broadcast: false, window: this }): InvokerReturnType<'${channel.key}'> | void {
+function ${camelCase(channel.key)}(${parameters} opts: { broadcast: true }): void;
+function ${camelCase(channel.key)}(${parameters} opts?: { window?: PorosBrowserWindow }): InvokerReturnType<'${channel.key}'>;
+function ${camelCase(channel.key)}(this: PorosBrowserWindow, ${parameters} opts: any = { broadcast: false, window: this }): InvokerReturnType<'${channel.key}'> | void {
   if (!opts.broadcast) {
     checkBrowserWindow(this);
   }
@@ -144,7 +144,7 @@ export const rendererInvoker = {`;
         node.declaration.body.body.forEach((property) => {
           if (property.type === 'TSPropertySignature') {
             channels.push({
-              key: property.key.value,
+              key: property.key.value ?? property.key.name,
               parameters: property.typeAnnotation.typeAnnotation.parameters.map((item: any) => item.name),
             });
           }
