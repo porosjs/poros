@@ -1,6 +1,6 @@
 {
   "name": "@porosjs/plugins",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "@porosjs/plugins",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
