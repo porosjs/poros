@@ -364,6 +364,9 @@ rendererInvoker.networkMonitor(received: number, transferred: number, opts: { br
 - locale
 - ipc
 
+## TODO
+- 适配 vue 
+
 
 ## 引用与参考
 - [umi](https://github.com/umijs/umi)
