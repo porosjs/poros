@@ -1,4 +1,4 @@
-import { chalk, checkLocal, logger, printHelp, setNoDeprecation, setNodeTitle, yParser } from '@umijs/utils';
+import { chalk, checkLocal, execa, logger, printHelp, setNoDeprecation, setNodeTitle, yParser } from '@umijs/utils';
 import { dev } from 'umi/dist/cli/dev';
 import { DEV_COMMAND, MIN_NODE_VERSION } from 'umi/dist/constants';
 import { Service } from 'umi/dist/service/service';
@@ -55,6 +55,8 @@ export async function run(opts: IOpts = {}) {
       platform: process.platform,
       arch: process.arch === 'arm' ? 'armv7l' : process.arch,
     });
+  } else if (command === 'patch') {
+    await execa.execa('node', ['../scripts/postinstall'], { cwd: __dirname });
   } else {
     logger.info(chalk.cyan.bold(`Poros v${version}`));
 

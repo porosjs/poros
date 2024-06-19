@@ -27,6 +27,7 @@ interface ITemplateParams extends ITemplatePluginParams {
   name: string;
   version: string;
   npmClient: ENpmClient;
+  isYarn: boolean;
   registry: string;
   author: string;
   email: string;
@@ -59,6 +60,7 @@ const DEFAULT_DATA = {
   author: 'poros',
   version: pkg.version,
   npmClient: ENpmClient.pnpm,
+  isYarn: false,
   registry: ERegistry.npm,
   withHusky: false,
   extraNpmrc: '',
@@ -212,6 +214,7 @@ export default async ({ cwd, args, defaultData = DEFAULT_DATA }: IGeneratorOpts)
         : ({
             version: version.includes('-canary.') ? version : `^${version}`,
             npmClient,
+            isYarn: npmClient === ENpmClient.yarn,
             registry,
             author,
             email,
