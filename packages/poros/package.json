@@ -1,6 +1,6 @@
 {
   "name": "poros",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "description": "An electron react framework based on Umi",
   "main": "index.js",
   "types": "index.d.ts",
