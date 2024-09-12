@@ -1,6 +1,6 @@
 # Poros
-[![Build With Umi](https://img.shields.io/badge/build%20with-umi-028fe4.svg?style=flat-square)](http://umijs.org/) <a href="https://porosjs.com"><img src="https://img.shields.io/badge/porosjs-poros-blue.svg" alt="poros" /></a>
-[![dumi](https://img.shields.io/badge/docs%20by-dumi-blue)](https://github.com/umijs/dumi)
+
+[![Build With Umi](https://img.shields.io/badge/build%20with-umi-028fe4.svg?style=flat-square)](http://umijs.org/) <a href="https://porosjs.com"><img src="https://img.shields.io/badge/porosjs-poros-blue.svg" alt="poros" /></a> [![dumi](https://img.shields.io/badge/docs%20by-dumi-blue)](https://github.com/umijs/dumi)
 
 <img src="./logo.png" width="120">
 
@@ -52,7 +52,7 @@ info  - [MFSU] skip buildDeps
 │   ├── builder.ts                      // electron-builder 配置
 │   ├── config.ts                       // umi 配置
 │   └── routes.ts                       // umi routes 配置
-├── mock                                
+├── mock
 │   └── demo.ts
 ├── src
 │   ├── constants
@@ -69,9 +69,9 @@ info  - [MFSU] skip buildDeps
 │   │   ├── assets
 │   │   ├── models
 │   │   ├── pages
-│   │   ├── utils 
+│   │   ├── utils
 │   │   ├── ipc.ts                      // 渲染进程与主进程ipc通信定义文件，开启ipc插件有效
-│   │   └── app.ts         
+│   │   └── app.ts
 ├── package.json
 ├── pnpm-lock.yaml
 ├── tsconfig.json
@@ -140,6 +140,7 @@ export default defineConfig({
   },
 }
 ```
+
 打包后，可以通过 `app://./api/...` 访问到 `https://randomuser.me/api/...`
 
 ## API
@@ -148,54 +149,54 @@ export default defineConfig({
 
 ### Main Process
 
-| 参数 | 类型 | 说明 |
-|-----|-----|-----|
-| initialize | () => void | 初始化方法，需要在app ready之前调用 |
-| PorosBrowserWindow | [PorosBrowserWindow](#PorosBrowserWindow) | 窗口基类 |
-| PorosWindowManager | [PorosWindowManager](#PorosWindowManager) | 窗口管理类 |
-| port | number | dev web服务端口 |
-| logger | [Logger](#Logger) | 日志模块 |
-| localStore | [LocalStore](#LocalStore) | 本地化存储，可以本地文件的方式存储一些配置信息 |
-| localShortcut | [LocalShortcut](#LocalShortcut) | 窗口化快捷键 |
-| isMacOS | boolean | 是否为macOS系统 |
-| isWindows | boolean | 是否为Windows系统 |
-| isLinux | boolean | 是否为Linux系统 |
-| isX86 | boolean | 是否为x86架构 |
-| isX64 | boolean | 是否为x64架构 |
-| isDev | boolean | 是否为开发环境 |
-| isProd | boolean | 是否为生产环境 |
+| 参数               | 类型                                      | 说明                                           |
+| ------------------ | ----------------------------------------- | ---------------------------------------------- |
+| initialize         | () => void                                | 初始化方法，需要在 app ready 之前调用          |
+| PorosBrowserWindow | [PorosBrowserWindow](#PorosBrowserWindow) | 窗口基类                                       |
+| PorosWindowManager | [PorosWindowManager](#PorosWindowManager) | 窗口管理类                                     |
+| port               | number                                    | dev web 服务端口                               |
+| logger             | [Logger](#Logger)                         | 日志模块                                       |
+| localStore         | [LocalStore](#LocalStore)                 | 本地化存储，可以本地文件的方式存储一些配置信息 |
+| localShortcut      | [LocalShortcut](#LocalShortcut)           | 窗口化快捷键                                   |
+| isMacOS            | boolean                                   | 是否为 macOS 系统                              |
+| isWindows          | boolean                                   | 是否为 Windows 系统                            |
+| isLinux            | boolean                                   | 是否为 Linux 系统                              |
+| isX86              | boolean                                   | 是否为 x86 架构                                |
+| isX64              | boolean                                   | 是否为 x64 架构                                |
+| isDev              | boolean                                   | 是否为开发环境                                 |
+| isProd             | boolean                                   | 是否为生产环境                                 |
 
 ### Renderer Process
 
 > 透传 `umi` 的所有属性, 也加入了一些写的属性
 
-| 参数 | 类型 | 说明 |
-|-----|-----|-----|
-| logger | [Logger](#Logger) | 日志模块 |
+| 参数       | 类型                      | 说明                                           |
+| ---------- | ------------------------- | ---------------------------------------------- |
+| logger     | [Logger](#Logger)         | 日志模块                                       |
 | localStore | [LocalStore](#LocalStore) | 本地化存储，可以本地文件的方式存储一些配置信息 |
 
 ### PorosBrowserWindow
 
 继承至 `BrowserWindow`
 
-| 参数 | 类型 | 说明 |
-|-----|-----|-----|
-| single | static readonly boolean | 是否单例, 默认：true |
-| URL | static readonly string | 加载页面地址 |
-| OPTIONS | static readonly PorosBrowserWindowOptions | 窗口配置项 |
-| registerWindowEvent | () => void | 注册窗口事件 |
+| 参数                | 类型                                      | 说明                 |
+| ------------------- | ----------------------------------------- | -------------------- |
+| single              | static readonly boolean                   | 是否单例, 默认：true |
+| URL                 | static readonly string                    | 加载页面地址         |
+| OPTIONS             | static readonly PorosBrowserWindowOptions | 窗口配置项           |
+| registerWindowEvent | () => void                                | 注册窗口事件         |
 
 ### PorosWindowManager
 
 管理 `PorosBrowserWindow` 窗口
 
-| 参数 | 类型 | 说明 |
-|-----|-----|-----|
-| create | (constructor: Type\<PorosBrowserWindow\>, ...properties: ConstructorParameters\<typeof constructor\>) => PorosBrowserWindow | 创建窗口实例 |
-| destroy | `(id: number) => void` \| `(constructor: Type\<PorosBrowserWindow\>) => void` | 销毁窗口实例 |
-| destroyAll | (excludes: Type\<PorosBrowserWindow\>[] = []) | 销毁所有窗口实例，excludes:排除项 |
-| getAll | () => PorosBrowserWindow[] | 获取所有窗口 |
-| get | `(constructor: PorosBrowserWindow) => PorosBrowserWindow\|Record<number, PorosBrowserWindow>\|undefined` \| `(id: number) => PorosBrowserWindow\|undefined`  | 获取窗口 |
+| 参数       | 类型                                                                                                                                                        | 说明                              |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
+| create     | (constructor: Type\<PorosBrowserWindow\>, ...properties: ConstructorParameters\<typeof constructor\>) => PorosBrowserWindow                                 | 创建窗口实例                      |
+| destroy    | `(id: number) => void` \| `(constructor: Type\<PorosBrowserWindow\>) => void`                                                                               | 销毁窗口实例                      |
+| destroyAll | (excludes: Type\<PorosBrowserWindow\>[] = [])                                                                                                               | 销毁所有窗口实例，excludes:排除项 |
+| getAll     | () => PorosBrowserWindow[]                                                                                                                                  | 获取所有窗口                      |
+| get        | `(constructor: PorosBrowserWindow) => PorosBrowserWindow\|Record<number, PorosBrowserWindow>\|undefined` \| `(id: number) => PorosBrowserWindow\|undefined` | 获取窗口                          |
 
 ### Logger
 
@@ -203,24 +204,24 @@ export default defineConfig({
 
 ```typescript
 export default defineConfig({
-   logger : {
-     transports: {
-       file: {
-         level: 'warn',
-         format: '[{y}-{m}-{d} {h}:{i}:{s}.{ms}] [{level}]{scope} {text}',
-         maxSize: 1048576,
-       },
-       console: {
-         level: 'debug',
-       },
-     },
-   }
+  logger: {
+    transports: {
+      file: {
+        level: 'warn',
+        format: '[{y}-{m}-{d} {h}:{i}:{s}.{ms}] [{level}]{scope} {text}',
+        maxSize: 1048576,
+      },
+      console: {
+        level: 'debug',
+      },
+    },
+  },
 });
 ```
 
 具体配置和用法可参照[electron-log](https://github.com/megahertz/electron-log)。
 
-> 注意：控制台的日志输出为了作出类型区分加了特有的标志，所有 `transports.console.format` 的设置不会生效, 
+> 注意：控制台的日志输出为了作出类型区分加了特有的标志，所有 `transports.console.format` 的设置不会生效,
 
 ### LocalStore
 
@@ -230,14 +231,14 @@ export default defineConfig({
 
 ```typescript
 export default defineConfig({
-   localStore: {
-     schema: {
-       unicorn: {
-          type: 'string',
-         default: '🦄',
-       },
-     },
-   },
+  localStore: {
+    schema: {
+      unicorn: {
+        type: 'string',
+        default: '🦄',
+      },
+    },
+  },
 });
 ```
 
@@ -247,18 +248,17 @@ export default defineConfig({
 
 将键盘快捷键本地添加到 BrowserWindow 实例，而不使用菜单
 
-`PorosBrowserWindow` 中内置了打开DevTools快捷键 `Cmd+Option+I` 或 `F12`
+`PorosBrowserWindow` 中内置了打开 DevTools 快捷键 `Cmd+Option+I` 或 `F12`
 
 具体用法可参照[electron-localshortcut](https://github.com/parro-it/electron-localshortcut)。
 
-
 ## 插件
 
-> 您也可以尝试直接使用 Umi 插件。因为目录结构在Umi的基础上做了改变，有些插件可能无法直接使用，如果您遇到任何问题，请联系我。
+> 您也可以尝试直接使用 Umi 插件。因为目录结构在 Umi 的基础上做了改变，有些插件可能无法直接使用，如果您遇到任何问题，请联系我。
 
 ### locale
 
-与umi locale插件功能基本相同，开启方法一致，主进程与渲染进程中使用方法相同。
+与 umi locale 插件功能基本相同，开启方法一致，主进程与渲染进程中使用方法相同。
 
 ```typescript
 import { localeInfo, getIntl, setIntl, getLocale, setLocale, getAllLocales, i18n } from 'poros';
@@ -266,35 +266,35 @@ import { localeInfo, getIntl, setIntl, getLocale, setLocale, getAllLocales, i18n
 i18n('button.ok');
 ```
 
-| 参数 | 类型 | 说明 |
-|-----|-----|-----|
-| localeInfo | \{[key: string]: \{messages:{[key: string]},locale:string\}\} | 语言信息 |
-| getIntl | (lang?: string, changeIntl?: boolean) => IntlShape | 日获取当前的 intl 对象志模块 |
-| setIntl | (lang: string) => void | 切换全局的 intl 的设置 |
-| getLocale | () => string | 获取当前选择的语言 |
-| setLocale | (lang: string) => void | 设置语言 |
-| getAllLocales | string[] | 获取多语言列表 |
-| i18n | (id:string, values?: Record<string, any>) => string | formatMessage语法糖 |
+| 参数          | 类型                                                          | 说明                         |
+| ------------- | ------------------------------------------------------------- | ---------------------------- |
+| localeInfo    | \{[key: string]: \{messages:{[key: string]},locale:string\}\} | 语言信息                     |
+| getIntl       | (lang?: string, changeIntl?: boolean) => IntlShape            | 日获取当前的 intl 对象志模块 |
+| setIntl       | (lang: string) => void                                        | 切换全局的 intl 的设置       |
+| getLocale     | () => string                                                  | 获取当前选择的语言           |
+| setLocale     | (lang: string) => void                                        | 设置语言                     |
+| getAllLocales | string[]                                                      | 获取多语言列表               |
+| i18n          | (id:string, values?: Record<string, any>) => string           | formatMessage 语法糖         |
 
 ### ipc
 
 简化主进程与渲染进程之间的通信
 
-#### 主进程API
+#### 主进程 API
 
-| 参数 | 类型 | 说明 |
-|-----|-----|-----|
-| IpcHandle | - | ipc方法注解，`PorosBrowserWindow`内使用 |
-| rendererInvoker | {[method: string]: (...args:any[], opts?: { broadcast?: boolean, window?: PorosBrowserWindow})} | 渲染进程方法调用器 |
+| 参数            | 类型                                                                                            | 说明                                     |
+| --------------- | ----------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| IpcHandle       | -                                                                                               | ipc 方法注解，`PorosBrowserWindow`内使用 |
+| rendererInvoker | {[method: string]: (...args:any[], opts?: { broadcast?: boolean, window?: PorosBrowserWindow})} | 渲染进程方法调用器                       |
 
-`rendererInvoker` 中 `broadcast` 为 `true` 时，会给所有窗口广播事件(广播事件无返回值)，所有监听了事件的窗口都会收到消息，反之只有相应的窗口下页面会收到消息。`PorosBrowserWindow` 类中调用，window默认值为当前窗口，非`PorosBrowserWindow` 类中必需指定window值。
+`rendererInvoker` 中 `broadcast` 为 `true` 时，会给所有窗口广播事件(广播事件无返回值)，所有监听了事件的窗口都会收到消息，反之只有相应的窗口下页面会收到消息。`PorosBrowserWindow` 类中调用，window 默认值为当前窗口，非`PorosBrowserWindow` 类中必需指定 window 值。
 
-#### 渲染进程API
+#### 渲染进程 API
 
-| 参数 | 类型 | 说明 |
-|-----|-----|-----|
-| useIpc | (channel: string ,callback?:(...args:any[])=>any)=>any[] | ipc方法注解，`PorosBrowserWindow`内使用 |
-| mainInvoker | {[windowName: string]: {[method: string]: (...args:any)=>any}, open: ()=>void} | 主进程方法调用器 |
+| 参数        | 类型                                                                           | 说明                                     |
+| ----------- | ------------------------------------------------------------------------------ | ---------------------------------------- |
+| useIpc      | (channel: string ,callback?:(...args:any[])=>any)=>any[]                       | ipc 方法注解，`PorosBrowserWindow`内使用 |
+| mainInvoker | {[windowName: string]: {[method: string]: (...args:any)=>any}, open: ()=>void} | 主进程方法调用器                         |
 
 #### 渲染进程调用主进程
 
@@ -320,16 +320,16 @@ const ret = mainInvoker.MainWindow.foo('demo');
 #### 主进程调用渲染进程
 
 1、定义事件类型(/src/renderer/ipc.ts)
+
 ```typescript
 export default interface IpcChannelToHandlerMap {
   'network-monitor': (received: number, transferred: number) => string;
 }
 ```
 
-2、react组件中监听
-```tsx
-import { mainInvoker } from 'poros';
+2、react 组件中监听
 
+```tsx
 const Demo = () => {
   useIpc('network-monitor', (received, transferred) => {
     return ''; // 返回值给主进程
@@ -337,17 +337,16 @@ const Demo = () => {
   // 或者
   const [received, transferred] = useIpc('network-monitor');
 
-  return (
-    <div>demo</div>
-  );
+  return <div>demo</div>;
 };
 export default Demo;
 ```
 
 3、主进程中调用
+
 ```typescript
 // PorosBrowserWindow类中调用
-const ret = this.rendererInvoker.networkMonitor(received: number, transferred: number, opts?: { broadcast?: boolean, window?: PorosBrowserWindow}); 
+const ret = this.rendererInvoker.networkMonitor(received: number, transferred: number, opts?: { broadcast?: boolean, window?: PorosBrowserWindow});
 
 // 非PorosBrowserWindow类中调用
 import { rendererInvoker } from 'poros';
@@ -355,6 +354,7 @@ rendererInvoker.networkMonitor(received: number, transferred: number, opts: { br
 ```
 
 ## 预设插件
+
 - initial-state
 - access
 - model
@@ -365,16 +365,17 @@ rendererInvoker.networkMonitor(received: number, transferred: number, opts: { br
 - ipc
 
 ## TODO
-- 适配 vue 
 
+- ~~适配 vue~~ umi 对 vue 支持为实验功能，不建议生产使用，放弃 vue 适配！
+- Auto Update
 
 ## 引用与参考
+
 - [umi](https://github.com/umijs/umi)
 - [umi-plugin-electron-builder](https://github.com/BySlin/umi-plugin-electron-builder)
-- [electron-log](https://github.com/megahertz/electron-log)      
+- [electron-log](https://github.com/megahertz/electron-log)
 - [electron-store](https://github.com/sindresorhus/electron-store)
-- [electron-localshortcut](https://github.com/parro-it/electron-localshortcut)                     
-
+- [electron-localshortcut](https://github.com/parro-it/electron-localshortcut)
 
 ## 许可
 
