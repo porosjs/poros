@@ -293,7 +293,7 @@ i18n('button.ok');
 
 | 参数        | 类型                                                                           | 说明                                     |
 | ----------- | ------------------------------------------------------------------------------ | ---------------------------------------- |
-| useIpc      | (channel: string ,callback?:(...args:any[])=>any)=>any[]                       | ipc 方法注解，`PorosBrowserWindow`内使用 |
+| useIpc      | (channel: string ,callback?:(...args:any[])=>any)=>any[]                       | 使用ipc事件监听 |
 | mainInvoker | {[windowName: string]: {[method: string]: (...args:any)=>any}, open: ()=>void} | 主进程方法调用器                         |
 
 #### 渲染进程调用主进程
@@ -368,6 +368,7 @@ rendererInvoker.networkMonitor(received: number, transferred: number, opts: { br
 
 - ~~适配 vue~~ umi 对 vue 支持为实验功能，不建议生产使用，放弃 vue 适配！
 - Auto Update
+- `PorosBrowserWindow` 类以外的 IPC 事件监听处理
 
 ## 引用与参考
 
