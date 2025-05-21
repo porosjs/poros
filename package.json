@@ -1,6 +1,6 @@
 {
   "name": "poros",
-  "version": "1.1.7",
+  "version": "1.2.0",
   "private": true,
   "scripts": {
     "bootstrap": "poros-scripts bootstrap",
@@ -8,7 +8,6 @@
     "build:extra": "poros-scripts turbo build:extra",
     "build:force": "poros-scripts turbo build --no-cache",
     "build:release": "poros-scripts turbo build --no-cache",
-    "changelog": "poros-scripts changelog",
     "format": "prettier --write .",
     "preinstall": "npx only-allow pnpm",
     "postinstall": "poros-scripts postinstall",
@@ -31,7 +30,7 @@
     "@manypkg/get-packages": "^2.1.0",
     "@pnpm/lockfile-file": "^8.0.1",
     "@types/resolve": "^1.20.2",
-    "@umijs/utils": "4.1.10",
+    "@umijs/utils": "4.4.11",
     "@vercel/ncc": "^0.36.1",
     "browserslist": "4.21.5",
     "dts-packer": "^0.0.3",

@@ -102,7 +102,7 @@ ${contents.join('\n')}`,
   patchPackage('@umijs/preset-umi', [
     {
       file: 'dist/features/appData/appData.js',
-      replaces: [[57, `    memo.hasSrcDir = api.paths.absSrcPath.includes("/src");`]],
+      replaces: [[58, `    memo.hasSrcDir = api.paths.absSrcPath.includes("/src");`]],
     },
     {
       file: 'dist/commands/dev/plugins/ViteHtmlPlugin.js',
@@ -152,22 +152,22 @@ ${contents.join('\n')}`,
     },
     {
       file: 'dist/features/tmpFiles/tmpFiles.js',
-      annotates: [113, 114],
+      annotates: [119, 120],
       replaces: [
-        [73, '    const umiTempDir = (0, import_utils.winPath)((0, import_path.relative)(api.cwd, api.paths.absTmpPath));'],
+        [75, '    const umiTempDir = (0, import_utils.winPath)((0, import_path.relative)(api.cwd, api.paths.absTmpPath));'],
         [
-          93,
+          99,
           `            allowSyntheticDefaultImports: true,
             emitDecoratorMetadata: true,
             experimentalDecorators: true,`,
         ],
-        [103, ''],
+        [109, ''],
         [
-          345,
+          364,
           `    const pages = (0, import_path.relative)(
             api.cwd,`,
         ],
-        [348, '    const prefix = hasSrc ? `../../../${pages}/` : `../../${pages}/`;'],
+        [387, '    const prefix = hasSrc ? `../../../${pages}/` : `../../${pages}/`;'],
       ],
     },
   ]);

@@ -1,6 +1,6 @@
 {
   "name": "poros",
-  "version": "1.1.7",
+  "version": "1.2.0",
   "description": "An electron react framework based on Umi",
   "main": "index.js",
   "types": "index.d.ts",
@@ -41,11 +41,11 @@
   },
   "dependencies": {
     "@porosjs/plugins": "workspace:*",
-    "@umijs/bundler-vite": "4.1.10",
-    "@umijs/bundler-webpack": "4.1.10",
-    "@umijs/plugins": "4.1.10",
-    "@umijs/preset-umi": "4.1.10",
-    "@umijs/utils": "4.1.10",
+    "@umijs/bundler-vite": "4.4.11",
+    "@umijs/bundler-webpack": "4.4.11",
+    "@umijs/plugins": "4.4.11",
+    "@umijs/preset-umi": "4.4.11",
+    "@umijs/utils": "4.4.11",
     "electron-builder": "^24.6.4",
     "electron-localshortcut": "^3.2.1",
     "electron-log": "5.1.2",
@@ -53,7 +53,7 @@
     "eslint": "8.35.0",
     "http-proxy-middleware": "3.0.0",
     "stylelint": "14.8.2",
-    "umi": "4.1.10",
+    "umi": "4.4.11",
     "yargs": "^17.7.1",
     "zx": "^7.2.1"
   },
