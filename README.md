@@ -369,7 +369,6 @@ rendererInvoker.networkMonitor(received: number, transferred: number, opts: { br
 
 - ~~适配 vue~~ umi 对 vue 支持为实验功能，不建议生产使用，放弃 vue 适配！
 - Auto Update
-- `PorosBrowserWindow` 类以外的 IPC 事件监听处理
 
 ## 引用与参考
 
