@@ -1,7 +1,7 @@
-import { ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons';
 import TinyArea, { TinyAreaConfig } from '@ant-design/plots/es/components/tiny/area';
+import { ChevronDownOutline, ChevronUpOutline } from '@metisjs/icons';
 import { range } from 'lodash-es';
-import { useIpc } from 'poros';
+import { i18n, useIpc } from 'poros';
 import { useState } from 'react';
 
 const receivedConfig: TinyAreaConfig = {
@@ -17,12 +17,12 @@ const receivedConfig: TinyAreaConfig = {
   },
   line: {
     style: {
-      stroke: '#6dd0fa',
+      stroke: 'oklch(74.6% 0.16 232.661)',
       strokeWidth: 2,
     },
   },
   style: {
-    fill: '#6dd0fa',
+    fill: 'oklch(74.6% 0.16 232.661)',
     fillOpacity: 0.5,
   },
 };
@@ -40,12 +40,12 @@ const transferredConfig: TinyAreaConfig = {
   },
   line: {
     style: {
-      stroke: 'red',
+      stroke: 'oklch(63.7% 0.237 25.331)',
       strokeWidth: 2,
     },
   },
   style: {
-    fill: 'red',
+    fill: 'oklch(63.7% 0.237 25.331)',
     fillOpacity: 0.5,
   },
 };
@@ -69,42 +69,19 @@ const Chart = () => {
 
   return (
     <div>
-      <div
-        style={{
-          color: 'rgba(0, 0, 0, 0.45)',
-          fontSize: 14,
-        }}
-      >
-        网络监控
-      </div>
+      <div className="text-text-tertiary">{i18n('network.monitor')}</div>
       <TinyArea data={data} {...transferredConfig} />
       <TinyArea data={data} {...receivedConfig} />
-      <div style={{ display: 'flex', gap: 16, width: 480 }}>
-        <div style={{ display: 'flex', gap: 2, alignItems: 'center', flex: 1 }}>
-          <div
-            style={{
-              width: 10,
-              height: 10,
-              border: '2px solid red',
-              borderRadius: 2,
-              background: 'rgba(255, 0, 0, .5)',
-            }}
-          ></div>
-          <ArrowUpOutlined style={{ color: 'rgba(0, 0, 0, 0.45)' }} />
-          <div style={{ fontSize: 12, marginLeft: 'auto' }}>{data[data.length - 1].transferred.toFixed(2)} KB/s</div>
+      <div className="flex w-120 gap-4">
+        <div className="flex flex-1 items-center gap-1">
+          <div className="h-2.5 w-2.5 rounded-xs border border-red-500 bg-red-500/50"></div>
+          <ChevronUpOutline className="text-text-tertiary size-4" />
+          <div className="text-xs">{data[data.length - 1].transferred.toFixed(2)} KB/s</div>
         </div>
-        <div style={{ display: 'flex', gap: 2, alignItems: 'center', flex: 1 }}>
-          <div
-            style={{
-              width: 10,
-              height: 10,
-              border: '2px solid #6dd0fa',
-              borderRadius: 2,
-              background: 'rgba(109, 208, 250, .5)',
-            }}
-          ></div>
-          <ArrowDownOutlined style={{ color: 'rgba(0, 0, 0, 0.45)' }} />
-          <div style={{ fontSize: 12, marginLeft: 'auto' }}>{-data[data.length - 1].received.toFixed(2)} KB/s</div>
+        <div className="ml-auto flex items-center gap-1">
+          <div className="h-2.5 w-2.5 rounded-xs border border-sky-400 bg-sky-400/50"></div>
+          <ChevronDownOutline className="text-text-tertiary size-4" />
+          <div className="ml-auto text-xs">{-data[data.length - 1].received.toFixed(2)} KB/s</div>
         </div>
       </div>
     </div>

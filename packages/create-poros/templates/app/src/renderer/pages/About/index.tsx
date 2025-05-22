@@ -1,20 +1,13 @@
 import logoImg from '@/renderer/assets/logo.png';
-import { Avatar } from 'antd';
+import { Avatar } from 'metis-ui';
 import packageInfo from '../../../../package.json';
 
 const About = () => {
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        padding: 16,
-      }}
-    >
+    <div className="flex flex-col items-center p-4">
       <Avatar src={logoImg} shape="square" size={64} />
-      <div style={{ marginTop: 12, fontSize: 16, lineHeight: '20px' }}>Poros@{packageInfo.version}</div>
-      <div style={{ color: '#999', marginTop: 12 }}>Copyright @Porosjs 2024</div>
+      <div className="mt-3 text-base/5">Poros@{packageInfo.version}</div>
+      <div className="text-text-tertiary mt-3">Copyright @Porosjs 2025</div>
     </div>
   );
 };

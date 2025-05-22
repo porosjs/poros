@@ -6,6 +6,8 @@ export default {
 
   'title.about': 'About',
 
+  'network.monitor': 'Network Monitor',
+
   'versions.os': 'OS Version',
   'versions.node': 'Node Version',
   'versions.electron': 'Electron Version',

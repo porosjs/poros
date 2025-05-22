@@ -6,6 +6,8 @@ export default {
 
   'title.about': '关于',
 
+  'network.monitor': '网络监控',
+
   'versions.os': '系统版本',
   'versions.node': 'Node版本',
   'versions.electron': 'Electron版本',

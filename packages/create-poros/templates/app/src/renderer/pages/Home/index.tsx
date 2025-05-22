@@ -1,10 +1,12 @@
 import { fetchFoo } from '@/renderer/apis/foo';
 import logoImg from '@/renderer/assets/logo.png';
-import { GithubOutlined } from '@ant-design/icons';
-import { Avatar, Button, Descriptions, Divider, Space, notification } from 'antd';
-import { SelectLang, i18n, localStore, logger, mainInvoker, useModel } from 'poros';
+import LangSwitch from '@/renderer/components/LangSwitch';
+import ThemeSwitch from '@/renderer/components/ThemeSwitch';
+import { Avatar, Button, Descriptions, Divider, Space, notification } from 'metis-ui';
+import { i18n, localStore, logger, mainInvoker, useModel } from 'poros';
 import { useEffect, useState } from 'react';
 import Chart from './Chart';
+import GithubIcon from './GithubIcon';
 
 const HomePage: React.FC = () => {
   const { name } = useModel('demo');
@@ -61,39 +63,44 @@ const HomePage: React.FC = () => {
     {
       key: '1',
       label: i18n('versions.os'),
-      children: versions?.os,
+      content: versions?.os,
     },
     {
       key: '2',
       label: i18n('versions.node'),
-      children: versions?.node,
+      content: versions?.node,
     },
     {
       key: '3',
       label: i18n('versions.electron'),
-      children: versions?.electron,
+      content: versions?.electron,
     },
     {
       key: '4',
       label: i18n('versions.chrome'),
-      children: versions?.chrome,
+      content: versions?.chrome,
     },
   ];
 
   return (
-    <div style={{ padding: 24 }}>
-      <header style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+    <div className="p-6">
+      <header className="flex items-center gap-2">
         <Avatar src={logoImg} shape="square" size={64} />
-        <span style={{ fontSize: 32, fontWeight: 500, marginLeft: 8 }}>Poros</span>
-        <GithubOutlined style={{ marginLeft: 'auto' }} onClick={gotoGithub} />
-        <SelectLang />
+        <span className="ml-2 text-4xl font-medium">Poros</span>
+        <Space size={12} className="ml-auto">
+          <LangSwitch />
+          <ThemeSwitch />
+          <span onClick={gotoGithub} className="cursor-pointer">
+            <GithubIcon />
+          </span>
+        </Space>
       </header>
       <Divider />
-      <Descriptions items={items} column={2} style={{ width: 480 }} />
+      <Descriptions items={items} column={2} className="w-120" />
       <Divider />
       <Chart />
       <Divider />
-      <Space>
+      <Space wrap>
         <Button onClick={handleFetch}>Fetch API</Button>
         <Button onClick={() => mainInvoker.AboutWindow.open()}>{i18n('button.openNewWindow')}</Button>
         <Button onClick={() => mainInvoker.MainWindow.openDevTools()}>{i18n('button.openDevTools')}</Button>

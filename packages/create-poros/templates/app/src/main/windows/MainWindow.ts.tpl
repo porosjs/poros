@@ -35,7 +35,7 @@ class MainWindow extends PorosBrowserWindow {
     },
   };
 
-  private monitorTimer?: NodeJS.Timer;
+  private monitorTimer?: NodeJS.Timeout;
 
   constructor() {
     super(MainWindow.URL, MainWindow.OPTIONS);

@@ -1,15 +1,7 @@
-import { Spin } from 'antd';
+import { Spin } from 'metis-ui';
 
 const Loading = () => (
-  <div
-    style={{
-      position: 'absolute',
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)',
-      textAlign: 'center',
-    }}
-  >
+  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
     <Spin size="large" />
   </div>
 );
