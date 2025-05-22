@@ -3,7 +3,7 @@ import logger from '{{{electronLogPath}}}/main';
 import  { toString } from '{{{electronLogPath}}}/src/node/transforms/object';
 import { isWindows } from './utils';
 
-console.log = logger.log;
+Object.assign(console, logger.functions);
 
 {{#electronLogOptions}}
 function setProps(obj: any, logObj: any) {

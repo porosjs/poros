@@ -1,14 +1,11 @@
 // @ts-nocheck
 import { ipcMain } from 'electron'
 import ElectronStore from '{{{electronStorePath}}}';
-import ElectronExternalApi from '{{{electronLogPath}}}/src/main/ElectronExternalApi';
 import path from 'path';
-
-const electron = require('electron');
-const externalApi = new ElectronExternalApi({ electron });
+import { setPreloadFileForSessions } from './utils';
 
 ElectronStore.prototype.initialize = function(){
-  externalApi.setPreloadFileForSessions({ filePath: path.join(__dirname, 'preload/local-store-preload.js') });
+  setPreloadFileForSessions('local-store-preload', path.join(__dirname, 'preload/local-store-preload.js'));
 
   ipcMain.on('__IPC_ELECTRON_STORE_GET', async (event, val) => {
     event.returnValue = this.get(val);

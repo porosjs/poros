@@ -76,7 +76,7 @@ async function buildElectron(api: IApi) {
 }
 
 async function buildMain(api: IApi) {
-  const enableVite = !!api.config.vite;
+  const enableVite = false;
 
   const outputPath = api.env === Env.development ? getDevBuildPath(api) : getMainBuildPath(api);
 
@@ -110,7 +110,10 @@ async function buildMain(api: IApi) {
   };
   const modifyViteConfig = async (memo: any) => {
     memo.build.rollupOptions.output.entryFileNames = 'main.js';
-    memo.build.lib.formats = ['cjs'];
+    memo.build.lib = {
+      ...memo.build.lib,
+      formats: ['cjs'],
+    };
 
     return memo;
   };
@@ -146,7 +149,7 @@ async function buildMain(api: IApi) {
 }
 
 async function buildPreload(api: IApi) {
-  const enableVite = !!api.config.vite;
+  const enableVite = false;
 
   const outputPath = path.join(api.env === Env.development ? getDevBuildPath(api) : getMainBuildPath(api), 'preload');
 
@@ -179,7 +182,10 @@ async function buildPreload(api: IApi) {
   };
   const modifyViteConfig = async (memo: any) => {
     memo.build.rollupOptions.output.entryFileNames = '[name].js';
-    memo.build.lib.formats = ['cjs'];
+    memo.build.lib = {
+      ...memo.build.lib,
+      formats: ['cjs'],
+    };
 
     return memo;
   };

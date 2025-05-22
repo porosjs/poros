@@ -12,6 +12,7 @@ export default () => {
       require.resolve('@umijs/plugins/dist/request'),
       require.resolve('@porosjs/plugins/dist/qiankun'),
       require.resolve('@porosjs/plugins/dist/ipc'),
+      require.resolve('@porosjs/plugins/dist/metisui'),
     ],
   };
 };

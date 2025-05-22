@@ -18,6 +18,8 @@ export default (api: IApi) => {
       type: 'hash',
     };
 
+    config.mfsu = false;
+
     return config;
   });
 
@@ -50,7 +52,7 @@ export default (api: IApi) => {
   });
 
   api.onBuildComplete(({ err }) => {
-    if (err == null) {
+    if (err == null && !process.env.ANALYZE) {
       runBuild(api).catch((error) => {
         console.error(error);
       });

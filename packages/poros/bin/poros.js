@@ -6,6 +6,7 @@ process.title = 'poros';
 // @ts-ignore
 process.noDeprecation = '1';
 process.env.DID_YOU_KNOW = 'none';
+process.env.MAKO_AD = 'none';
 // @ts-ignore
 require('../dist/cli')
     .run()

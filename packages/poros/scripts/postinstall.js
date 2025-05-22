@@ -167,7 +167,7 @@ ${contents.join('\n')}`,
           `    const pages = (0, import_path.relative)(
             api.cwd,`,
         ],
-        [387, '    const prefix = hasSrc ? `../../../${pages}/` : `../../${pages}/`;'],
+        [367, '    const prefix = hasSrc ? `../../../${pages}/` : `../../${pages}/`;'],
       ],
     },
   ]);

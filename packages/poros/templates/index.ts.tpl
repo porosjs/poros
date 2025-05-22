@@ -2,7 +2,7 @@
 import logger from '{{{electronLogPath}}}/renderer';
 import { history } from 'poros';
 
-console.log = logger.log;
+Object.assign(console, logger.functions);
 
 const _logger = new Proxy(logger, {
   get: function(target, property) {
