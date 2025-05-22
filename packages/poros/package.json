@@ -46,10 +46,10 @@
     "@umijs/plugins": "4.4.11",
     "@umijs/preset-umi": "4.4.11",
     "@umijs/utils": "4.4.11",
-    "electron-builder": "^24.6.4",
+    "electron-builder": "^26.0.12",
     "electron-localshortcut": "^3.2.1",
-    "electron-log": "5.1.2",
-    "electron-store": "^8.1.0",
+    "electron-log": "5.4.0",
+    "electron-store": "10.0.1",
     "eslint": "8.35.0",
     "http-proxy-middleware": "3.0.0",
     "stylelint": "14.8.2",
@@ -58,6 +58,7 @@
     "zx": "^7.2.1"
   },
   "devDependencies": {
-    "@types/yargs": "^17.0.24"
+    "@types/yargs": "^17.0.24",
+    "metis-ui": "^1.0.2"
   }
 }

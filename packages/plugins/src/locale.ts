@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { IApi, RUNTIME_TYPE_FILE_NAME } from 'umi';
 import { Mustache, fsExtra, lodash, winPath } from 'umi/plugin-utils';
-import { IAddAntdLocales, IGetLocaleFileListResult, exactLocalePaths, getAntdLocale, getDayjsLocale, getLocaleList, isNeedPolyfill } from './utils/localeUtils';
+import { IAddAntdLocales, IAddMetisuiLocales, IGetLocaleFileListResult, exactLocalePaths, getAntdLocale, getDayjsLocale, getLocaleList, getMetisuiLocale, isNeedPolyfill } from './utils/localeUtils';
 import { withTmpPath } from './utils/withTmpPath';
 
 interface ILocaleConfig {
@@ -10,6 +10,7 @@ interface ILocaleConfig {
   /** title 开启国际化 */
   title?: boolean;
   antd?: boolean;
+  metisui?: boolean;
   baseSeparator?: string;
 }
 
@@ -25,6 +26,7 @@ export default (api: IApi) => {
             default: zod.string(),
             title: zod.boolean(),
             antd: zod.boolean(),
+            metisui: zod.boolean(),
             baseSeparator: zod.string(),
           })
           .partial();
@@ -54,6 +56,14 @@ export default (api: IApi) => {
       args,
     });
 
+  const addMetisuiLocales: IAddMetisuiLocales = async (args) =>
+    await api.applyPlugins({
+      key: 'addMetisuiLocales',
+      type: api.ApplyPluginsType.add,
+      initialValue: [`metis-ui/${api.config?.ssr ? 'lib' : 'es'}/locale/${getMetisuiLocale(args.lang, args.country)}`],
+      args,
+    });
+
   const getList = async (resolveKey: string): Promise<IGetLocaleFileListResult[]> => {
     const { paths } = api;
     return getLocaleList({
@@ -62,6 +72,7 @@ export default (api: IApi) => {
       absSrcPath: join(paths.absSrcPath, '..'),
       addAntdLocales,
       resolveKey,
+      addMetisuiLocales,
     });
   };
 
@@ -70,15 +81,17 @@ export default (api: IApi) => {
     const resolveKey = 'dayjs';
     const dayjsPkgPath = winPath(dirname(require.resolve(`${resolveKey}/package.json`)));
 
-    const { baseSeparator, antd, title } = {
+    const { baseSeparator, antd, metisui, title } = {
       baseSeparator: '-',
       antd: !!api.config.antd,
+      metisui: !!api.config.metisui,
       ...(api.config.locale as ILocaleConfig),
     };
     const defaultLocale = api.config.locale?.default || `zh${baseSeparator}CN`;
     const localeList = await getList(resolveKey);
     const dayjsLocales = localeList.map(({ dayjsLocale }) => dayjsLocale).filter((locale) => locale);
     const antdLocales = localeList.map(({ antdLocale }) => antdLocale).filter((locale) => locale);
+    const metisuiLocales = localeList.map(({ metisuiLocale }) => metisuiLocale).filter((locale) => locale);
 
     let DayjsLocales = dayjsLocales;
     let DefaultDayjsLocale = '';
@@ -103,7 +116,20 @@ export default (api: IApi) => {
         }),
       );
     }
-    const NormalizeAntdLocalesName = function () {
+
+    let DefaultMetisuiLocales: string[] = [];
+    // set metisui default locale
+    if (!metisuiLocales.length && api.config.locale?.metisui) {
+      const [lang, country = ''] = defaultLocale.split(baseSeparator);
+      DefaultMetisuiLocales = lodash.uniq(
+        await addMetisuiLocales({
+          lang,
+          country,
+        }),
+      );
+    }
+
+    const NormalizeLocalesName = function () {
       // @ts-ignore
       return packageNormalize(this);
     };
@@ -112,9 +138,11 @@ export default (api: IApi) => {
       content: Mustache.render(localeTpl, {
         DayjsLocales,
         DefaultDayjsLocale,
-        NormalizeAntdLocalesName,
+        NormalizeLocalesName,
         DefaultAntdLocales,
+        DefaultMetisuiLocales,
         Antd: !!antd,
+        Metisui: !!metisui,
         Title: title && api.config.title,
         dayjsPkgPath,
       }),
@@ -135,17 +163,23 @@ export default (api: IApi) => {
             locale: antdLocale,
             index: index,
           })),
+          metisuiLocale: locale.metisuiLocale.map((metisuiLocale, index) => ({
+            locale: metisuiLocale,
+            index: index,
+          })),
           paths: locale.paths.map((path, index) => ({
             path,
             index,
           })),
         })),
         Antd: !!antd,
+        Metisui: !!metisui,
         DefaultLocale: JSON.stringify(defaultLocale),
         warningPkgPath: winPath(dirname(require.resolve('warning/package'))),
         reactIntlPkgPath,
       }),
     });
+
     // runtime.tsx
     const runtimeTpl = readFileSync(join(__dirname, '../libs/locale/renderer/runtime.tpl'), 'utf-8');
     api.writeTmpFile({

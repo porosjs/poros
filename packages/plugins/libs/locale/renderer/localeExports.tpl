@@ -19,9 +19,16 @@ export {
 let g_intl: IntlShape;
 
 {{#LocaleList}}
+{{#Antd}}
 {{#antdLocale}}
-import {{lang}}{{country}}{{index}} from '{{{locale}}}';
+import antd_{{lang}}{{country}}{{index}} from '{{{locale}}}';
 {{/antdLocale}}
+{{/Antd}}
+{{#Metisui}}
+{{#metisuiLocale}}
+import metisui_{{lang}}{{country}}{{index}} from '{{{locale}}}';
+{{/metisuiLocale}}
+{{/Metisui}}
 {{#paths}}
 import lang_{{lang}}{{country}}{{index}} from "{{{path}}}";
 {{/paths}}
@@ -36,9 +43,14 @@ export const localeInfo: {[key: string]: any} = {
     locale: '{{locale}}',
     {{#Antd}}antd: {
       {{#antdLocale}}
-      ...{{lang}}{{country}}{{index}},
+      ...antd_{{lang}}{{country}}{{index}},
       {{/antdLocale}}
     },{{/Antd}}
+    {{#Metisui}}metisui: {
+      {{#metisuiLocale}}
+      ...metisui_{{lang}}{{country}}{{index}},
+      {{/metisuiLocale}}
+    },{{/Metisui}}
     dayjsLocale: '{{dayjsLocale}}',
   },
   {{/LocaleList}}

@@ -4,11 +4,14 @@ import { glob, lodash, winPath } from 'umi/plugin-utils';
 
 export type IAddAntdLocales = (args: { lang: string; country: string }) => Promise<string[]>;
 
+export type IAddMetisuiLocales = (args: { lang: string; country: string }) => Promise<string[]>;
+
 export interface IGetLocaleFileListOpts {
   localeFolder: string;
   separator?: string;
   absSrcPath?: string;
   addAntdLocales: IAddAntdLocales;
+  addMetisuiLocales: IAddMetisuiLocales;
   resolveKey: string;
 }
 
@@ -37,17 +40,20 @@ export const getDayjsLocale = (lang: string, country: string, resolveKey: string
 
 export const getAntdLocale = (lang: string, country: string): string => `${lang}_${(country || lang).toLocaleUpperCase()}`;
 
+export const getMetisuiLocale = (lang: string, country: string): string => `${lang}_${(country || lang).toLocaleUpperCase()}`;
+
 export interface IGetLocaleFileListResult {
   lang: string;
   country: string;
   name: string;
   paths: string[];
   antdLocale: string[];
+  metisuiLocale: string[];
   dayjsLocale: string;
 }
 
 /**
- * 有些情况下可能项目包含的locale和antd的不匹配
+ * 有些情况下可能项目包含的locale和a 的不匹配
  * 这个方法用于检测
  * @param localePath
  * @returns
@@ -62,7 +68,7 @@ const modulesHasLocale = (localePath: string) => {
 };
 
 export const getLocaleList = async (opts: IGetLocaleFileListOpts): Promise<IGetLocaleFileListResult[]> => {
-  const { localeFolder, separator = '-', absSrcPath = '', addAntdLocales, resolveKey = 'dayjs' } = opts;
+  const { localeFolder, separator = '-', absSrcPath = '', addAntdLocales, addMetisuiLocales, resolveKey = 'dayjs' } = opts;
   const localeFileMath = new RegExp(`^([a-z]{2})${separator}?([A-Z]{2})?\.(js|json|ts)$`);
 
   const localeFiles = glob
@@ -86,6 +92,7 @@ export const getLocaleList = async (opts: IGetLocaleFileListOpts): Promise<IGetL
     const [lang, country = ''] = name.split(separator);
     const { dayjsLocale } = getDayjsLocale(lang, country, resolveKey);
     const antdLocale = lodash.uniq(await addAntdLocales({ lang, country })).filter((localePath) => modulesHasLocale(localePath));
+    const metisuiLocale = lodash.uniq(await addMetisuiLocales({ lang, country })).filter((localePath) => modulesHasLocale(localePath));
 
     return {
       lang,
@@ -95,6 +102,7 @@ export const getLocaleList = async (opts: IGetLocaleFileListOpts): Promise<IGetL
       locale: name.split(separator).join('-'),
       country,
       antdLocale,
+      metisuiLocale,
       paths: groups[name].map((item) => winPath(item.path)),
       dayjsLocale,
     };

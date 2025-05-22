@@ -1,7 +1,10 @@
 import React from 'react';
 {{#Antd}}
-import { ConfigProvider } from 'antd';
+import { ConfigProvider as AntdConfigProvider } from 'antd';
 {{/Antd}}
+{{#Metisui}}
+import { ConfigProvider as MetisuiConfigProvider } from 'metis-ui';
+{{/Metisui}}
 
 {{#DayjsLocales.length}}
 import dayjs from '{{{dayjsPkgPath}}}';
@@ -12,8 +15,11 @@ import '{{{dayjsPkgPath}}}/locale/{{.}}';
 import { RawIntlProvider, getLocale, getDirection , setIntl, getIntl, localeInfo } from './localeExports';
 
 {{#DefaultAntdLocales}}
-import {{NormalizeAntdLocalesName}} from '{{{.}}}';
+import {{NormalizeLocalesName}} from '{{{.}}}';
 {{/DefaultAntdLocales}}
+{{#DefaultMetisuiLocales}}
+import {{NormalizeLocalesName}} from '{{{.}}}';
+{{/DefaultMetisuiLocales}}
 
 export function _onCreate() {
   const locale = getLocale();
@@ -56,21 +62,36 @@ export const _LocaleContainer = (props:any) => {
     {{/Title}}
   }, []);
 
+  let dom = <RawIntlProvider value={intl}>{props.children}</RawIntlProvider>
+
   {{#Antd}}
   const defaultAntdLocale = {
     {{#DefaultAntdLocales}}
-    ...{{NormalizeAntdLocalesName}},
+    ...{{NormalizeLocalesName}},
     {{/DefaultAntdLocales}}
   }
-  const direction = getDirection();
+  const antdDirection = getDirection();
 
-  return (
-    <ConfigProvider  direction={direction} locale={localeInfo[locale]?.antd || defaultAntdLocale}>
-      <RawIntlProvider value={intl}>{props.children}</RawIntlProvider>
-    </ConfigProvider>
+  dom = (
+    <AntdConfigProvider direction={antdDirection} locale={localeInfo[locale]?.antd || defaultAntdLocale}>
+      {dom}
+    </AntdConfigProvider>
   )
   {{/Antd}}
-  {{^Antd}}
-  return <RawIntlProvider value={intl}>{props.children}</RawIntlProvider>;
-  {{/Antd}}
+  {{#Metisui}}
+  const defaultMetisuiLocale = {
+    {{#DefaultMetisuiLocales}}
+    ...{{NormalizeLocalesName}},
+    {{/DefaultMetisuiLocales}}
+  }
+  const metisuiDirection = getDirection();
+
+  dom = (
+    <MetisuiConfigProvider direction={metisuiDirection} locale={localeInfo[locale]?.metisui || defaultMetisuiLocale}>
+      {dom}
+    </MetisuiConfigProvider>
+  )
+  {{/Metisui}}
+
+  return dom;
 };
