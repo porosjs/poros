@@ -47,9 +47,6 @@
     "typescript": "5.1.6"
   },
   "pnpm": {
-    "neverBuiltDependencies": [],
-    "overrides": {
-      "poros": "link:../../Workspace/SourceCode/porosjs/poros/packages/poros"
-    }
+    "neverBuiltDependencies": []
   }
 }
