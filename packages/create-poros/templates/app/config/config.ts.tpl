@@ -4,8 +4,8 @@ import routes from './routes';
 
 export default defineConfig({
   npmClient: '{{{npmClient}}}',
+  model: {},
   metisui: {},
-  antd: {},
   locale: {},
   request: {},
   routes,

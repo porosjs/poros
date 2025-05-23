@@ -1,8 +1,8 @@
-import type { FC } from 'react';
 import { ComputerDesktopOutline, MoonSparklesOutline, SunOutline } from '@metisjs/icons';
-import { Dropdown } from 'metis-ui';
+import { Dropdown, MenuProps } from 'metis-ui';
 import { MenuClickEventHandler } from 'metis-ui/es/menu/interface';
 import { useMetisUIConfig } from 'poros';
+import type { FC } from 'react';
 
 export type ThemeName = 'system' | 'light' | 'dark';
 
@@ -34,21 +34,20 @@ const ThemeSwitch: FC = () => {
 
   const currentTheme = themes.find((theme) => theme.name === (config.theme ?? 'system'));
 
+  const menu: MenuProps = {
+    items: themes.map((theme) => ({
+      key: theme.name,
+      label: theme.label,
+      icon: theme.icon,
+    })),
+    selectable: true,
+    selectedKeys: [currentTheme!.name],
+    onClick: onThemeChange,
+    className: { item: { icon: '-ms-1 size-5' } },
+  };
+
   return (
-    <Dropdown
-      trigger={['click']}
-      menu={{
-        items: themes.map((theme) => ({
-          key: theme.name,
-          label: theme.label,
-          icon: theme.icon,
-        })),
-        selectable: true,
-        selectedKeys: [currentTheme!.name],
-        onClick: onThemeChange,
-        className: { item: { icon: '-ms-1 size-5' } },
-      }}
-    >
+    <Dropdown trigger={['click']} menu={menu}>
       <button className="text-text flex items-center *:size-6">{currentTheme?.icon}</button>
     </Dropdown>
   );

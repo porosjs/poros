@@ -17,7 +17,7 @@
     "start:no-mock": "cross-env MOCK=none poros dev"
   },
   "dependencies": {
-     "@ant-design/plots": "^2.1.15",
+    "@ant-design/plots": "^2.1.15",
     "@metisjs/icons": "^1.0.1",
     "lodash-es": "^4.17.21",
     "metis-ui": "^1.0.2",
