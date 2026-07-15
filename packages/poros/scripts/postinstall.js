@@ -65,7 +65,7 @@ ${contents.join('\n')}`,
   patchPackage('@umijs/bundler-webpack', [
     {
       file: 'dist/server/server.js',
-      annotates: [213, 214, 215, 216],
+      annotates: [221, 222, 223, 224],
     },
     {
       file: 'dist/build.d.ts',
@@ -152,22 +152,22 @@ ${contents.join('\n')}`,
     },
     {
       file: 'dist/features/tmpFiles/tmpFiles.js',
-      annotates: [119, 120],
+      annotates: [117, 118],
       replaces: [
-        [75, '    const umiTempDir = (0, import_utils.winPath)((0, import_path.relative)(api.cwd, api.paths.absTmpPath));'],
+        [74, '    const umiTempDir = (0, import_utils.winPath)((0, import_path.relative)(api.cwd, api.paths.absTmpPath));'],
         [
-          99,
+          97,
           `            allowSyntheticDefaultImports: true,
             emitDecoratorMetadata: true,
             experimentalDecorators: true,`,
         ],
-        [109, ''],
+        [107, ''],
         [
-          364,
+          362,
           `    const pages = (0, import_path.relative)(
             api.cwd,`,
         ],
-        [367, '    const prefix = hasSrc ? `../../../${pages}/` : `../../${pages}/`;'],
+        [365, '    const prefix = hasSrc ? `../../../${pages}/` : `../../${pages}/`;'],
       ],
     },
   ]);

@@ -1,6 +1,5 @@
 {
   "$schema": "https://turborepo.org/schema.json",
-  "baseBranch": "origin/main",
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
@@ -20,9 +19,5 @@
     },
     "test:e2e": {}
   },
-  "globalDependencies": [
-    "tsconfig.base.json",
-    "tsconfig.json",
-    "jest.config.ts"
-  ]
+  "globalDependencies": ["tsconfig.base.json", "tsconfig.json", "jest.config.ts"]
 }

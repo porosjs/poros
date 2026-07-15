@@ -17,7 +17,7 @@ export class IpcUtils {
     single: boolean;
   }[];
 
-  constructor(private api: IApi | null, private hasHandle: boolean) {
+  constructor(_api: IApi | null, private hasHandle: boolean) {
     this.windows = glob
       .sync('**/*.{ts,js}', {
         cwd: join(process.cwd(), 'src/main/windows'),

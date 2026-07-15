@@ -80,7 +80,7 @@ async function buildMain(api: IApi) {
 
   const outputPath = api.env === Env.development ? getDevBuildPath(api) : getMainBuildPath(api);
 
-  const external: any[] = [...externalPackagesConfig, api.config.externals];
+  const externals: any[] = [...externalPackagesConfig, ...Object.keys(api.config.externals)];
 
   const chainWebpack = (config: any) => {
     if (api.env === Env.production) {
@@ -106,6 +106,7 @@ async function buildMain(api: IApi) {
   const modifyWebpackConfig = async (memo: any) => {
     memo.output.filename = 'main.js';
     memo.target = 'electron-main';
+    memo.externalsType = 'commonjs';
     return memo;
   };
   const modifyViteConfig = async (memo: any) => {
@@ -121,7 +122,7 @@ async function buildMain(api: IApi) {
   const opts: any = {
     config: {
       ...api.config,
-      external,
+      externals,
       outputPath,
       alias: { ...api.config.alias, poros: `@@/${PLUGIN_DIR_NAME}/exports` },
       fastRefresh: false,
@@ -153,7 +154,7 @@ async function buildPreload(api: IApi) {
 
   const outputPath = path.join(api.env === Env.development ? getDevBuildPath(api) : getMainBuildPath(api), 'preload');
 
-  const external: any[] = [...externalPackagesConfig, api.config.externals];
+  const externals: any[] = [...externalPackagesConfig, ...Object.keys(api.config.externals)];
 
   const chainWebpack = (config: any) => {
     if (api.env === Env.production) {
@@ -178,6 +179,7 @@ async function buildPreload(api: IApi) {
   const modifyWebpackConfig = async (memo: any) => {
     memo.output.filename = '[name].js';
     memo.target = 'electron-preload';
+    memo.externalsType = 'commonjs';
     return memo;
   };
   const modifyViteConfig = async (memo: any) => {
@@ -202,7 +204,7 @@ async function buildPreload(api: IApi) {
     const opts: any = {
       config: {
         ...api.config,
-        external,
+        externals,
         outputPath,
       },
       env: api.env,
