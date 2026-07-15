@@ -6,7 +6,7 @@ import { spawnSync } from './.internal/utils';
 
   // no cache
   if (args.includes('--no-cache')) {
-    args.unshift('--force');
+    args.unshift('--force=true');
   }
 
   // filter
